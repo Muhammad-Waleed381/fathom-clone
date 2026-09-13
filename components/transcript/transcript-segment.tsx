@@ -33,7 +33,7 @@ export const TranscriptSegment = React.forwardRef<HTMLDivElement, TranscriptSegm
     ref
   ) => {
     const speakerName = speaker?.name || "Unknown Speaker";
-    const speakerColor = speaker?.color || "#FEF08A";
+    const speakerColor = speaker?.color || "#E4E4E7";
     const initials = speakerName
       .split(" ")
       .map((n) => n[0])
@@ -47,18 +47,18 @@ export const TranscriptSegment = React.forwardRef<HTMLDivElement, TranscriptSegm
         data-segment-id={segment.id}
         data-speaker-id={segment.speakerId}
         className={cn(
-          "relative rounded-lg p-3.5 transition-colors duration-150 border-2 text-left",
+          "relative rounded-xl p-3.5 transition-colors duration-150 border text-left",
           isActiveSegment
-            ? "bg-[#FEF08A]/15 border-black shadow-neo-sm"
-            : "bg-white border-black/20 hover:border-black",
+            ? "bg-amber-50/60 border-amber-200 shadow-sm"
+            : "bg-white border-zinc-200 hover:border-zinc-300",
           className
         )}
       >
         {/* Left Color Indicator Accent */}
         <div
           className={cn(
-            "absolute left-0 top-3 bottom-3 w-1.5 rounded-r border-r border-y border-black transition-all",
-            isActiveSegment ? "opacity-100" : "opacity-60"
+            "absolute left-0 top-3 bottom-3 w-1 rounded-r transition-all",
+            isActiveSegment ? "opacity-100" : "opacity-40"
           )}
           style={{ backgroundColor: speakerColor }}
         />
@@ -66,38 +66,38 @@ export const TranscriptSegment = React.forwardRef<HTMLDivElement, TranscriptSegm
         {/* Header: Speaker Avatar, Name, Role tag, and Seekable Timestamp */}
         <div className="flex items-center justify-between gap-2 mb-2 pl-2">
           <div className="flex items-center gap-2.5 min-w-0">
-            <Avatar className="h-7 w-7 border-2 border-black rounded-full shadow-neo-sm shrink-0">
+            <Avatar className="h-7 w-7 border border-zinc-200 rounded-md shrink-0">
               {speaker?.avatarUrl && (
                 <AvatarImage src={speaker.avatarUrl} alt={speakerName} />
               )}
               <AvatarFallback
                 style={{ backgroundColor: speakerColor }}
-                className="font-mono text-[10px] font-black text-black"
+                className="font-mono text-[10px] font-semibold text-zinc-950 rounded-md"
               >
                 {initials}
               </AvatarFallback>
             </Avatar>
 
             <div className="flex items-center gap-2 min-w-0 flex-wrap">
-              <span className="truncate font-bold text-xs text-black">
+              <span className="truncate font-semibold text-xs text-zinc-950">
                 {speakerName}
               </span>
               {speaker?.role && (
-                <span className="inline-flex items-center rounded border border-black bg-[#DDD6FE] px-1.5 py-0.2 font-mono text-[10px] font-bold text-black shadow-neo-sm truncate max-w-[140px]">
+                <span className="inline-flex items-center rounded-sm border border-zinc-200 bg-zinc-50 px-1.5 py-0.5 font-mono text-[10px] font-medium text-zinc-600 truncate max-w-[140px]">
                   {speaker.role}
                 </span>
               )}
             </div>
           </div>
 
-          {/* Timestamp seeking badge */}
+          {/* Monospace timestamp badge — click to seek */}
           <button
             type="button"
             onClick={() => onTimestampClick(segment.start)}
-            className="flex items-center gap-1 font-mono text-xs font-bold text-black bg-white hover:bg-[#FEF08A] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-neo active:translate-x-0 active:translate-y-0 active:shadow-neo-sm px-2 py-0.5 rounded border border-black shadow-neo-sm transition-all shrink-0 cursor-pointer"
+            className="flex items-center gap-1 font-mono text-xs font-medium text-zinc-600 bg-zinc-50 hover:bg-zinc-100 hover:text-zinc-950 px-2 py-0.5 rounded-md border border-zinc-200 transition-colors shrink-0 cursor-pointer"
             title={`Jump to ${formatTime(segment.start)}`}
           >
-            <Clock className="w-3 h-3 text-black" />
+            <Clock className="w-3 h-3" />
             <span>{formatTime(segment.start)}</span>
           </button>
         </div>
@@ -120,10 +120,10 @@ export const TranscriptSegment = React.forwardRef<HTMLDivElement, TranscriptSegm
                     onWordClick(word);
                   }}
                   className={cn(
-                    "inline-block rounded-xs mx-0.5 transition-colors duration-75 cursor-pointer",
+                    "inline-block mx-0.5 transition-colors duration-75 cursor-pointer",
                     isWordActive
-                      ? "bg-[#FEF08A] text-black font-bold ring-1 ring-black px-1 rounded-xs"
-                      : "text-zinc-800 hover:text-black hover:bg-zinc-100 px-0.5"
+                      ? "bg-amber-100 text-zinc-950 font-medium px-1 rounded-sm"
+                      : "text-zinc-700 hover:text-zinc-950 hover:bg-zinc-100 px-0.5 rounded-sm"
                   )}
                   title={`${formatTime(word.start)} – Click to seek`}
                 >
@@ -135,7 +135,7 @@ export const TranscriptSegment = React.forwardRef<HTMLDivElement, TranscriptSegm
             // Fallback if words array is empty
             <span
               onClick={() => onTimestampClick(segment.start)}
-              className="text-zinc-800 hover:text-black cursor-pointer"
+              className="text-zinc-700 hover:text-zinc-950 cursor-pointer"
             >
               {segment.text}
             </span>

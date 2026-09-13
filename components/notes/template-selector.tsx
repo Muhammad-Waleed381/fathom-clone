@@ -37,7 +37,7 @@ export const TEMPLATES: TemplateDefinition[] = [
     description: "Accountability matrix with owners, deadlines, and direct playback links",
     badge: (pendingCount: number) =>
       pendingCount > 0 ? (
-        <span className="ml-1.5 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-black px-1 text-[9px] font-mono font-black text-white">
+        <span className="ml-1.5 inline-flex h-4 min-w-4 items-center justify-center rounded-sm bg-zinc-950 px-1 text-[9px] font-mono font-semibold text-white">
           {pendingCount}
         </span>
       ) : null,
@@ -97,7 +97,7 @@ export function TemplateSelector({
       >
         <TabsList
           className={cn(
-            "grid w-full grid-cols-2 md:grid-cols-4 h-auto p-1 bg-[#FAF8F5] border-2 border-black rounded-lg gap-1 shadow-neo-sm",
+            "grid w-full grid-cols-2 md:grid-cols-4 h-auto p-1 bg-zinc-50 border border-zinc-200 rounded-xl gap-1 shadow-sm",
             compact ? "h-9 p-0.5" : "min-h-[44px]"
           )}
         >
@@ -109,14 +109,14 @@ export function TemplateSelector({
                 key={tmpl.id}
                 value={tmpl.id}
                 className={cn(
-                  "relative flex items-center justify-center gap-1.5 rounded-md px-2 py-1.5 font-mono text-xs font-bold transition-all cursor-pointer select-none border-2 border-transparent",
-                  "text-zinc-700 hover:text-black hover:bg-zinc-200/60",
-                  "data-[state=active]:bg-[#FEF08A] data-[state=active]:text-black data-[state=active]:border-black data-[state=active]:shadow-neo-sm",
+                  "relative flex items-center justify-center gap-1.5 rounded-md px-2 py-1.5 font-mono text-xs font-medium transition-all cursor-pointer select-none border border-transparent",
+                  "text-zinc-500 hover:text-zinc-700 hover:bg-white",
+                  "data-[state=active]:bg-white data-[state=active]:text-zinc-950 data-[state=active]:border-zinc-200 data-[state=active]:shadow-sm",
                   compact && "py-1 text-[11px]"
                 )}
                 title={tmpl.description}
               >
-                <Icon className="h-3.5 w-3.5 shrink-0 text-black" />
+                <Icon className="h-3.5 w-3.5 shrink-0" />
                 <span className="truncate hidden sm:inline">{tmpl.label}</span>
                 <span className="truncate sm:hidden">{tmpl.shortLabel}</span>
 

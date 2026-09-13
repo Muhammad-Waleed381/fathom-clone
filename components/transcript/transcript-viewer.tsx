@@ -46,10 +46,10 @@ interface SelectionState {
 }
 
 const CATEGORIES: { id: MeetingHighlight["category"]; label: string; activeClass: string }[] = [
-  { id: "key_moment", label: "Key Moment", activeClass: "bg-[#FEF08A] border-2 border-black shadow-neo-sm text-black font-bold" },
-  { id: "decision", label: "Decision", activeClass: "bg-[#A7F3D0] border-2 border-black shadow-neo-sm text-black font-bold" },
-  { id: "action", label: "Action Item", activeClass: "bg-[#DDD6FE] border-2 border-black shadow-neo-sm text-black font-bold" },
-  { id: "risk", label: "Risk / Blocker", activeClass: "bg-[#FED7AA] border-2 border-black shadow-neo-sm text-black font-bold" },
+  { id: "key_moment", label: "Key Moment", activeClass: "bg-amber-100 border border-amber-300 text-zinc-950 font-semibold" },
+  { id: "decision", label: "Decision", activeClass: "bg-emerald-50 border border-emerald-200 text-zinc-950 font-semibold" },
+  { id: "action", label: "Action Item", activeClass: "bg-violet-50 border border-violet-200 text-zinc-950 font-semibold" },
+  { id: "risk", label: "Risk / Blocker", activeClass: "bg-orange-50 border border-orange-200 text-zinc-950 font-semibold" },
 ];
 
 export function TranscriptViewer({ className, onClipCreated }: TranscriptViewerProps) {
@@ -297,22 +297,22 @@ export function TranscriptViewer({ className, onClipCreated }: TranscriptViewerP
         {/* Toast Notification */}
         {toastMessage && (
           <div className="absolute top-14 left-1/2 -translate-x-1/2 z-50 animate-in fade-in slide-in-from-top-2">
-            <div className="flex items-center gap-2 rounded-full bg-[#A7F3D0] border-2 border-black px-4 py-1.5 text-xs font-mono font-bold text-black shadow-neo">
-              <Sparkles className="w-3.5 h-3.5 text-black" />
+            <div className="flex items-center gap-2 rounded-md bg-white border border-zinc-200 px-4 py-1.5 text-xs font-medium text-zinc-950 shadow-md">
+              <Sparkles className="w-3.5 h-3.5 text-zinc-700" />
               <span>{toastMessage}</span>
             </div>
           </div>
         )}
 
         {/* Editorial Header Toolbar: Search & Auto-Scroll status */}
-        <div className="flex flex-col gap-2 p-3 border-b-2 border-black bg-[#FAF8F5] z-10">
+        <div className="flex flex-col gap-2 p-3 border-b border-zinc-200 bg-zinc-50 z-10">
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-2">
-              <span className="font-mono text-xs font-black uppercase tracking-wider text-black">
+              <span className="font-mono text-xs font-semibold uppercase tracking-wider text-zinc-950">
                 Transcript
               </span>
-              <span className="font-mono text-[10px] font-bold bg-white text-black border border-black px-1.5 py-0.2 rounded shadow-neo-sm">
-                {filteredSegments.length} SEGMENTS
+              <span className="font-mono text-[10px] font-medium bg-white text-zinc-600 border border-zinc-200 px-1.5 py-0.5 rounded-sm">
+                {filteredSegments.length} segments
               </span>
             </div>
 
@@ -325,39 +325,39 @@ export function TranscriptViewer({ className, onClipCreated }: TranscriptViewerP
                 if (nextState) scrollToActiveSegment();
               }}
               className={cn(
-                "inline-flex items-center gap-1.5 px-2 py-0.5 rounded border border-black font-mono text-[11px] font-bold shadow-neo-sm transition-all cursor-pointer",
+                "inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md border font-mono text-[11px] font-medium transition-all cursor-pointer",
                 autoScrollLocked
-                  ? "bg-[#A7F3D0] text-black"
-                  : "bg-white text-zinc-600 hover:bg-zinc-100"
+                  ? "bg-zinc-950 text-white border-zinc-950"
+                  : "bg-white text-zinc-500 border-zinc-200 hover:bg-zinc-100 hover:text-zinc-700"
               )}
               title="Click to toggle auto-scroll locking"
             >
               <span
                 className={cn(
-                  "w-2 h-2 rounded-full border border-black",
-                  autoScrollLocked ? "bg-black" : "bg-zinc-400"
+                  "w-1.5 h-1.5 rounded-sm",
+                  autoScrollLocked ? "bg-white" : "bg-zinc-400"
                 )}
               />
-              <span>{autoScrollLocked ? "AUTO-SCROLL ON" : "AUTO-SCROLL OFF"}</span>
+              <span>{autoScrollLocked ? "Auto-scroll on" : "Auto-scroll off"}</span>
             </button>
           </div>
 
           {/* Search bar & Speaker filter tag */}
           <div className="flex items-center gap-2">
             <div className="relative flex-1">
-              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-zinc-500" />
+              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-zinc-400" />
               <Input
                 type="text"
                 placeholder="Search words or speakers..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="h-8 pl-8 pr-8 text-xs font-mono bg-white border-2 border-black text-black placeholder:text-zinc-400 rounded shadow-neo-sm focus-visible:ring-0 focus-visible:border-black"
+                className="h-8 pl-8 pr-8 text-xs font-mono bg-white border-zinc-200 text-zinc-950 placeholder:text-zinc-400 rounded-md focus-visible:ring-1 focus-visible:ring-zinc-300 focus-visible:border-zinc-300"
               />
               {searchQuery && (
                 <button
                   type="button"
                   onClick={() => setSearchQuery("")}
-                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-black cursor-pointer"
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-700 cursor-pointer"
                 >
                   <X className="w-3.5 h-3.5" />
                 </button>
@@ -367,14 +367,14 @@ export function TranscriptViewer({ className, onClipCreated }: TranscriptViewerP
             {activeFilteredSpeakerObj && (
               <Badge
                 variant="outline"
-                className="h-8 gap-1.5 px-2 bg-[#DDD6FE] border-2 border-black text-black font-mono text-xs font-bold shadow-neo-sm shrink-0"
+                className="h-8 gap-1.5 px-2 bg-zinc-50 border-zinc-200 text-zinc-700 font-mono text-xs font-medium rounded-md shrink-0"
               >
-                <Filter className="w-3 h-3 text-black" />
+                <Filter className="w-3 h-3 text-zinc-500" />
                 <span className="truncate max-w-[100px]">{activeFilteredSpeakerObj.name}</span>
                 <button
                   type="button"
                   onClick={() => setActiveSpeakerFilter(null)}
-                  className="ml-1 text-black hover:opacity-70 cursor-pointer"
+                  className="ml-1 text-zinc-500 hover:text-zinc-900 cursor-pointer"
                   title="Clear speaker filter"
                 >
                   <X className="w-3 h-3" />
@@ -395,9 +395,9 @@ export function TranscriptViewer({ className, onClipCreated }: TranscriptViewerP
                   left: `${Math.max(20, Math.min(containerRef.current ? containerRef.current.clientWidth - 40 : 200, selectionData.x))}px`,
                   top: `${Math.max(50, selectionData.y)}px`,
                 }}
-                className="z-40 -translate-x-1/2 -translate-y-full flex items-center gap-1.5 px-3 py-1 rounded-md bg-[#FEF08A] hover:bg-[#FDE047] text-black text-xs font-mono font-bold border-2 border-black shadow-neo transition-all hover:-translate-y-[calc(100%+2px)] hover:-translate-x-[calc(50%+2px)] cursor-pointer"
+                className="z-40 -translate-x-1/2 -translate-y-full flex items-center gap-1.5 px-3 py-1 rounded-md bg-zinc-950 hover:bg-zinc-800 text-white text-xs font-medium border border-zinc-800 shadow-md transition-colors cursor-pointer"
               >
-                <Scissors className="w-3.5 h-3.5 text-black" />
+                <Scissors className="w-3.5 h-3.5" />
                 <span>Create Highlight</span>
               </button>
             </PopoverTrigger>
@@ -405,26 +405,26 @@ export function TranscriptViewer({ className, onClipCreated }: TranscriptViewerP
             <PopoverContent
               side="top"
               align="center"
-              className="w-80 bg-white border-2 border-black p-3.5 shadow-neo text-black rounded-lg"
+              className="w-80 bg-white border border-zinc-200 p-3.5 shadow-xl shadow-black/[0.08] text-zinc-950 rounded-xl"
             >
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="flex items-center gap-1.5 font-mono text-xs font-black uppercase text-black">
-                    <Bookmark className="w-3.5 h-3.5 fill-black text-black" />
+                  <span className="flex items-center gap-1.5 font-mono text-xs font-semibold uppercase text-zinc-950">
+                    <Bookmark className="w-3.5 h-3.5 fill-zinc-950 text-zinc-950" />
                     New Highlight
                   </span>
-                  <span className="font-mono text-xs font-bold bg-[#FEF08A] text-black border border-black px-1.5 py-0.2 rounded shadow-neo-sm">
+                  <span className="font-mono text-xs font-medium bg-zinc-50 text-zinc-700 border border-zinc-200 px-1.5 py-0.5 rounded-md">
                     {formatTime(selectionData.start)} – {formatTime(selectionData.end)}
                   </span>
                 </div>
 
-                <p className="text-xs text-zinc-800 bg-[#FAF8F5] p-2 rounded border border-black font-sans italic line-clamp-3">
+                <p className="text-xs text-zinc-700 bg-zinc-50 p-2 rounded-md border border-zinc-200 font-sans italic line-clamp-3">
                   &ldquo;{selectionData.text}&rdquo;
                 </p>
 
                 {/* Category Selector */}
                 <div className="space-y-1">
-                  <span className="text-[10px] uppercase font-mono font-bold text-zinc-600">
+                  <span className="text-[10px] uppercase font-mono font-medium text-zinc-500">
                     Category
                   </span>
                   <div className="grid grid-cols-2 gap-1.5">
@@ -434,15 +434,15 @@ export function TranscriptViewer({ className, onClipCreated }: TranscriptViewerP
                         type="button"
                         onClick={() => setSelectedCategory(cat.id)}
                         className={cn(
-                          "flex items-center justify-between px-2 py-1 rounded text-xs font-mono border transition-all text-left cursor-pointer",
+                          "flex items-center justify-between px-2 py-1 rounded-md text-xs font-medium border transition-all text-left cursor-pointer",
                           selectedCategory === cat.id
                             ? cat.activeClass
-                            : "bg-white border-black/30 text-black hover:border-black"
+                            : "bg-white border-zinc-200 text-zinc-700 hover:border-zinc-300 hover:bg-zinc-50"
                         )}
                       >
                         <span>{cat.label}</span>
                         {selectedCategory === cat.id && (
-                          <Check className="w-3 h-3 text-black" />
+                          <Check className="w-3 h-3 text-zinc-700" />
                         )}
                       </button>
                     ))}
@@ -459,7 +459,7 @@ export function TranscriptViewer({ className, onClipCreated }: TranscriptViewerP
                       setPopoverOpen(false);
                       setSelectionData(null);
                     }}
-                    className="h-7 text-xs font-mono font-bold border-2 border-black bg-white hover:bg-zinc-100 text-black shadow-neo-sm cursor-pointer"
+                    className="h-7 text-xs font-medium border-zinc-200 bg-white hover:bg-zinc-50 text-zinc-700 rounded-md cursor-pointer"
                   >
                     Cancel
                   </Button>
@@ -467,9 +467,9 @@ export function TranscriptViewer({ className, onClipCreated }: TranscriptViewerP
                     type="button"
                     size="sm"
                     onClick={handleCreateClipFromSelection}
-                    className="h-7 text-xs font-mono font-bold bg-[#FEF08A] hover:bg-[#FDE047] text-black border-2 border-black shadow-neo-sm gap-1.5 cursor-pointer"
+                    className="h-7 text-xs font-medium bg-zinc-950 hover:bg-zinc-800 text-white border-0 rounded-md gap-1.5 cursor-pointer"
                   >
-                    <Sparkles className="w-3 h-3 text-black" />
+                    <Sparkles className="w-3 h-3" />
                     Save Clip
                   </Button>
                 </div>
@@ -508,11 +508,11 @@ export function TranscriptViewer({ className, onClipCreated }: TranscriptViewerP
               })
             ) : (
               <div className="py-16 text-center text-zinc-500 space-y-2">
-                <Search className="w-8 h-8 mx-auto text-zinc-400" />
-                <p className="font-mono text-sm font-bold text-black">
-                  No matching transcript segments
+                <Search className="w-8 h-8 mx-auto text-zinc-300" />
+                <p className="font-mono text-sm font-medium text-zinc-700">
+                  No matching segments
                 </p>
-                <p className="text-xs text-zinc-500 font-sans">
+                <p className="text-xs text-zinc-400 font-sans">
                   Try clearing your search query or speaker filter.
                 </p>
                 {(searchQuery || activeSpeakerFilter) && (
@@ -524,7 +524,7 @@ export function TranscriptViewer({ className, onClipCreated }: TranscriptViewerP
                       setSearchQuery("");
                       setActiveSpeakerFilter(null);
                     }}
-                    className="mt-2 text-xs font-mono font-bold border-2 border-black bg-white hover:bg-[#FEF08A] text-black shadow-neo-sm"
+                    className="mt-2 text-xs font-medium border-zinc-200 bg-white hover:bg-zinc-50 text-zinc-700 rounded-md"
                   >
                     Clear all filters
                   </Button>
@@ -534,7 +534,7 @@ export function TranscriptViewer({ className, onClipCreated }: TranscriptViewerP
           </div>
         </ScrollArea>
 
-        {/* Floating "Resume auto-scroll" Pill Button */}
+        {/* Floating "Resume auto-scroll" Banner */}
         {!autoScrollLocked && (
           <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-30 animate-in fade-in slide-in-from-bottom-3 duration-200">
             <button
@@ -543,9 +543,9 @@ export function TranscriptViewer({ className, onClipCreated }: TranscriptViewerP
                 setAutoScrollLocked(true);
                 scrollToActiveSegment();
               }}
-              className="flex items-center gap-1.5 rounded-full bg-white text-black border-2 border-black shadow-neo-sm font-bold font-mono text-xs px-4 py-2 hover:bg-[#FEF08A] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-neo active:translate-x-0 active:translate-y-0 active:shadow-neo-sm transition-all cursor-pointer"
+              className="flex items-center gap-1.5 rounded-md bg-white text-zinc-700 border border-zinc-200 shadow-md font-medium text-xs px-4 py-2 hover:bg-zinc-50 hover:text-zinc-950 transition-colors cursor-pointer"
             >
-              <ArrowDown className="w-3.5 h-3.5 text-black animate-bounce" />
+              <ArrowDown className="w-3.5 h-3.5 animate-bounce" />
               <span>Resume Auto-scroll</span>
             </button>
           </div>
