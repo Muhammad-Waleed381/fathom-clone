@@ -9,7 +9,6 @@ import {
   CheckSquare,
   TrendingUp,
   Cpu,
-  Sparkles,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -38,7 +37,7 @@ export const TEMPLATES: TemplateDefinition[] = [
     description: "Accountability matrix with owners, deadlines, and direct playback links",
     badge: (pendingCount: number) =>
       pendingCount > 0 ? (
-        <span className="ml-1.5 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-primary/20 px-1 text-[10px] font-bold text-primary">
+        <span className="ml-1.5 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-black px-1 text-[9px] font-mono font-black text-white">
           {pendingCount}
         </span>
       ) : null,
@@ -98,43 +97,30 @@ export function TemplateSelector({
       >
         <TabsList
           className={cn(
-            "grid w-full grid-cols-2 md:grid-cols-4 h-auto p-1 bg-slate-900/80 border border-slate-800/80 rounded-xl gap-1 shadow-inner",
+            "grid w-full grid-cols-2 md:grid-cols-4 h-auto p-1 bg-[#FAF8F5] border-2 border-black rounded-lg gap-1 shadow-neo-sm",
             compact ? "h-9 p-0.5" : "min-h-[44px]"
           )}
         >
           {TEMPLATES.map((tmpl) => {
             const Icon = tmpl.icon;
-            const isActive = activeId === tmpl.id;
 
             return (
               <TabsTrigger
                 key={tmpl.id}
                 value={tmpl.id}
                 className={cn(
-                  "relative flex items-center justify-center gap-2 rounded-lg px-2.5 py-1.5 text-xs font-medium transition-all duration-150 cursor-pointer select-none",
-                  "text-slate-400 hover:text-slate-200 hover:bg-slate-800/50",
-                  "data-[state=active]:bg-slate-800/90 data-[state=active]:text-white data-[state=active]:shadow-sm data-[state=active]:border data-[state=active]:border-slate-700/80",
+                  "relative flex items-center justify-center gap-1.5 rounded-md px-2 py-1.5 font-mono text-xs font-bold transition-all cursor-pointer select-none border-2 border-transparent",
+                  "text-zinc-700 hover:text-black hover:bg-zinc-200/60",
+                  "data-[state=active]:bg-[#FEF08A] data-[state=active]:text-black data-[state=active]:border-black data-[state=active]:shadow-neo-sm",
                   compact && "py-1 text-[11px]"
                 )}
                 title={tmpl.description}
               >
-                <Icon
-                  className={cn(
-                    "h-3.5 w-3.5 shrink-0 transition-colors",
-                    isActive ? "text-primary" : "text-slate-400"
-                  )}
-                />
+                <Icon className="h-3.5 w-3.5 shrink-0 text-black" />
                 <span className="truncate hidden sm:inline">{tmpl.label}</span>
                 <span className="truncate sm:hidden">{tmpl.shortLabel}</span>
 
                 {tmpl.badge && tmpl.badge(pendingActionItemsCount)}
-
-                {isActive && (
-                  <span
-                    className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-4 h-0.5 bg-primary rounded-full"
-                    aria-hidden="true"
-                  />
-                )}
               </TabsTrigger>
             );
           })}

@@ -17,8 +17,6 @@ import {
   User,
   Clock,
   Lightbulb,
-  CornerDownLeft,
-  ChevronRight,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -89,10 +87,10 @@ function MarkdownResponse({
             key={`ts-${pIdx}`}
             type="button"
             onClick={() => onSeek(secs)}
-            className="inline-flex items-center gap-1 mx-1 px-1.5 py-0.5 rounded text-[11px] font-mono font-medium text-primary bg-primary/10 hover:bg-primary/20 hover:text-white border border-primary/25 transition-colors align-middle cursor-pointer"
+            className="inline-flex items-center gap-1 mx-1 px-1.5 py-0.5 rounded font-mono text-xs font-bold text-black bg-[#FEF08A] hover:bg-[#FDE047] border border-black shadow-neo-sm hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-neo active:translate-x-0 active:translate-y-0 active:shadow-neo-sm transition-all align-middle cursor-pointer"
             title={`Seek to ${cleanTime}`}
           >
-            <Play className="h-2 w-2 fill-current" />
+            <Play className="h-2 w-2 fill-black text-black" />
             <span>{cleanTime}</span>
           </button>
         );
@@ -101,7 +99,7 @@ function MarkdownResponse({
       // Bold text
       if (part.startsWith("**") && part.endsWith("**")) {
         return (
-          <strong key={`b-${pIdx}`} className="font-semibold text-slate-100">
+          <strong key={`b-${pIdx}`} className="font-bold text-black font-sans">
             {part.slice(2, -2)}
           </strong>
         );
@@ -113,14 +111,14 @@ function MarkdownResponse({
     if (isBullet) {
       return (
         <li key={`line-${lineIndex}`} className="flex items-start gap-2 my-1 leading-relaxed">
-          <span className="mt-2 h-1 w-1 rounded-full bg-primary/70 shrink-0" />
+          <span className="mt-1.5 h-1.5 w-1.5 rounded-xs bg-black shrink-0" />
           <span className="flex-1">{renderedParts}</span>
         </li>
       );
     }
 
     if (line.trim() === "") {
-      return <div key={`empty-${lineIndex}`} className="h-2" />;
+      return <div key={`empty-${lineIndex}`} className="h-1.5" />;
     }
 
     return (
@@ -131,7 +129,7 @@ function MarkdownResponse({
   };
 
   return (
-    <div className="text-xs text-slate-200 space-y-1">
+    <div className="text-xs text-zinc-900 space-y-1 font-sans">
       {lines.map((line, idx) => renderFormattedLine(line, idx))}
     </div>
   );
@@ -270,7 +268,7 @@ export function AskFathomChat({ className }: AskFathomChatProps) {
       };
       setMessages((prev) => [...prev, aiMessage]);
       setIsTyping(false);
-    }, 700);
+    }, 600);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -296,50 +294,43 @@ export function AskFathomChat({ className }: AskFathomChatProps) {
   return (
     <div
       className={cn(
-        "flex flex-col h-[520px] rounded-2xl border border-slate-800 bg-slate-950/80 shadow-xl overflow-hidden backdrop-blur-md",
+        "flex flex-col h-[520px] rounded-xl border-2 border-black bg-white shadow-neo overflow-hidden font-sans",
         className
       )}
     >
-      {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-slate-800 bg-slate-900/60">
-        <div className="flex items-center gap-2.5">
-          <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary/15 text-primary border border-primary/25">
-            <Sparkles className="h-4 w-4" />
+      {/* Header: Cyber lavender accent */}
+      <div className="flex items-center justify-between px-3.5 py-2.5 border-b-2 border-black bg-[#DDD6FE]">
+        <div className="flex items-center gap-2">
+          <div className="flex h-6 w-6 items-center justify-center rounded border-2 border-black bg-white shadow-neo-sm text-black">
+            <Bot className="h-3.5 w-3.5" />
           </div>
           <div>
             <div className="flex items-center gap-1.5">
-              <h3 className="text-xs font-semibold text-white tracking-tight">
+              <h3 className="font-mono text-xs font-black uppercase text-black tracking-tight">
                 Ask Fathom AI
               </h3>
-              <Badge
-                variant="outline"
-                className="text-[9px] font-mono px-1 py-0 border-primary/40 bg-primary/10 text-primary font-semibold"
-              >
+              <span className="font-mono text-[9px] font-black uppercase bg-black text-white px-1.5 py-0.2 rounded shadow-neo-sm">
                 GPT-4o
-              </Badge>
+              </span>
             </div>
-            <p className="text-[11px] text-slate-400">
-              Grounded in transcript with interactive playback jumps
-            </p>
           </div>
         </div>
 
-        <Button
-          variant="ghost"
-          size="sm"
+        <button
+          type="button"
           onClick={handleReset}
-          className="h-7 w-7 p-0 text-slate-400 hover:text-slate-200 hover:bg-slate-800"
+          className="flex h-7 w-7 items-center justify-center rounded border-2 border-black bg-white text-black shadow-neo-sm hover:bg-[#FEF08A] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-neo active:translate-x-0 active:translate-y-0 active:shadow-neo-sm transition-all cursor-pointer"
           title="Reset conversation"
         >
-          <RotateCcw className="h-3.5 w-3.5" />
-        </Button>
+          <RotateCcw className="h-3.5 w-3.5 text-black" />
+        </button>
       </div>
 
-      {/* Suggested Prompt Pills */}
-      <div className="px-3.5 py-2.5 bg-slate-900/40 border-b border-slate-800/60 overflow-x-auto scrollbar-none flex items-center gap-1.5">
-        <div className="flex items-center gap-1 text-[11px] text-slate-400 font-medium shrink-0 mr-1">
-          <Lightbulb className="h-3 w-3 text-amber-400" />
-          <span>Try:</span>
+      {/* Suggested Prompt Chips */}
+      <div className="px-3 py-2 bg-[#FAF8F5] border-b-2 border-black overflow-x-auto scrollbar-none flex items-center gap-1.5">
+        <div className="flex items-center gap-1 font-mono text-[10px] font-bold text-zinc-600 shrink-0 mr-0.5">
+          <Lightbulb className="h-3 w-3 text-black" />
+          <span>TRY:</span>
         </div>
         {PROMPT_PILLS.map((pill, idx) => (
           <button
@@ -347,7 +338,7 @@ export function AskFathomChat({ className }: AskFathomChatProps) {
             type="button"
             onClick={() => handleSendMessage(pill)}
             disabled={isTyping}
-            className="shrink-0 text-[11px] px-2.5 py-1 rounded-full bg-slate-800/80 hover:bg-primary/20 hover:text-primary hover:border-primary/40 text-slate-300 border border-slate-700/60 transition-all cursor-pointer select-none text-left disabled:opacity-50"
+            className="shrink-0 font-mono text-[11px] font-bold px-2.5 py-1 rounded border-2 border-black bg-white hover:bg-[#DDD6FE] text-black shadow-neo-sm hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-neo active:translate-x-0 active:translate-y-0 active:shadow-neo-sm transition-all cursor-pointer select-none text-left disabled:opacity-50"
           >
             {pill}
           </button>
@@ -355,8 +346,8 @@ export function AskFathomChat({ className }: AskFathomChatProps) {
       </div>
 
       {/* Messages Scroll Area */}
-      <ScrollArea className="flex-1 p-4">
-        <div className="space-y-4">
+      <ScrollArea className="flex-1 p-3.5">
+        <div className="space-y-3.5">
           {messages.map((msg) => {
             const isAi = msg.role === "assistant";
 
@@ -369,19 +360,19 @@ export function AskFathomChat({ className }: AskFathomChatProps) {
                 )}
               >
                 {isAi && (
-                  <Avatar className="h-6 w-6 shrink-0 mt-0.5 border border-primary/30">
-                    <AvatarFallback className="bg-primary/20 text-primary text-[10px] font-bold">
-                      <Bot className="h-3.5 w-3.5" />
+                  <Avatar className="h-7 w-7 shrink-0 mt-0.5 border-2 border-black rounded-full shadow-neo-sm">
+                    <AvatarFallback className="bg-[#DDD6FE] text-black font-mono text-xs font-black">
+                      <Bot className="h-4 w-4 text-black" />
                     </AvatarFallback>
                   </Avatar>
                 )}
 
                 <div
                   className={cn(
-                    "max-w-[85%] rounded-2xl p-3 shadow-xs",
+                    "max-w-[85%] rounded-lg p-3 border-2 border-black shadow-neo-sm",
                     isAi
-                      ? "bg-slate-900/90 border border-slate-800 text-slate-200 rounded-tl-sm"
-                      : "bg-primary text-white rounded-tr-sm ml-auto"
+                      ? "bg-white text-zinc-900"
+                      : "bg-[#FEF08A] text-black font-mono font-bold text-xs ml-auto"
                   )}
                 >
                   {isAi ? (
@@ -393,23 +384,21 @@ export function AskFathomChat({ className }: AskFathomChatProps) {
 
                       {/* Interactive Citations Bar */}
                       {msg.citations && msg.citations.length > 0 && (
-                        <div className="pt-2 mt-2 border-t border-slate-800 flex flex-wrap gap-1.5 items-center">
-                          <span className="text-[10px] font-mono text-slate-400 flex items-center gap-1">
-                            <Clock className="h-2.5 w-2.5" /> Citations:
+                        <div className="pt-2 mt-2 border-t-2 border-black/10 flex flex-wrap gap-1.5 items-center">
+                          <span className="font-mono text-[10px] font-bold text-zinc-600 flex items-center gap-1">
+                            <Clock className="h-2.5 w-2.5 text-black" /> CITATIONS:
                           </span>
                           {msg.citations.map((cite, cIdx) => (
                             <button
                               key={`c-${cIdx}`}
                               type="button"
                               onClick={() => seekTo(cite.time)}
-                              className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-mono bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700/60 transition-colors cursor-pointer"
+                              className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded font-mono text-xs font-bold text-black bg-[#FEF08A] hover:bg-[#FDE047] border border-black shadow-neo-sm hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-neo active:translate-x-0 active:translate-y-0 active:shadow-neo-sm transition-all cursor-pointer"
                               title={`Jump video to ${formatTime(cite.time)}`}
                             >
-                              <Play className="h-2 w-2 text-primary fill-primary/30" />
-                              <span className="text-primary font-semibold">
-                                {formatTime(cite.time)}
-                              </span>
-                              <span className="text-slate-400 truncate max-w-[120px]">
+                              <Play className="h-2 w-2 fill-black text-black" />
+                              <span>{formatTime(cite.time)}</span>
+                              <span className="truncate max-w-[120px]">
                                 {cite.text}
                               </span>
                             </button>
@@ -418,16 +407,16 @@ export function AskFathomChat({ className }: AskFathomChatProps) {
                       )}
                     </div>
                   ) : (
-                    <p className="text-xs leading-relaxed font-medium">
+                    <p className="text-xs leading-relaxed font-bold">
                       {msg.content}
                     </p>
                   )}
                 </div>
 
                 {!isAi && (
-                  <Avatar className="h-6 w-6 shrink-0 mt-0.5 border border-slate-700">
-                    <AvatarFallback className="bg-slate-800 text-slate-300 text-[10px] font-semibold">
-                      <User className="h-3.5 w-3.5" />
+                  <Avatar className="h-7 w-7 shrink-0 mt-0.5 border-2 border-black rounded-full shadow-neo-sm">
+                    <AvatarFallback className="bg-white text-black font-mono text-xs font-black">
+                      <User className="h-4 w-4 text-black" />
                     </AvatarFallback>
                   </Avatar>
                 )}
@@ -438,23 +427,23 @@ export function AskFathomChat({ className }: AskFathomChatProps) {
           {/* Typing indicator */}
           {isTyping && (
             <div className="flex items-start gap-2.5">
-              <Avatar className="h-6 w-6 shrink-0 mt-0.5 border border-primary/30">
-                <AvatarFallback className="bg-primary/20 text-primary text-[10px]">
-                  <Bot className="h-3.5 w-3.5 animate-pulse" />
+              <Avatar className="h-7 w-7 shrink-0 mt-0.5 border-2 border-black rounded-full shadow-neo-sm">
+                <AvatarFallback className="bg-[#DDD6FE] text-black">
+                  <Bot className="h-4 w-4 text-black animate-pulse" />
                 </AvatarFallback>
               </Avatar>
-              <div className="rounded-2xl rounded-tl-sm bg-slate-900/90 border border-slate-800 px-3 py-2 text-slate-400 text-xs flex items-center gap-1.5 shadow-xs">
-                <span className="h-1.5 w-1.5 rounded-full bg-primary animate-bounce" />
+              <div className="rounded-lg bg-white border-2 border-black px-3 py-2 text-black font-mono text-xs font-bold flex items-center gap-1.5 shadow-neo-sm">
+                <span className="h-1.5 w-1.5 rounded-full bg-black animate-bounce" />
                 <span
-                  className="h-1.5 w-1.5 rounded-full bg-primary animate-bounce"
+                  className="h-1.5 w-1.5 rounded-full bg-black animate-bounce"
                   style={{ animationDelay: "150ms" }}
                 />
                 <span
-                  className="h-1.5 w-1.5 rounded-full bg-primary animate-bounce"
+                  className="h-1.5 w-1.5 rounded-full bg-black animate-bounce"
                   style={{ animationDelay: "300ms" }}
                 />
-                <span className="ml-1.5 text-[11px] text-slate-400">
-                  Fathom AI is researching transcript...
+                <span className="ml-1 text-black">
+                  Fathom AI researching...
                 </span>
               </div>
             </div>
@@ -463,7 +452,7 @@ export function AskFathomChat({ className }: AskFathomChatProps) {
       </ScrollArea>
 
       {/* Input row */}
-      <div className="p-3 border-t border-slate-800 bg-slate-900/60">
+      <div className="p-2.5 border-t-2 border-black bg-[#FAF8F5]">
         <form
           onSubmit={(e) => {
             e.preventDefault();
@@ -478,18 +467,17 @@ export function AskFathomChat({ className }: AskFathomChatProps) {
               onKeyDown={handleKeyDown}
               placeholder="Ask anything about this meeting..."
               disabled={isTyping}
-              className="h-9 pr-9 text-xs bg-slate-950/80 border-slate-800 focus-visible:ring-primary/60 text-slate-100 placeholder:text-slate-500 rounded-xl"
+              className="h-9 text-xs font-sans bg-white border-2 border-black text-black placeholder:text-zinc-400 focus-visible:ring-0 focus-visible:border-black rounded shadow-neo-sm"
             />
           </div>
-          <Button
+          <button
             type="submit"
-            size="sm"
             disabled={!inputQuery.trim() || isTyping}
-            className="h-9 w-9 p-0 rounded-xl bg-primary hover:bg-primary/90 text-white shrink-0 cursor-pointer disabled:opacity-40"
+            className="flex h-9 w-9 items-center justify-center rounded border-2 border-black bg-[#FEF08A] hover:bg-[#FDE047] text-black shadow-neo-sm hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-neo active:translate-x-0 active:translate-y-0 active:shadow-neo-sm transition-all cursor-pointer disabled:opacity-40 shrink-0"
             title="Send query"
           >
-            <Send className="h-3.5 w-3.5" />
-          </Button>
+            <Send className="h-3.5 w-3.5 text-black" />
+          </button>
         </form>
       </div>
     </div>

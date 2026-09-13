@@ -33,7 +33,7 @@ export const TranscriptSegment = React.forwardRef<HTMLDivElement, TranscriptSegm
     ref
   ) => {
     const speakerName = speaker?.name || "Unknown Speaker";
-    const speakerColor = speaker?.color || "#6366F1";
+    const speakerColor = speaker?.color || "#FEF08A";
     const initials = speakerName
       .split(" ")
       .map((n) => n[0])
@@ -47,63 +47,63 @@ export const TranscriptSegment = React.forwardRef<HTMLDivElement, TranscriptSegm
         data-segment-id={segment.id}
         data-speaker-id={segment.speakerId}
         className={cn(
-          "group relative rounded-xl p-3.5 transition-all duration-200 border text-left",
+          "relative rounded-lg p-3.5 transition-colors duration-150 border-2 text-left",
           isActiveSegment
-            ? "bg-slate-900/90 border-indigo-500/60 shadow-[0_0_20px_rgba(99,102,241,0.08)] ring-1 ring-indigo-500/30"
-            : "bg-slate-900/30 border-slate-800/60 hover:bg-slate-900/60 hover:border-slate-700/60",
+            ? "bg-[#FEF08A]/15 border-black shadow-neo-sm"
+            : "bg-white border-black/20 hover:border-black",
           className
         )}
       >
         {/* Left Color Indicator Accent */}
         <div
           className={cn(
-            "absolute left-0 top-3 bottom-3 w-1 rounded-r transition-all",
-            isActiveSegment ? "opacity-100 scale-y-100" : "opacity-40 group-hover:opacity-80"
+            "absolute left-0 top-3 bottom-3 w-1.5 rounded-r border-r border-y border-black transition-all",
+            isActiveSegment ? "opacity-100" : "opacity-60"
           )}
           style={{ backgroundColor: speakerColor }}
         />
 
-        {/* Header: Speaker Avatar, Name, Role, and Seekable Timestamp */}
+        {/* Header: Speaker Avatar, Name, Role tag, and Seekable Timestamp */}
         <div className="flex items-center justify-between gap-2 mb-2 pl-2">
           <div className="flex items-center gap-2.5 min-w-0">
-            <Avatar className="h-7 w-7 border border-slate-700 shrink-0">
+            <Avatar className="h-7 w-7 border-2 border-black rounded-full shadow-neo-sm shrink-0">
               {speaker?.avatarUrl && (
                 <AvatarImage src={speaker.avatarUrl} alt={speakerName} />
               )}
               <AvatarFallback
                 style={{ backgroundColor: speakerColor }}
-                className="text-[10px] font-bold text-white"
+                className="font-mono text-[10px] font-black text-black"
               >
                 {initials}
               </AvatarFallback>
             </Avatar>
 
-            <div className="flex flex-col min-w-0">
-              <span className="truncate text-xs font-semibold text-slate-100">
+            <div className="flex items-center gap-2 min-w-0 flex-wrap">
+              <span className="truncate font-bold text-xs text-black">
                 {speakerName}
               </span>
               {speaker?.role && (
-                <span className="truncate text-[10px] text-slate-400">
-                  {speaker.role} {speaker.company ? `• ${speaker.company}` : ""}
+                <span className="inline-flex items-center rounded border border-black bg-[#DDD6FE] px-1.5 py-0.2 font-mono text-[10px] font-bold text-black shadow-neo-sm truncate max-w-[140px]">
+                  {speaker.role}
                 </span>
               )}
             </div>
           </div>
 
-          {/* Timestamp seeking button */}
+          {/* Timestamp seeking badge */}
           <button
             type="button"
             onClick={() => onTimestampClick(segment.start)}
-            className="flex items-center gap-1 font-mono text-[11px] text-slate-400 hover:text-indigo-300 hover:underline px-2 py-0.5 rounded bg-slate-800/60 border border-slate-700/60 transition-colors shrink-0"
+            className="flex items-center gap-1 font-mono text-xs font-bold text-black bg-white hover:bg-[#FEF08A] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-neo active:translate-x-0 active:translate-y-0 active:shadow-neo-sm px-2 py-0.5 rounded border border-black shadow-neo-sm transition-all shrink-0 cursor-pointer"
             title={`Jump to ${formatTime(segment.start)}`}
           >
-            <Clock className="w-3 h-3 text-slate-500" />
+            <Clock className="w-3 h-3 text-black" />
             <span>{formatTime(segment.start)}</span>
           </button>
         </div>
 
         {/* Word-by-word interactive spans */}
-        <div className="pl-2 text-sm leading-relaxed tracking-normal select-text">
+        <div className="pl-2 text-sm leading-relaxed tracking-normal select-text font-sans">
           {segment.words && segment.words.length > 0 ? (
             segment.words.map((word, idx) => {
               const isWordActive =
@@ -120,10 +120,10 @@ export const TranscriptSegment = React.forwardRef<HTMLDivElement, TranscriptSegm
                     onWordClick(word);
                   }}
                   className={cn(
-                    "inline-block rounded px-0.5 mx-0.5 transition-colors duration-100 cursor-pointer",
+                    "inline-block rounded-xs mx-0.5 transition-colors duration-75 cursor-pointer",
                     isWordActive
-                      ? "bg-indigo-500/35 text-indigo-100 font-semibold shadow-sm ring-1 ring-indigo-400/50 scale-[1.03]"
-                      : "text-slate-300 hover:text-white hover:bg-slate-800/80"
+                      ? "bg-[#FEF08A] text-black font-bold ring-1 ring-black px-1 rounded-xs"
+                      : "text-zinc-800 hover:text-black hover:bg-zinc-100 px-0.5"
                   )}
                   title={`${formatTime(word.start)} – Click to seek`}
                 >
@@ -135,7 +135,7 @@ export const TranscriptSegment = React.forwardRef<HTMLDivElement, TranscriptSegm
             // Fallback if words array is empty
             <span
               onClick={() => onTimestampClick(segment.start)}
-              className="text-slate-300 hover:text-white cursor-pointer"
+              className="text-zinc-800 hover:text-black cursor-pointer"
             >
               {segment.text}
             </span>

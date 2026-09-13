@@ -16,10 +16,7 @@ import {
   Calendar,
   User,
   ListTodo,
-  Sparkles,
   Play,
-  Share2,
-  Filter,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import confetti from "canvas-confetti";
@@ -61,17 +58,17 @@ export function ActionItemsList({
     if (!currentMeeting) return;
     toggleActionItem(currentMeeting.id, itemId);
 
-    // If marking as completed, trigger celebratory confetti
+    // If marking as completed, trigger celebratory confetti burst
     if (!isCompleted && typeof window !== "undefined") {
       try {
         confetti({
-          particleCount: 45,
-          spread: 55,
+          particleCount: 50,
+          spread: 60,
           origin: { y: 0.8 },
-          colors: ["#6366f1", "#10b981", "#3b82f6", "#f59e0b"],
+          colors: ["#FEF08A", "#000000", "#A7F3D0", "#DDD6FE"],
         });
       } catch {
-        // Fallback gracefully in test or unsupported environments
+        // Graceful fallback
       }
     }
   };
@@ -116,7 +113,7 @@ export function ActionItemsList({
         document.body.removeChild(textarea);
       }
       setCopied(true);
-      setTimeout(() => setCopied(false), 2200);
+      setTimeout(() => setCopied(false), 2000);
     } catch (err) {
       console.error("Failed to copy action items", err);
     }
@@ -126,30 +123,21 @@ export function ActionItemsList({
     switch (priority) {
       case "high":
         return (
-          <Badge
-            variant="outline"
-            className="border-rose-500/30 bg-rose-500/10 text-rose-400 text-[10px] font-semibold tracking-wider uppercase px-1.5 py-0"
-          >
+          <span className="border border-black bg-[#FECDD3] text-black font-mono text-[10px] font-bold px-1.5 py-0.2 rounded shadow-neo-sm uppercase">
             High
-          </Badge>
+          </span>
         );
       case "medium":
         return (
-          <Badge
-            variant="outline"
-            className="border-amber-500/30 bg-amber-500/10 text-amber-400 text-[10px] font-semibold tracking-wider uppercase px-1.5 py-0"
-          >
-            Medium
-          </Badge>
+          <span className="border border-black bg-[#FED7AA] text-black font-mono text-[10px] font-bold px-1.5 py-0.2 rounded shadow-neo-sm uppercase">
+            Med
+          </span>
         );
       case "low":
         return (
-          <Badge
-            variant="outline"
-            className="border-blue-500/30 bg-blue-500/10 text-blue-400 text-[10px] font-semibold tracking-wider uppercase px-1.5 py-0"
-          >
+          <span className="border border-black bg-[#BAE6FD] text-black font-mono text-[10px] font-bold px-1.5 py-0.2 rounded shadow-neo-sm uppercase">
             Low
-          </Badge>
+          </span>
         );
       default:
         return null;
@@ -157,40 +145,32 @@ export function ActionItemsList({
   };
 
   return (
-    <div className={cn("flex flex-col space-y-4", className)}>
+    <div className={cn("flex flex-col space-y-4 font-sans", className)}>
       {showHeader && (
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-800">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b-2 border-black/10">
           <div>
             <div className="flex items-center gap-2">
-              <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary/10 text-primary border border-primary/20">
-                <ListTodo className="h-4 w-4" />
-              </div>
-              <h3 className="text-sm font-semibold text-white tracking-tight">
-                Action Items & Deliverables
+              <h3 className="font-mono text-xs font-black uppercase tracking-wider text-black flex items-center gap-1.5">
+                <ListTodo className="h-4 w-4 text-black" />
+                Action Items
               </h3>
-              <Badge
-                variant="secondary"
-                className="text-[11px] font-mono bg-slate-800 text-slate-300 border-slate-700 px-1.5"
-              >
-                {completedCount}/{totalCount}
-              </Badge>
+              <span className="font-mono text-xs font-bold bg-[#FEF08A] text-black border border-black px-1.5 py-0.2 rounded shadow-neo-sm">
+                {completedCount}/{totalCount} DONE
+              </span>
             </div>
-            <p className="text-xs text-slate-400 mt-1">
-              Time-bound assignments with synchronized video playback markers.
-            </p>
           </div>
 
           <div className="flex items-center gap-2">
             {/* Filter pills */}
-            <div className="inline-flex rounded-lg bg-slate-900/90 p-0.5 border border-slate-800 text-xs">
+            <div className="inline-flex rounded-md bg-[#FAF8F5] p-0.5 border-2 border-black text-xs shadow-neo-sm">
               <button
                 type="button"
                 onClick={() => setFilter("all")}
                 className={cn(
-                  "px-2.5 py-1 rounded-md text-xs font-medium transition-colors cursor-pointer",
+                  "px-2.5 py-0.5 rounded font-mono text-xs font-bold transition-all cursor-pointer",
                   filter === "all"
-                    ? "bg-slate-800 text-white shadow-xs"
-                    : "text-slate-400 hover:text-slate-200"
+                    ? "bg-[#FEF08A] text-black border border-black shadow-neo-sm"
+                    : "text-zinc-600 hover:text-black"
                 )}
               >
                 All
@@ -199,10 +179,10 @@ export function ActionItemsList({
                 type="button"
                 onClick={() => setFilter("pending")}
                 className={cn(
-                  "px-2.5 py-1 rounded-md text-xs font-medium transition-colors cursor-pointer",
+                  "px-2.5 py-0.5 rounded font-mono text-xs font-bold transition-all cursor-pointer",
                   filter === "pending"
-                    ? "bg-slate-800 text-white shadow-xs"
-                    : "text-slate-400 hover:text-slate-200"
+                    ? "bg-[#FEF08A] text-black border border-black shadow-neo-sm"
+                    : "text-zinc-600 hover:text-black"
                 )}
               >
                 Pending
@@ -211,10 +191,10 @@ export function ActionItemsList({
                 type="button"
                 onClick={() => setFilter("completed")}
                 className={cn(
-                  "px-2.5 py-1 rounded-md text-xs font-medium transition-colors cursor-pointer",
+                  "px-2.5 py-0.5 rounded font-mono text-xs font-bold transition-all cursor-pointer",
                   filter === "completed"
-                    ? "bg-slate-800 text-white shadow-xs"
-                    : "text-slate-400 hover:text-slate-200"
+                    ? "bg-[#FEF08A] text-black border border-black shadow-neo-sm"
+                    : "text-zinc-600 hover:text-black"
                 )}
               >
                 Done
@@ -222,41 +202,38 @@ export function ActionItemsList({
             </div>
 
             {/* Copy button */}
-            <Button
-              variant="outline"
-              size="sm"
+            <button
+              type="button"
               onClick={copyToSlackOrMarkdown}
-              className="h-8 gap-1.5 text-xs border-slate-700 bg-slate-800/80 hover:bg-slate-700 text-slate-200"
+              className="flex h-8 items-center gap-1.5 rounded-md border-2 border-black bg-white px-2.5 font-mono text-xs font-bold text-black shadow-neo-sm hover:bg-[#A7F3D0] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-neo active:translate-x-0 active:translate-y-0 active:shadow-neo-sm transition-all cursor-pointer"
               title="Copy checklist formatted for Slack or Markdown"
             >
               {copied ? (
                 <>
-                  <Check className="h-3.5 w-3.5 text-emerald-400" />
-                  <span className="text-emerald-400 font-medium">Copied!</span>
+                  <Check className="h-3.5 w-3.5 text-black" />
+                  <span className="text-black font-black">Copied!</span>
                 </>
               ) : (
                 <>
-                  <Copy className="h-3.5 w-3.5 text-slate-400" />
-                  <span>Copy to Slack / Markdown</span>
+                  <Copy className="h-3.5 w-3.5 text-black" />
+                  <span>Copy</span>
                 </>
               )}
-            </Button>
+            </button>
           </div>
         </div>
       )}
 
       {/* Progress Bar */}
       {totalCount > 0 && (
-        <div className="space-y-1.5">
-          <div className="flex justify-between text-xs text-slate-400">
-            <span>Overall Completion</span>
-            <span className="font-mono text-slate-300 font-medium">
-              {progressPercent}%
-            </span>
+        <div className="space-y-1">
+          <div className="flex justify-between font-mono text-xs font-bold text-black">
+            <span>COMPLETION</span>
+            <span>{progressPercent}%</span>
           </div>
-          <div className="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden">
+          <div className="h-2.5 w-full bg-zinc-100 rounded-full border-2 border-black overflow-hidden p-[1px]">
             <div
-              className="h-full bg-primary transition-all duration-300 rounded-full"
+              className="h-full bg-[#A7F3D0] border-r-2 border-black rounded-full transition-all duration-300"
               style={{ width: `${progressPercent}%` }}
             />
           </div>
@@ -266,11 +243,11 @@ export function ActionItemsList({
       {/* Items list */}
       <div className="space-y-2.5">
         {filteredItems.length === 0 ? (
-          <div className="py-8 text-center text-slate-400 text-xs border border-dashed border-slate-800 rounded-xl bg-slate-900/30">
+          <div className="py-8 text-center font-mono text-xs font-bold text-zinc-500 border-2 border-dashed border-black/30 rounded-lg bg-[#FAF8F5]">
             {filter === "completed"
-              ? "No completed action items yet. Check off items above as they get done!"
+              ? "No completed action items yet."
               : filter === "pending"
-              ? "All action items completed! Great work team! 🎉"
+              ? "All action items completed! 🎉"
               : "No action items tracked for this meeting."}
           </div>
         ) : (
@@ -286,16 +263,15 @@ export function ActionItemsList({
               <Card
                 key={item.id}
                 className={cn(
-                  "p-3.5 rounded-xl border transition-all duration-150 group",
+                  "p-3 rounded-lg border-2 border-black transition-all group",
                   item.completed
-                    ? "bg-slate-950/40 border-slate-800/60 opacity-75"
-                    : "bg-slate-900/70 border-slate-800/90 hover:border-slate-700/90 hover:bg-slate-900",
-                  isCurrentMoment &&
-                    "ring-1 ring-primary/60 border-primary/50 bg-primary/5"
+                    ? "bg-[#FAF8F5] opacity-75 shadow-none"
+                    : "bg-white shadow-neo-sm hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-neo",
+                  isCurrentMoment && "border-black ring-2 ring-[#FEF08A] bg-[#FEF08A]/10"
                 )}
               >
                 <div className="flex items-start gap-3">
-                  {/* Checkbox */}
+                  {/* Thick square checkbox */}
                   <div className="pt-0.5">
                     <Checkbox
                       id={`chk-${item.id}`}
@@ -304,9 +280,10 @@ export function ActionItemsList({
                         handleToggle(item.id, item.completed)
                       }
                       className={cn(
-                        "h-4 w-4 rounded border-slate-600 transition-transform active:scale-90",
-                        item.completed &&
-                          "bg-primary border-primary text-primary-foreground"
+                        "h-5 w-5 rounded-xs border-2 border-black transition-all cursor-pointer shadow-neo-sm",
+                        item.completed
+                          ? "bg-black text-white"
+                          : "bg-white hover:bg-[#FEF08A]"
                       )}
                     />
                   </div>
@@ -317,10 +294,10 @@ export function ActionItemsList({
                       <label
                         htmlFor={`chk-${item.id}`}
                         className={cn(
-                          "text-sm font-medium leading-snug cursor-pointer select-none transition-colors",
+                          "text-xs leading-snug cursor-pointer select-none transition-colors",
                           item.completed
-                            ? "text-slate-400 line-through decoration-slate-600"
-                            : "text-slate-100 hover:text-white"
+                            ? "line-through decoration-2 decoration-black text-zinc-400 font-medium font-sans"
+                            : "text-black font-bold font-sans"
                         )}
                       >
                         {item.text}
@@ -334,12 +311,12 @@ export function ActionItemsList({
                       {/* Assignee badge */}
                       {assignee ? (
                         <div
-                          className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-slate-800/90 border border-slate-700/60 text-slate-300"
+                          className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded border border-black bg-white shadow-neo-sm font-mono text-[11px] font-bold text-black"
                           title={`${assignee.name}${
                             assignee.role ? ` — ${assignee.role}` : ""
                           }`}
                         >
-                          <Avatar className="h-4 w-4 shrink-0">
+                          <Avatar className="h-4 w-4 border border-black shrink-0">
                             {assignee.avatarUrl && (
                               <AvatarImage
                                 src={assignee.avatarUrl}
@@ -347,20 +324,20 @@ export function ActionItemsList({
                               />
                             )}
                             <AvatarFallback
-                              className="text-[9px] font-bold text-white"
+                              className="font-mono text-[8px] font-black text-black"
                               style={{
-                                backgroundColor: assignee.color || "#6366f1",
+                                backgroundColor: assignee.color || "#FEF08A",
                               }}
                             >
                               {assignee.name.slice(0, 2).toUpperCase()}
                             </AvatarFallback>
                           </Avatar>
-                          <span className="truncate max-w-[120px] font-medium">
+                          <span className="truncate max-w-[120px]">
                             {assignee.name}
                           </span>
                         </div>
                       ) : (
-                        <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-slate-800/50 border border-slate-800 text-slate-400">
+                        <div className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded border border-black/30 font-mono text-[10px] text-zinc-500">
                           <User className="h-3 w-3" />
                           <span>Unassigned</span>
                         </div>
@@ -368,9 +345,9 @@ export function ActionItemsList({
 
                       {/* Due date */}
                       {item.dueDate && (
-                        <div className="inline-flex items-center gap-1 text-slate-400 px-1.5 py-0.5 rounded bg-slate-800/40 text-[11px]">
-                          <Calendar className="h-3 w-3 text-slate-500" />
-                          <span>Due {item.dueDate}</span>
+                        <div className="inline-flex items-center gap-1 border border-black bg-white px-1.5 py-0.5 rounded font-mono text-[10px] font-bold text-black shadow-neo-sm">
+                          <Calendar className="h-3 w-3 text-black" />
+                          <span>{item.dueDate}</span>
                         </div>
                       )}
 
@@ -380,19 +357,17 @@ export function ActionItemsList({
                           type="button"
                           onClick={() => seekTo(item.timestamp!)}
                           className={cn(
-                            "inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-mono transition-colors cursor-pointer",
+                            "inline-flex items-center gap-1 px-1.5 py-0.5 rounded font-mono text-xs font-bold border border-black transition-all cursor-pointer shadow-neo-sm",
                             isCurrentMoment
-                              ? "bg-primary text-white font-semibold"
-                              : "bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700/50"
+                              ? "bg-black text-white"
+                              : "bg-[#FEF08A] hover:bg-[#FDE047] text-black hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-neo active:translate-x-0 active:translate-y-0 active:shadow-neo-sm"
                           )}
-                          title={`Seek video directly to timestamp ${formatTime(
-                            item.timestamp
-                          )}`}
+                          title={`Seek video directly to ${formatTime(item.timestamp)}`}
                         >
                           <Play
                             className={cn(
                               "h-2.5 w-2.5 fill-current",
-                              isCurrentMoment ? "text-white" : "text-primary"
+                              isCurrentMoment ? "text-white" : "text-black"
                             )}
                           />
                           <span>{formatTime(item.timestamp)}</span>
