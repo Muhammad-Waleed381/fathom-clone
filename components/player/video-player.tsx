@@ -19,7 +19,6 @@ import {
   Check,
   Zap,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -92,7 +91,7 @@ export function VideoPlayer({ className }: VideoPlayerProps) {
     }, 3200);
   }, []);
 
-  // Quick 30s Highlight creation
+  // Quick 30s Highlight creation (HotKey: H)
   const handleCreate30sHighlight = useCallback(() => {
     if (!currentMeeting) return;
     const end = Math.min(duration, currentTime);
@@ -104,10 +103,9 @@ export function VideoPlayer({ className }: VideoPlayerProps) {
       start,
       end,
       category: "key_moment",
-      color: "#FEF08A",
     });
 
-    showToast(`✨ Highlight Saved: ${formatTime(start)} – ${formatTime(end)}`);
+    showToast(`Highlight Saved: ${formatTime(start)} – ${formatTime(end)}`);
   }, [currentMeeting, currentTime, duration, addHighlight, showToast]);
 
   // Jump handlers
@@ -234,7 +232,7 @@ export function VideoPlayer({ className }: VideoPlayerProps) {
     }
   }, [currentTime]);
 
-  // Global Keyboard Shortcuts (Space, J, L, H, F, M)
+  // Global Keyboard Shortcuts (Space, J, L, H, F, M) with input collision guards
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       const target = e.target as HTMLElement;
@@ -302,16 +300,16 @@ export function VideoPlayer({ className }: VideoPlayerProps) {
         onMouseMove={handleActivity}
         onMouseEnter={() => setControlsVisible(true)}
         className={cn(
-          "group relative flex flex-col justify-between overflow-hidden rounded-xl border-2 border-black bg-neutral-950 shadow-[6px_6px_0px_0px_#000] select-none",
+          "group relative flex flex-col justify-between overflow-hidden rounded-xl border border-zinc-200 bg-zinc-950 shadow-sm select-none",
           isFullscreen ? "h-screen w-screen rounded-none border-0 shadow-none" : "min-h-[460px] aspect-video",
           className
         )}
       >
         {/* Floating Toast Notification */}
         {toastMessage && (
-          <div className="absolute top-4 left-1/2 -translate-x-1/2 z-50 animate-in fade-in slide-in-from-top-3 duration-200">
-            <div className="flex items-center gap-2 rounded-md border-2 border-black bg-[#FEF08A] px-3.5 py-1.5 font-mono text-xs font-black text-black shadow-neo">
-              <Sparkles className="w-4 h-4 text-black" />
+          <div className="absolute top-4 left-1/2 -translate-x-1/2 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
+            <div className="flex items-center gap-2 rounded-md border border-zinc-800 bg-zinc-900/95 px-3 py-1.5 text-xs font-medium text-white shadow-md backdrop-blur-md">
+              <Sparkles className="w-3.5 h-3.5 text-zinc-300" />
               <span>{toastMessage}</span>
             </div>
           </div>
@@ -320,34 +318,34 @@ export function VideoPlayer({ className }: VideoPlayerProps) {
         {/* Top Header Overlay Bar */}
         <div
           className={cn(
-            "absolute top-0 inset-x-0 z-30 flex items-center justify-between p-3 bg-gradient-to-b from-black/90 via-black/50 to-transparent transition-opacity duration-200",
+            "absolute top-0 inset-x-0 z-30 flex items-center justify-between p-3 bg-gradient-to-b from-black/80 via-black/40 to-transparent transition-opacity duration-200",
             controlsVisible ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
           )}
         >
           <div className="flex items-center gap-2 min-w-0">
-            <span className="flex items-center gap-1.5 rounded-md border-2 border-black bg-[#FEF08A] px-2 py-0.5 font-mono text-[10px] font-black uppercase tracking-wider text-black shadow-neo-sm">
-              <Zap className="w-3 h-3 text-black fill-black" />
-              <span>3D SPATIAL STAGE</span>
+            <span className="flex items-center gap-1.5 rounded-md border border-zinc-800 bg-zinc-900/80 px-2 py-0.5 text-[11px] font-medium text-zinc-300">
+              <Zap className="w-3 h-3 text-zinc-400" />
+              <span>Spatial Stage</span>
             </span>
-            <span className="truncate font-mono text-xs font-bold text-white max-w-[220px] sm:max-w-md">
+            <span className="truncate text-xs font-medium text-zinc-300 max-w-[220px] sm:max-w-md">
               {currentMeeting?.title || "Meeting Recording"}
             </span>
           </div>
 
-          {/* View Mode Toggle: 3D Stage vs Video */}
-          <div className="flex items-center gap-1 bg-black/80 p-1 rounded-lg border-2 border-black shadow-neo-sm">
+          {/* View Mode Toggle: Stage vs Stream */}
+          <div className="flex items-center gap-1 bg-zinc-900/90 p-0.5 rounded-md border border-zinc-800">
             <button
               type="button"
               onClick={() => setViewMode("gallery")}
               className={cn(
-                "flex items-center gap-1.5 px-2.5 py-1 rounded text-xs font-mono font-bold transition-all",
+                "flex items-center gap-1.5 px-2 py-1 rounded-sm text-xs font-medium transition-colors",
                 viewMode === "gallery"
-                  ? "bg-[#FEF08A] text-black border border-black shadow-neo-sm"
-                  : "text-neutral-400 hover:text-white"
+                  ? "bg-zinc-800 text-white shadow-xs"
+                  : "text-zinc-400 hover:text-white"
               )}
             >
               <LayoutGrid className="w-3.5 h-3.5" />
-              <span>3D Stage</span>
+              <span>Stage</span>
             </button>
 
             {currentMeeting?.videoUrl && (
@@ -355,10 +353,10 @@ export function VideoPlayer({ className }: VideoPlayerProps) {
                 type="button"
                 onClick={() => setViewMode("video")}
                 className={cn(
-                  "flex items-center gap-1.5 px-2.5 py-1 rounded text-xs font-mono font-bold transition-all",
+                  "flex items-center gap-1.5 px-2 py-1 rounded-sm text-xs font-medium transition-colors",
                   viewMode === "video"
-                    ? "bg-[#FEF08A] text-black border border-black shadow-neo-sm"
-                    : "text-neutral-400 hover:text-white"
+                    ? "bg-zinc-800 text-white shadow-xs"
+                    : "text-zinc-400 hover:text-white"
                 )}
               >
                 <VideoIcon className="w-3.5 h-3.5" />
@@ -368,15 +366,15 @@ export function VideoPlayer({ className }: VideoPlayerProps) {
           </div>
         </div>
 
-        {/* Main Canvas Area: 3D Spatial Stage Canvas */}
+        {/* Main Canvas Area: Clean Video Tiles Grid */}
         <div
-          className="relative flex-1 w-full h-full flex items-center justify-center bg-neutral-950 overflow-hidden"
+          className="relative flex-1 w-full h-full flex items-center justify-center bg-zinc-950 overflow-hidden"
           style={{
             perspective: "800px",
           }}
         >
           {viewMode === "gallery" ? (
-            /* Multi-Participant 3D Spatial Video Conference Grid */
+            /* Multi-Participant Video Conference Grid */
             <div
               className="w-full h-full p-4 sm:p-6 grid grid-cols-2 sm:grid-cols-4 gap-3.5 items-center justify-center"
               style={{
@@ -396,25 +394,25 @@ export function VideoPlayer({ className }: VideoPlayerProps) {
                   <div
                     key={speaker.id}
                     style={{
-                      transform: isActive ? "translateZ(18px)" : "translateZ(0px)",
+                      transform: isActive ? "translateZ(14px)" : "translateZ(0px)",
                       transformStyle: "preserve-3d",
-                      transition: "transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.35s ease",
+                      transition: "transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease",
                     }}
                     className={cn(
-                      "relative rounded-xl flex flex-col items-center justify-center p-3 sm:p-4 select-none transition-colors",
+                      "relative rounded-lg flex flex-col items-center justify-center p-3 sm:p-4 select-none transition-all",
                       isActive
-                        ? "bg-neutral-900 border-2 border-black ring-2 ring-[#FEF08A] shadow-[0_16px_32px_rgba(0,0,0,0.8),_4px_4px_0px_0px_#000] z-20"
-                        : "bg-neutral-900/80 border-2 border-black/70 shadow-neo-sm opacity-85 hover:opacity-100 hover:border-black"
+                        ? "border border-zinc-700 bg-zinc-900 ring-2 ring-white shadow-md z-20"
+                        : "border border-zinc-800 bg-zinc-900/80 opacity-85 hover:opacity-100 hover:border-zinc-700"
                     )}
                   >
                     {/* Participant Avatar */}
                     <div className="relative mb-2.5">
                       <Avatar
                         className={cn(
-                          "h-12 w-12 sm:h-16 sm:w-16 border-2 transition-transform duration-300",
+                          "h-12 w-12 sm:h-14 sm:w-14 rounded-md border transition-transform duration-200",
                           isActive
-                            ? "border-black scale-105 shadow-[0_0_16px_rgba(254,240,138,0.5)]"
-                            : "border-neutral-700"
+                            ? "border-zinc-500 scale-105"
+                            : "border-zinc-800"
                         )}
                       >
                         {speaker.avatarUrl && (
@@ -423,28 +421,23 @@ export function VideoPlayer({ className }: VideoPlayerProps) {
                             alt={speaker.name}
                           />
                         )}
-                        <AvatarFallback
-                          style={{ backgroundColor: speaker.color || "#DDD6FE" }}
-                          className="font-mono text-base font-black text-black"
-                        >
+                        <AvatarFallback className="rounded-md bg-zinc-800 text-xs font-medium text-zinc-200">
                           {initials}
                         </AvatarFallback>
                       </Avatar>
 
-                      {/* Active Speaking Pulsing Ring */}
+                      {/* Active Speaking Indicator */}
                       {isActive && (
-                        <span className="absolute -inset-1.5 rounded-full border-2 border-[#FEF08A] animate-ping opacity-60 pointer-events-none" />
+                        <span className="absolute -inset-1 rounded-lg border border-white/40 animate-ping opacity-40 pointer-events-none" />
                       )}
                     </div>
 
                     {/* Speaker Name & Role */}
                     <div className="text-center px-1 max-w-full">
-                      <div className="flex items-center justify-center gap-1">
-                        <span className={cn("truncate font-mono text-xs font-bold", isActive ? "text-[#FEF08A]" : "text-white")}>
-                          {speaker.name}
-                        </span>
-                      </div>
-                      <p className="truncate font-mono text-[10px] text-neutral-400">
+                      <p className={cn("truncate text-xs font-medium", isActive ? "text-white" : "text-zinc-300")}>
+                        {speaker.name}
+                      </p>
+                      <p className="truncate text-[10px] text-zinc-500">
                         {speaker.role || "Participant"}
                       </p>
                     </div>
@@ -452,12 +445,12 @@ export function VideoPlayer({ className }: VideoPlayerProps) {
                     {/* Speaking Status Pill */}
                     <div className="absolute bottom-2 left-2 flex items-center gap-1">
                       {isActive ? (
-                        <div className="flex items-center gap-1 rounded border-2 border-black bg-[#FEF08A] px-1.5 py-0.5 font-mono text-[9px] font-black uppercase text-black shadow-neo-sm">
-                          <Mic className="w-2.5 h-2.5 text-black" />
-                          <span>SPEAKING</span>
+                        <div className="flex items-center gap-1 rounded-sm border border-zinc-700 bg-zinc-800/90 px-1.5 py-0.5 text-[10px] font-medium text-white">
+                          <Mic className="w-2.5 h-2.5 text-emerald-400" />
+                          <span>Speaking</span>
                         </div>
                       ) : (
-                        <div className="flex items-center rounded border border-neutral-700 bg-black/60 px-1 py-0.5 text-neutral-400">
+                        <div className="flex items-center rounded-sm border border-zinc-800 bg-zinc-900/80 px-1 py-0.5 text-zinc-500">
                           <MicOff className="w-2.5 h-2.5" />
                         </div>
                       )}
@@ -465,11 +458,11 @@ export function VideoPlayer({ className }: VideoPlayerProps) {
 
                     {/* Active Speaker Soundwave Equalizer */}
                     {isActive && isPlaying && (
-                      <div className="absolute bottom-2.5 right-2 flex items-end gap-0.5 h-3.5 px-1">
-                        <span className="w-1 h-2 bg-[#FEF08A] rounded-xs border border-black animate-[pulse_0.35s_ease-in-out_infinite]" />
-                        <span className="w-1 h-3.5 bg-[#FEF08A] rounded-xs border border-black animate-[pulse_0.5s_ease-in-out_infinite_0.1s]" />
-                        <span className="w-1 h-1.5 bg-[#FEF08A] rounded-xs border border-black animate-[pulse_0.4s_ease-in-out_infinite_0.2s]" />
-                        <span className="w-1 h-3 bg-[#FEF08A] rounded-xs border border-black animate-[pulse_0.6s_ease-in-out_infinite_0.15s]" />
+                      <div className="absolute bottom-2.5 right-2 flex items-end gap-0.5 h-3 px-1">
+                        <span className="w-0.5 h-2 bg-white rounded-xs animate-[pulse_0.35s_ease-in-out_infinite]" />
+                        <span className="w-0.5 h-3 bg-white rounded-xs animate-[pulse_0.5s_ease-in-out_infinite_0.1s]" />
+                        <span className="w-0.5 h-1.5 bg-white rounded-xs animate-[pulse_0.4s_ease-in-out_infinite_0.2s]" />
+                        <span className="w-0.5 h-2.5 bg-white rounded-xs animate-[pulse_0.6s_ease-in-out_infinite_0.15s]" />
                       </div>
                     )}
                   </div>
@@ -493,15 +486,15 @@ export function VideoPlayer({ className }: VideoPlayerProps) {
             />
           )}
 
-          {/* Centered Tactile Large Play Button when paused */}
+          {/* Centered Rectangular Tactile Play Button when paused (Zero Pill constraint) */}
           {!isPlaying && (
             <button
               type="button"
               onClick={togglePlay}
-              className="absolute z-20 flex h-16 w-16 items-center justify-center rounded-full border-2 border-black bg-[#FEF08A] text-black shadow-[4px_4px_0px_0px_#000] hover:shadow-[6px_6px_0px_0px_#000] hover:scale-105 active:scale-95 transition-all"
+              className="absolute z-20 flex h-14 w-14 items-center justify-center rounded-xl border border-zinc-700 bg-zinc-900/90 text-white shadow-lg backdrop-blur-sm hover:bg-zinc-800 hover:scale-105 active:scale-95 transition-all"
               aria-label="Play video"
             >
-              <Play className="w-7 h-7 ml-1 fill-black text-black" />
+              <Play className="w-6 h-6 ml-0.5 fill-white text-white" />
             </button>
           )}
         </div>
@@ -509,11 +502,11 @@ export function VideoPlayer({ className }: VideoPlayerProps) {
         {/* Bottom Tactile Controls Bar */}
         <div
           className={cn(
-            "relative z-30 flex flex-col gap-2.5 p-3.5 bg-[#FAF8F5] border-t-2 border-black transition-opacity duration-200",
+            "relative z-30 flex flex-col gap-2 p-3 bg-white border-t border-zinc-200 transition-opacity duration-200",
             controlsVisible ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
           )}
         >
-          {/* Integrated Physical Video Scrubber with highlight markers */}
+          {/* Integrated Audio-Synchronized Video Scrubber */}
           <VideoScrubber
             currentTime={currentTime}
             duration={duration}
@@ -521,27 +514,27 @@ export function VideoPlayer({ className }: VideoPlayerProps) {
             onSeek={seekTo}
           />
 
-          {/* Tactile Video Controls Bar Row */}
-          <div className="flex items-center justify-between pt-1">
+          {/* Video Controls Bar Row */}
+          <div className="flex items-center justify-between pt-0.5">
             {/* Left Controls: Play/Pause, -10s, +10s, Volume */}
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5">
               {/* Play / Pause Tactile Button */}
               <Tooltip>
                 <TooltipTrigger asChild>
                   <button
                     type="button"
                     onClick={togglePlay}
-                    className="flex h-9 w-9 items-center justify-center rounded-md border-2 border-black bg-[#FEF08A] text-black shadow-neo-sm hover:shadow-neo hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0 active:translate-y-0 active:shadow-neo-sm transition-all"
+                    className="flex h-8 w-8 items-center justify-center rounded-md bg-zinc-950 text-white shadow-xs hover:bg-zinc-800 active:scale-95 transition-all"
                     aria-label={isPlaying ? "Pause (Space)" : "Play (Space)"}
                   >
                     {isPlaying ? (
-                      <Pause className="w-4 h-4 fill-black text-black" />
+                      <Pause className="w-4 h-4 fill-white text-white" />
                     ) : (
-                      <Play className="w-4 h-4 ml-0.5 fill-black text-black" />
+                      <Play className="w-4 h-4 ml-0.5 fill-white text-white" />
                     )}
                   </button>
                 </TooltipTrigger>
-                <TooltipContent side="top" className="border-2 border-black bg-white text-black font-mono text-xs">
+                <TooltipContent side="top" className="rounded-md border border-zinc-200 bg-zinc-950 text-white text-xs px-2 py-1 shadow-sm">
                   {isPlaying ? "Pause (Space)" : "Play (Space)"}
                 </TooltipContent>
               </Tooltip>
@@ -552,14 +545,14 @@ export function VideoPlayer({ className }: VideoPlayerProps) {
                   <button
                     type="button"
                     onClick={() => handleJump(-10)}
-                    className="flex h-9 items-center gap-1 rounded-md border-2 border-black bg-white px-2 text-xs font-mono font-bold text-black shadow-neo-sm hover:bg-[#FEF08A] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-neo active:translate-x-0 active:translate-y-0 active:shadow-neo-sm transition-all"
+                    className="flex h-8 items-center gap-1 rounded-md border border-zinc-200 bg-white px-2 text-xs font-medium text-zinc-700 shadow-xs hover:bg-zinc-50 hover:text-zinc-950 active:scale-95 transition-all"
                     aria-label="Rewind 10s (J)"
                   >
                     <RotateCcw className="w-3.5 h-3.5" />
                     <span className="hidden sm:inline">-10s</span>
                   </button>
                 </TooltipTrigger>
-                <TooltipContent side="top" className="border-2 border-black bg-white text-black font-mono text-xs">
+                <TooltipContent side="top" className="rounded-md border border-zinc-200 bg-zinc-950 text-white text-xs px-2 py-1 shadow-sm">
                   Rewind 10s (J)
                 </TooltipContent>
               </Tooltip>
@@ -570,14 +563,14 @@ export function VideoPlayer({ className }: VideoPlayerProps) {
                   <button
                     type="button"
                     onClick={() => handleJump(10)}
-                    className="flex h-9 items-center gap-1 rounded-md border-2 border-black bg-white px-2 text-xs font-mono font-bold text-black shadow-neo-sm hover:bg-[#FEF08A] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-neo active:translate-x-0 active:translate-y-0 active:shadow-neo-sm transition-all"
+                    className="flex h-8 items-center gap-1 rounded-md border border-zinc-200 bg-white px-2 text-xs font-medium text-zinc-700 shadow-xs hover:bg-zinc-50 hover:text-zinc-950 active:scale-95 transition-all"
                     aria-label="Forward 10s (L)"
                   >
                     <RotateCw className="w-3.5 h-3.5" />
                     <span className="hidden sm:inline">+10s</span>
                   </button>
                 </TooltipTrigger>
-                <TooltipContent side="top" className="border-2 border-black bg-white text-black font-mono text-xs">
+                <TooltipContent side="top" className="rounded-md border border-zinc-200 bg-zinc-950 text-white text-xs px-2 py-1 shadow-sm">
                   Forward 10s (L)
                 </TooltipContent>
               </Tooltip>
@@ -589,19 +582,19 @@ export function VideoPlayer({ className }: VideoPlayerProps) {
                     <button
                       type="button"
                       onClick={toggleMute}
-                      className="flex h-9 w-9 items-center justify-center rounded-md border-2 border-black bg-white text-black shadow-neo-sm hover:bg-[#FEF08A] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-neo active:translate-x-0 active:translate-y-0 transition-all"
+                      className="flex h-8 w-8 items-center justify-center rounded-md border border-zinc-200 bg-white text-zinc-700 shadow-xs hover:bg-zinc-50 hover:text-zinc-950 active:scale-95 transition-all"
                       aria-label={isMuted ? "Unmute (M)" : "Mute (M)"}
                     >
                       {isMuted || volume === 0 ? (
-                        <VolumeX className="w-4 h-4 text-black" />
+                        <VolumeX className="w-4 h-4 text-zinc-700" />
                       ) : volume < 0.5 ? (
-                        <Volume1 className="w-4 h-4 text-black" />
+                        <Volume1 className="w-4 h-4 text-zinc-700" />
                       ) : (
-                        <Volume2 className="w-4 h-4 text-black" />
+                        <Volume2 className="w-4 h-4 text-zinc-700" />
                       )}
                     </button>
                   </TooltipTrigger>
-                  <TooltipContent side="top" className="border-2 border-black bg-white text-black font-mono text-xs">
+                  <TooltipContent side="top" className="rounded-md border border-zinc-200 bg-zinc-950 text-white text-xs px-2 py-1 shadow-sm">
                     {isMuted ? "Unmute (M)" : "Mute (M)"}
                   </TooltipContent>
                 </Tooltip>
@@ -622,23 +615,23 @@ export function VideoPlayer({ className }: VideoPlayerProps) {
               </div>
             </div>
 
-            {/* Right Controls: Highlight (H), Speed Dropdown, Fullscreen */}
-            <div className="flex items-center gap-2">
+            {/* Right Controls: Highlight (H), Speed Dropdown, Fullscreen (F) */}
+            <div className="flex items-center gap-1.5">
               {/* Quick 30s Highlight Button (H) */}
               <Tooltip>
                 <TooltipTrigger asChild>
                   <button
                     type="button"
                     onClick={handleCreate30sHighlight}
-                    className="flex h-9 items-center gap-1.5 rounded-md border-2 border-black bg-[#FEF08A] px-2.5 font-mono text-xs font-black text-black shadow-neo-sm hover:shadow-neo hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0 active:translate-y-0 transition-all"
+                    className="flex h-8 items-center gap-1.5 rounded-md border border-zinc-200 bg-white px-2.5 text-xs font-medium text-zinc-800 shadow-xs hover:bg-zinc-50 hover:text-zinc-950 active:scale-95 transition-all"
                   >
-                    <Sparkles className="w-3.5 h-3.5 text-black" />
+                    <Sparkles className="w-3.5 h-3.5 text-zinc-500" />
                     <span className="hidden sm:inline">Highlight</span>
-                    <span className="rounded border border-black bg-white px-1 font-mono text-[10px]">H</span>
+                    <span className="rounded-sm border border-zinc-200 bg-zinc-100 px-1 py-0.2 font-mono text-[10px] text-zinc-500">H</span>
                   </button>
                 </TooltipTrigger>
-                <TooltipContent side="top" className="border-2 border-black bg-white text-black font-mono text-xs">
-                  Create 30s Highlight (HotKey: H)
+                <TooltipContent side="top" className="rounded-md border border-zinc-200 bg-zinc-950 text-white text-xs px-2 py-1 shadow-sm">
+                  Create 30s Highlight (H)
                 </TooltipContent>
               </Tooltip>
 
@@ -649,13 +642,13 @@ export function VideoPlayer({ className }: VideoPlayerProps) {
                     <DropdownMenuTrigger asChild>
                       <button
                         type="button"
-                        className="flex h-9 items-center justify-center rounded-md border-2 border-black bg-white px-2.5 font-mono text-xs font-black text-black shadow-neo-sm hover:bg-[#FEF08A] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-neo active:translate-x-0 active:translate-y-0 transition-all"
+                        className="flex h-8 items-center justify-center rounded-md border border-zinc-200 bg-white px-2.5 text-xs font-medium text-zinc-800 shadow-xs hover:bg-zinc-50 hover:text-zinc-950 active:scale-95 transition-all"
                       >
                         {playbackRate}x
                       </button>
                     </DropdownMenuTrigger>
                   </TooltipTrigger>
-                  <TooltipContent side="top" className="border-2 border-black bg-white text-black font-mono text-xs">
+                  <TooltipContent side="top" className="rounded-md border border-zinc-200 bg-zinc-950 text-white text-xs px-2 py-1 shadow-sm">
                     Playback speed
                   </TooltipContent>
                 </Tooltip>
@@ -663,17 +656,17 @@ export function VideoPlayer({ className }: VideoPlayerProps) {
                 <DropdownMenuContent
                   side="top"
                   align="end"
-                  className="min-w-[6rem] border-2 border-black bg-white text-black shadow-neo font-mono text-xs font-bold"
+                  className="min-w-[5.5rem] rounded-md border border-zinc-200 bg-white text-zinc-950 shadow-md p-1"
                 >
                   {PLAYBACK_SPEEDS.map((speed) => (
                     <DropdownMenuItem
                       key={speed}
                       onClick={() => setPlaybackRate(speed)}
-                      className="flex items-center justify-between cursor-pointer focus:bg-[#FEF08A] focus:text-black py-1.5"
+                      className="flex items-center justify-between text-xs cursor-pointer rounded-sm px-2 py-1.5 hover:bg-zinc-100"
                     >
                       <span>{speed}x</span>
                       {playbackRate === speed && (
-                        <Check className="w-3.5 h-3.5 text-black" />
+                        <Check className="w-3.5 h-3.5 text-zinc-950" />
                       )}
                     </DropdownMenuItem>
                   ))}
@@ -686,17 +679,17 @@ export function VideoPlayer({ className }: VideoPlayerProps) {
                   <button
                     type="button"
                     onClick={toggleFullscreen}
-                    className="flex h-9 w-9 items-center justify-center rounded-md border-2 border-black bg-white text-black shadow-neo-sm hover:bg-[#FEF08A] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-neo active:translate-x-0 active:translate-y-0 transition-all"
+                    className="flex h-8 w-8 items-center justify-center rounded-md border border-zinc-200 bg-white text-zinc-700 shadow-xs hover:bg-zinc-50 hover:text-zinc-950 active:scale-95 transition-all"
                     aria-label={isFullscreen ? "Exit Fullscreen (F)" : "Fullscreen (F)"}
                   >
                     {isFullscreen ? (
-                      <Minimize className="w-4 h-4 text-black" />
+                      <Minimize className="w-4 h-4 text-zinc-700" />
                     ) : (
-                      <Maximize className="w-4 h-4 text-black" />
+                      <Maximize className="w-4 h-4 text-zinc-700" />
                     )}
                   </button>
                 </TooltipTrigger>
-                <TooltipContent side="top" className="border-2 border-black bg-white text-black font-mono text-xs">
+                <TooltipContent side="top" className="rounded-md border border-zinc-200 bg-zinc-950 text-white text-xs px-2 py-1 shadow-sm">
                   {isFullscreen ? "Exit Fullscreen (F)" : "Fullscreen (F)"}
                 </TooltipContent>
               </Tooltip>

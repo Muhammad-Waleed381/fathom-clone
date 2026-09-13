@@ -43,31 +43,31 @@ const CATEGORY_COLORS: Record<
   { border: string; bg: string; text: string; badge: string; label: string }
 > = {
   key_moment: {
-    border: "border-black",
-    bg: "bg-[#FEF08A]",
-    text: "text-black",
-    badge: "bg-[#FEF08A] text-black border-black",
+    border: "border-zinc-300",
+    bg: "bg-zinc-200",
+    text: "text-zinc-900",
+    badge: "bg-zinc-100 text-zinc-700 border-zinc-300",
     label: "Key Moment",
   },
   decision: {
-    border: "border-black",
-    bg: "bg-[#A7F3D0]",
-    text: "text-black",
-    badge: "bg-[#A7F3D0] text-black border-black",
+    border: "border-zinc-300",
+    bg: "bg-zinc-300",
+    text: "text-zinc-900",
+    badge: "bg-zinc-200 text-zinc-700 border-zinc-300",
     label: "Decision",
   },
   action: {
-    border: "border-black",
-    bg: "bg-[#DDD6FE]",
-    text: "text-black",
-    badge: "bg-[#DDD6FE] text-black border-black",
+    border: "border-zinc-400",
+    bg: "bg-zinc-400",
+    text: "text-zinc-900",
+    badge: "bg-zinc-300 text-zinc-800 border-zinc-400",
     label: "Action Item",
   },
   risk: {
-    border: "border-black",
-    bg: "bg-[#FECDD3]",
-    text: "text-black",
-    badge: "bg-[#FECDD3] text-black border-black",
+    border: "border-zinc-500",
+    bg: "bg-zinc-600",
+    text: "text-white",
+    badge: "bg-zinc-700 text-zinc-100 border-zinc-600",
     label: "Risk / Blocker",
   },
 };
@@ -177,32 +177,38 @@ export function VideoScrubber({
           {/* Hover Time Tooltip */}
           {hoverPosition && (
             <div
-              className="pointer-events-none absolute -top-8 z-40 -translate-x-1/2 rounded border-2 border-black bg-black px-2 py-0.5 font-mono text-[11px] font-black text-white shadow-neo-sm"
+              className="pointer-events-none absolute -top-8 z-40 -translate-x-1/2 rounded-md border border-zinc-200 bg-zinc-950 px-2 py-0.5 font-mono text-[11px] font-medium text-white shadow-sm"
               style={{ left: `${hoverPosition.x}px` }}
             >
               {formatTime(hoverPosition.time)}
             </div>
           )}
 
-          {/* Solid black border track (border-2 border-black bg-zinc-200) */}
-          <div className="relative h-3.5 w-full rounded-md border-2 border-black bg-zinc-200 overflow-hidden shadow-neo-sm">
-            {/* Underlay: Speaker colored segments tick bar */}
+          {/* Sleek neutral track: h-2 rounded-sm bg-zinc-100 border border-zinc-200 */}
+          <div className="relative h-2 w-full rounded-sm border border-zinc-200 bg-zinc-100 overflow-hidden">
+            {/* Underlay: Speaker colored segments tick bar — monochrome zinc tones */}
             {showSpeakerSegments && speakerSegments.length > 0 && duration > 0 && (
-              <div className="pointer-events-none absolute inset-0 flex opacity-40">
+              <div className="pointer-events-none absolute inset-0 flex opacity-30">
                 {speakerSegments.map((segment) => {
                   const left = (segment.start / duration) * 100;
                   const width = Math.max(0.3, ((segment.end - segment.start) / duration) * 100);
                   const speaker = currentMeeting?.participants.find(
                     (p) => p.id === segment.speakerId
                   );
+                  // Map speaker index to a zinc shade rather than pastel color
+                  const speakerIdx = currentMeeting?.participants.findIndex(
+                    (p) => p.id === segment.speakerId
+                  ) ?? 0;
+                  const shades = ["#71717a", "#a1a1aa", "#52525b", "#d4d4d8", "#3f3f46"];
+                  const shade = shades[speakerIdx % shades.length];
                   return (
                     <div
                       key={segment.id}
-                      className="absolute top-0 bottom-0 border-r border-black/20"
+                      className="absolute top-0 bottom-0"
                       style={{
                         left: `${left}%`,
                         width: `${width}%`,
-                        backgroundColor: speaker?.color || "#DDD6FE",
+                        backgroundColor: shade,
                       }}
                     />
                   );
@@ -210,14 +216,14 @@ export function VideoScrubber({
               </div>
             )}
 
-            {/* Vibrant electric yellow progress bar (bg-[#FEF08A]) */}
+            {/* Dark progress bar: bg-zinc-950 */}
             <div
-              className="h-full bg-[#FEF08A] border-r-2 border-black transition-[width] duration-75"
+              className="h-full bg-zinc-950 transition-[width] duration-75"
               style={{ width: `${progressPercent}%` }}
             />
           </div>
 
-          {/* Highlight Markers along the scrubber track */}
+          {/* Highlight Markers along the scrubber track — monochrome */}
           {duration > 0 &&
             highlights.map((hl) => {
               const leftPercent = Math.min(100, Math.max(0, (hl.start / duration) * 100));
@@ -238,9 +244,9 @@ export function VideoScrubber({
                         handleSeek(hl.start);
                       }}
                       className={cn(
-                        "absolute z-20 h-4 -translate-y-1/2 top-1/2 rounded-xs border border-black transition-all hover:h-5 hover:z-30",
+                        "absolute z-20 h-3 -translate-y-1/2 top-1/2 rounded-sm border transition-all hover:h-4 hover:z-30",
                         styleConfig.bg,
-                        "shadow-[1px_1px_0px_0px_#000] hover:scale-110"
+                        styleConfig.border
                       )}
                       style={{
                         left: `${leftPercent}%`,
@@ -252,25 +258,25 @@ export function VideoScrubber({
                   </TooltipTrigger>
                   <TooltipContent
                     side="top"
-                    className="max-w-xs border-2 border-black bg-white p-2.5 text-black shadow-neo"
+                    className="max-w-xs rounded-md border border-zinc-200 bg-white p-2.5 text-zinc-950 shadow-sm"
                   >
                     <div className="flex items-center gap-2 mb-1">
                       <span
                         className={cn(
-                          "rounded border border-black px-1.5 py-0.2 font-mono text-[10px] font-black uppercase",
+                          "rounded-sm border px-1.5 py-0.5 font-mono text-[10px] font-semibold uppercase",
                           styleConfig.badge
                         )}
                       >
                         {styleConfig.label}
                       </span>
-                      <span className="font-mono text-[11px] font-bold text-neutral-600">
+                      <span className="font-mono text-[11px] text-zinc-500">
                         {formatTime(hl.start)} – {formatTime(hl.end)}
                       </span>
                     </div>
-                    <p className="text-xs font-bold text-black line-clamp-2">
+                    <p className="text-xs font-medium text-zinc-900 line-clamp-2">
                       {hl.title}
                     </p>
-                    <p className="text-[10px] font-mono font-bold text-black underline mt-1">
+                    <p className="text-[10px] font-mono text-zinc-400 mt-1">
                       Click to jump
                     </p>
                   </TooltipContent>
@@ -278,33 +284,33 @@ export function VideoScrubber({
               );
             })}
 
-          {/* Physical square or pill scrubber thumb with hard shadow */}
+          {/* Rectangular scrubber thumb with soft shadow */}
           <div
             className={cn(
-              "pointer-events-none absolute top-1/2 z-30 -translate-y-1/2 -translate-x-1/2 h-5 w-5 rounded-md border-2 border-black bg-white shadow-[2px_2px_0px_0px_#000] transition-transform",
-              isDragging ? "scale-125 bg-[#FEF08A]" : "group-hover:scale-110"
+              "pointer-events-none absolute top-1/2 z-30 -translate-y-1/2 -translate-x-1/2 h-4 w-4 rounded-sm border border-zinc-300 bg-white shadow-sm transition-transform",
+              isDragging ? "scale-125 border-zinc-950 bg-zinc-950" : "group-hover:scale-110 group-hover:border-zinc-400"
             )}
             style={{ left: `${progressPercent}%` }}
           >
             {/* Center tactile dot */}
-            <div className="h-1.5 w-1.5 rounded-full bg-black mx-auto mt-1" />
+            <div className="h-1.5 w-1.5 rounded-xs bg-zinc-400 mx-auto mt-1" />
           </div>
         </div>
 
         {/* Timestamps and Progress Indicators */}
-        <div className="flex items-center justify-between font-mono text-xs text-black px-0.5">
-          <div className="flex items-center gap-1.5 font-bold">
-            <span className="text-black font-black">
+        <div className="flex items-center justify-between font-mono text-xs text-zinc-500 px-0.5">
+          <div className="flex items-center gap-1.5">
+            <span className="text-zinc-950 font-semibold">
               {formatTime(currentTime)}
             </span>
-            <span className="text-neutral-400">/</span>
-            <span className="text-neutral-600">{formatTime(duration)}</span>
+            <span className="text-zinc-300">/</span>
+            <span className="text-zinc-400">{formatTime(duration)}</span>
           </div>
 
           {highlights.length > 0 && (
             <div className="flex items-center gap-1.5">
-              <span className="inline-flex items-center rounded border border-black bg-[#FEF08A] px-1.5 py-0.2 font-mono text-[10px] font-black text-black shadow-neo-sm">
-                {highlights.length} HIGHLIGHT{highlights.length === 1 ? "" : "S"}
+              <span className="inline-flex items-center rounded-sm border border-zinc-200 bg-zinc-100 px-1.5 py-0.5 font-mono text-[10px] font-medium text-zinc-600">
+                {highlights.length} highlight{highlights.length === 1 ? "" : "s"}
               </span>
             </div>
           )}

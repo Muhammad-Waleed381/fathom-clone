@@ -16,12 +16,10 @@ import { HighlightModal } from "@/components/highlights/highlight-modal";
 import { ClipShareModal } from "@/components/highlights/clip-share-modal";
 import { ApiKeysModal } from "@/components/settings/api-keys-modal";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import {
-  Tooltip,
-  TooltipContent,
   TooltipProvider,
-  TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { formatTime } from "@/components/player/video-scrubber";
 import {
@@ -140,20 +138,19 @@ function MeetingDetailContent() {
 
   if (!meeting) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center bg-[#FAF8F5] px-4 text-center text-black">
-        <div className="p-8 rounded-xl border-2 border-black bg-white shadow-neo max-w-md">
-          <h2 className="text-xl font-black text-black uppercase">Meeting Not Found</h2>
-          <p className="mt-2 text-xs font-mono text-neutral-600">
-            The requested meeting ID does not exist in your workspace.
+      <div className="flex min-h-screen flex-col items-center justify-center bg-zinc-50/50 px-4 text-center text-zinc-950">
+        <div className="p-8 rounded-xl border border-zinc-200 bg-white shadow-sm max-w-md w-full">
+          <h2 className="text-lg font-bold text-zinc-950">Meeting Not Found</h2>
+          <p className="mt-1.5 text-xs text-zinc-500">
+            The requested meeting ID could not be found in your workspace.
           </p>
-          <Link href="/" className="mt-4 inline-block">
-            <button
-              type="button"
-              className="flex items-center gap-2 rounded-md border-2 border-black bg-[#FEF08A] px-4 py-2 font-mono text-xs font-black text-black shadow-neo-sm hover:shadow-neo active:translate-x-0.5 active:translate-y-0.5"
-            >
-              Return to Dashboard
-            </button>
-          </Link>
+          <div className="mt-5 flex justify-center">
+            <Link href="/">
+              <Button variant="default" size="sm">
+                Return to Dashboard
+              </Button>
+            </Link>
+          </div>
         </div>
       </div>
     );
@@ -177,65 +174,60 @@ function MeetingDetailContent() {
 
   return (
     <TooltipProvider delayDuration={150}>
-      <div className="min-h-screen bg-[#FAF8F5] text-black selection:bg-[#FEF08A] selection:text-black flex flex-col font-sans">
-        {/* Editorial Header Navigation */}
-        <header className="sticky top-0 z-40 border-b-2 border-black bg-[#FAF8F5]/95 backdrop-blur-md">
-          <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8 gap-4">
-            {/* Left: Back Button & Meeting Title Info */}
+      <div className="min-h-screen bg-zinc-50/40 text-zinc-950 selection:bg-zinc-200 selection:text-zinc-950 flex flex-col font-sans">
+        {/* Clean Editorial Header Navigation */}
+        <header className="sticky top-0 z-40 border-b border-zinc-200 bg-white/95 backdrop-blur-md">
+          <div className="mx-auto flex h-18 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8 gap-4">
+            {/* Left: Back Link & Meeting Title */}
             <div className="flex items-center gap-3.5 min-w-0">
               <Link href="/">
                 <button
                   type="button"
-                  className="flex h-10 w-10 items-center justify-center rounded-md border-2 border-black bg-white text-black shadow-neo-sm hover:bg-[#FEF08A] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-neo active:translate-x-0 active:translate-y-0 active:shadow-neo-sm transition-all"
+                  className="flex h-9 w-9 items-center justify-center rounded-md border border-zinc-200 bg-white text-zinc-700 shadow-xs hover:bg-zinc-50 hover:text-zinc-950 transition-colors"
                   title="Back to Dashboard"
                 >
-                  <ArrowLeft className="h-4 w-4 text-black" />
+                  <ArrowLeft className="h-4 w-4" />
                 </button>
               </Link>
 
               <div className="min-w-0">
-                <div className="flex items-center gap-2">
-                  <h1 className="truncate font-black text-2xl tracking-tight text-black">
-                    {meeting.title}
-                  </h1>
-                </div>
+                <h1 className="truncate font-bold text-xl text-zinc-950 tracking-tight">
+                  {meeting.title}
+                </h1>
 
-                {/* Badges & Attendee Pills */}
-                <div className="flex flex-wrap items-center gap-2 text-xs font-mono font-bold text-black mt-1">
-                  <span className="inline-flex items-center gap-1 rounded border border-black bg-white px-2 py-0.5 shadow-neo-sm">
-                    <Calendar className="h-3 w-3 text-black" />
+                {/* Attendee Badges & Metadata */}
+                <div className="flex flex-wrap items-center gap-2 mt-1">
+                  <span className="inline-flex items-center gap-1.5 rounded-md border border-zinc-200 bg-zinc-50 px-2 py-0.5 text-xs font-medium text-zinc-700">
+                    <Calendar className="h-3 w-3 text-zinc-500" />
                     <span>{formattedDate}</span>
                   </span>
-                  <span className="inline-flex items-center gap-1 rounded border border-black bg-white px-2 py-0.5 shadow-neo-sm">
-                    <Clock className="h-3 w-3 text-black" />
+                  <span className="inline-flex items-center gap-1.5 rounded-md border border-zinc-200 bg-zinc-50 px-2 py-0.5 text-xs font-medium text-zinc-700">
+                    <Clock className="h-3 w-3 text-zinc-500" />
                     <span>{formatTime(meeting.duration)}</span>
                   </span>
 
                   {/* Compact Attendee Avatars */}
-                  <div className="hidden sm:flex items-center -space-x-1.5 ml-1">
+                  <div className="hidden sm:flex items-center -space-x-1 ml-0.5">
                     {meeting.participants.slice(0, 5).map((p) => (
                       <Avatar
                         key={p.id}
-                        className="h-6 w-6 border-2 border-black shadow-neo-sm"
+                        className="h-5 w-5 rounded-md border border-zinc-200"
                         title={p.name}
                       >
                         {p.avatarUrl && <AvatarImage src={p.avatarUrl} alt={p.name} />}
-                        <AvatarFallback
-                          style={{ backgroundColor: p.color || "#FEF08A" }}
-                          className="font-mono text-[9px] font-black text-black"
-                        >
+                        <AvatarFallback className="text-[9px] font-medium bg-zinc-100 text-zinc-800">
                           {p.name[0]}
                         </AvatarFallback>
                       </Avatar>
                     ))}
                   </div>
 
-                  <span className="rounded border border-black bg-white px-1.5 py-0.5 font-mono text-[11px] font-bold text-black shadow-neo-sm">
-                    {meeting.participants.length} ATTENDEES
+                  <span className="rounded-md border border-zinc-200 bg-zinc-50 px-2 py-0.5 text-xs font-medium text-zinc-700">
+                    {meeting.participants.length} attendees
                   </span>
 
                   {meeting.tags?.[0] && (
-                    <span className="hidden md:inline-flex rounded border border-black bg-[#FEF08A] px-2 py-0.5 font-mono text-[10px] font-black uppercase text-black shadow-neo-sm">
+                    <span className="hidden md:inline-flex rounded-md border border-zinc-200 bg-zinc-100 px-2 py-0.5 text-xs font-medium text-zinc-600">
                       {meeting.tags[0]}
                     </span>
                   )}
@@ -246,103 +238,108 @@ function MeetingDetailContent() {
             {/* Right: Quick Action Buttons */}
             <div className="flex items-center gap-2 shrink-0">
               {/* Highlight Action */}
-              <button
+              <Button
                 type="button"
                 onClick={handleOpenHighlight}
-                className="flex h-9 items-center gap-1.5 rounded-md border-2 border-black bg-[#FEF08A] px-3 font-mono text-xs font-bold text-black shadow-neo-sm hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-neo active:translate-x-0 active:translate-y-0 active:shadow-neo-sm transition-all"
+                variant="default"
+                size="sm"
+                className="gap-1.5"
               >
-                <Bookmark className="h-3.5 w-3.5 fill-black text-black" />
+                <Bookmark className="h-3.5 w-3.5 fill-current" />
                 <span className="hidden sm:inline">Highlight</span>
-              </button>
+              </Button>
 
               {/* Share Clip Action */}
-              <button
+              <Button
                 type="button"
                 onClick={() => handleOpenShare()}
-                className="flex h-9 items-center gap-1.5 rounded-md border-2 border-black bg-white px-3 font-mono text-xs font-bold text-black shadow-neo-sm hover:bg-[#DDD6FE] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-neo active:translate-x-0 active:translate-y-0 active:shadow-neo-sm transition-all"
+                variant="outline"
+                size="sm"
+                className="gap-1.5"
               >
-                <Share2 className="h-3.5 w-3.5 text-black" />
+                <Share2 className="h-3.5 w-3.5 text-zinc-600" />
                 <span className="hidden sm:inline">Share Clip</span>
-              </button>
+              </Button>
 
               {/* Copy Notes */}
-              <button
+              <Button
                 type="button"
                 onClick={handleCopySummary}
-                className="flex h-9 items-center gap-1.5 rounded-md border-2 border-black bg-white px-3 font-mono text-xs font-bold text-black shadow-neo-sm hover:bg-[#A7F3D0] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-neo active:translate-x-0 active:translate-y-0 active:shadow-neo-sm transition-all"
+                variant="outline"
+                size="sm"
+                className="gap-1.5"
               >
                 {copiedSummary ? (
                   <>
-                    <Check className="h-3.5 w-3.5 text-black" />
-                    <span className="hidden sm:inline text-black font-black">Copied!</span>
+                    <Check className="h-3.5 w-3.5 text-emerald-600" />
+                    <span className="hidden sm:inline text-emerald-600 font-medium">Copied</span>
                   </>
                 ) : (
                   <>
-                    <Copy className="h-3.5 w-3.5 text-black" />
+                    <Copy className="h-3.5 w-3.5 text-zinc-600" />
                     <span className="hidden sm:inline">Copy Notes</span>
                   </>
                 )}
-              </button>
+              </Button>
 
               {/* API Settings */}
-              <button
+              <Button
                 type="button"
                 onClick={() => setSettingsModalOpen(true)}
-                className="flex h-9 w-9 items-center justify-center rounded-md border-2 border-black bg-white text-black shadow-neo-sm hover:bg-[#FEF08A] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-neo active:translate-x-0 active:translate-y-0 active:shadow-neo-sm transition-all"
+                variant="outline"
+                size="icon"
+                className="h-8 w-8 text-zinc-700"
                 title="API Keys & Settings"
               >
-                <Settings className="h-4 w-4 text-black" />
-              </button>
+                <Settings className="h-4 w-4" />
+              </Button>
             </div>
           </div>
         </header>
 
-        {/* Main Split Grid: Left Player/Scrubber/Presence / Right Workspace Tabs */}
+        {/* Main Split Grid: Left Player Column / Right Workspace Tabs Column */}
         <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-            {/* Left Column (7 cols on lg): 3D Spatial Video Player + Scrubber + Speaker Presence */}
+            {/* Left Column (7 cols on lg): Audio-Synchronized Video Player + Speaker Presence */}
             <div className="lg:col-span-7 flex flex-col gap-4">
-              {/* 3D Spatial Video Player */}
               <VideoPlayer />
-
-              {/* Speaker Presence Bar */}
               <SpeakerPresenceBar />
             </div>
 
-            {/* Right Column (5 cols on lg): Intelligence Workspace Tabs */}
-            <div className="lg:col-span-5 flex flex-col min-h-[640px] rounded-xl border-2 border-black bg-white shadow-[6px_6px_0px_0px_#000] overflow-hidden">
+            {/* Right Column (5 cols on lg): Workspace Container Card */}
+            <div className="lg:col-span-5 flex flex-col min-h-[640px] rounded-xl border border-zinc-200 bg-white shadow-sm overflow-hidden">
               <Tabs
                 value={activeTab}
                 onValueChange={(val) => setActiveTab(val as any)}
                 className="flex flex-col h-full"
               >
-                {/* Neobrutalist Tabs Navigation Bar */}
-                <div className="border-b-2 border-black bg-[#FAF8F5] p-2 sm:p-2.5">
-                  <TabsList className="grid grid-cols-4 h-10 w-full bg-white p-1 border-2 border-black rounded-lg gap-1">
+                {/* Refined Tabs Navigation Bar */}
+                <div className="border-b border-zinc-200 bg-zinc-50/50 p-2">
+                  <TabsList className="grid grid-cols-4 h-9 w-full bg-zinc-100 p-0.5 rounded-lg">
                     <TabsTrigger
                       value="notes"
-                      className="gap-1.5 font-mono text-xs font-bold transition-all data-[state=active]:bg-[#FEF08A] data-[state=active]:text-black data-[state=active]:border-2 data-[state=active]:border-black data-[state=active]:shadow-neo-sm"
+                      className="gap-1.5 text-xs font-medium rounded-md data-[state=active]:bg-white data-[state=active]:text-zinc-950 data-[state=active]:shadow-xs"
                     >
-                      <Sparkles className="h-3.5 w-3.5 text-black" />
+                      <Sparkles className="h-3.5 w-3.5 text-zinc-500" />
                       <span>Notes</span>
                     </TabsTrigger>
 
                     <TabsTrigger
                       value="transcript"
-                      className="gap-1.5 font-mono text-xs font-bold transition-all data-[state=active]:bg-[#FEF08A] data-[state=active]:text-black data-[state=active]:border-2 data-[state=active]:border-black data-[state=active]:shadow-neo-sm"
+                      className="gap-1.5 text-xs font-medium rounded-md data-[state=active]:bg-white data-[state=active]:text-zinc-950 data-[state=active]:shadow-xs"
                     >
-                      <FileText className="h-3.5 w-3.5 text-black" />
+                      <FileText className="h-3.5 w-3.5 text-zinc-500" />
                       <span>Transcript</span>
                     </TabsTrigger>
 
                     <TabsTrigger
                       value="actions"
-                      className="relative gap-1.5 font-mono text-xs font-bold transition-all data-[state=active]:bg-[#FEF08A] data-[state=active]:text-black data-[state=active]:border-2 data-[state=active]:border-black data-[state=active]:shadow-neo-sm"
+                      className="relative gap-1.5 text-xs font-medium rounded-md data-[state=active]:bg-white data-[state=active]:text-zinc-950 data-[state=active]:shadow-xs"
                     >
-                      <ListTodo className="h-3.5 w-3.5 text-black" />
+                      <ListTodo className="h-3.5 w-3.5 text-zinc-500" />
                       <span>Actions</span>
                       {pendingActionCount > 0 && (
-                        <span className="ml-1 rounded-full border border-black bg-black px-1.5 py-0.2 font-mono text-[9px] font-black text-white">
+                        <span className="ml-1 rounded-sm bg-zinc-950 px-1 py-0.2 text-[10px] font-semibold text-white">
                           {pendingActionCount}
                         </span>
                       )}
@@ -350,9 +347,9 @@ function MeetingDetailContent() {
 
                     <TabsTrigger
                       value="ask"
-                      className="gap-1.5 font-mono text-xs font-bold transition-all data-[state=active]:bg-[#FEF08A] data-[state=active]:text-black data-[state=active]:border-2 data-[state=active]:border-black data-[state=active]:shadow-neo-sm"
+                      className="gap-1.5 text-xs font-medium rounded-md data-[state=active]:bg-white data-[state=active]:text-zinc-950 data-[state=active]:shadow-xs"
                     >
-                      <Bot className="h-3.5 w-3.5 text-black" />
+                      <Bot className="h-3.5 w-3.5 text-zinc-500" />
                       <span>Ask AI</span>
                     </TabsTrigger>
                   </TabsList>
@@ -426,10 +423,10 @@ export default function MeetingDetailPage() {
   return (
     <Suspense
       fallback={
-        <div className="flex min-h-screen items-center justify-center bg-[#FAF8F5] text-black">
-          <div className="flex flex-col items-center gap-3 border-2 border-black bg-white p-6 rounded-xl shadow-neo">
-            <div className="h-8 w-8 animate-spin rounded-full border-2 border-black border-t-[#FEF08A]" />
-            <p className="font-mono text-xs font-black uppercase">Loading meeting workspace...</p>
+        <div className="flex min-h-screen items-center justify-center bg-zinc-50/50 text-zinc-950">
+          <div className="flex flex-col items-center gap-3 border border-zinc-200 bg-white p-6 rounded-xl shadow-sm">
+            <div className="h-6 w-6 animate-spin rounded-md border-2 border-zinc-950 border-t-transparent" />
+            <p className="text-xs font-medium text-zinc-500">Loading workspace...</p>
           </div>
         </div>
       }
