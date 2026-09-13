@@ -402,7 +402,7 @@ export function MeetingRecorderModal({
         highlights,
         actionItems: actionItemsList,
         summaries,
-        tags: ["Live Recording", "AI Generated", "Studio Studio"],
+        tags: ["Live Recording", "AI Generated", "Studio"],
       };
 
       // Add to store & navigate directly
