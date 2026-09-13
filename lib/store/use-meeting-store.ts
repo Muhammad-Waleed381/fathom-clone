@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
-import { Meeting, SummaryTemplateId, MeetingHighlight } from "@/types/meeting";
+import { Meeting, SummaryTemplateId, MeetingHighlight, SummaryTemplateContent } from "@/types/meeting";
 import { SEED_MEETINGS } from "@/data/seed-meetings";
 
 export interface NewHighlightInput {
@@ -38,6 +38,7 @@ export interface MeetingState {
   toggleActionItem: (meetingId: string, actionItemId: string) => void;
   addHighlight: (meetingId: string, highlight: NewHighlightInput) => void;
   addMeeting: (meeting: Meeting) => void;
+  updateMeetingSummary: (meetingId: string, templateId: SummaryTemplateId, summary: SummaryTemplateContent) => void;
   seekTo: (time: number) => void;
   getCurrentMeeting: () => Meeting | null;
   resetToSeedData: () => void;
@@ -167,6 +168,29 @@ export const useMeetingStore = create<MeetingState>()(
             currentTime: 0,
             isPlaying: false,
             activeSpeakerFilter: null,
+          };
+        });
+      },
+
+      updateMeetingSummary: (meetingId: string, templateId: SummaryTemplateId, summary: SummaryTemplateContent) => {
+        set((state) => {
+          const updatedMeetings = state.meetings.map((m) => {
+            if (m.id !== meetingId) return m;
+            return {
+              ...m,
+              summaries: {
+                ...m.summaries,
+                [templateId]: summary,
+              },
+            };
+          });
+
+          const currentMeeting =
+            updatedMeetings.find((m) => m.id === state.currentMeetingId) ?? null;
+
+          return {
+            meetings: updatedMeetings,
+            currentMeeting,
           };
         });
       },
