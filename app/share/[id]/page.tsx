@@ -71,7 +71,11 @@ function SharePageContent() {
 
   const clipTitle = useMemo(() => {
     if (queryTitle) {
-      return decodeURIComponent(queryTitle);
+      try {
+        return decodeURIComponent(queryTitle);
+      } catch {
+        return queryTitle;
+      }
     }
     // Try to match an existing highlight title
     const matchingHl = meeting.highlights?.find(
