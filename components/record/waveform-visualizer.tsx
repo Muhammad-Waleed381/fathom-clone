@@ -41,7 +41,10 @@ export function WaveformVisualizer({
 
       // Organic variation
       const randomNoise = (Math.sin(i * 1.7) * 0.5 + 0.5) * 0.3;
-      const heightVal = Math.min(1, Math.max(0.08, baseEnergy * (curve * 0.7 + 0.3) + randomNoise * baseEnergy));
+      const heightVal = Math.min(
+        1,
+        Math.max(0.08, baseEnergy * (curve * 0.7 + 0.3) + randomNoise * baseEnergy)
+      );
       synthetic.push(heightVal);
     }
     return synthetic;
@@ -53,50 +56,50 @@ export function WaveformVisualizer({
   return (
     <div
       className={cn(
-        "relative flex w-full flex-col items-center justify-center rounded-2xl border border-slate-800/90 bg-gradient-to-b from-slate-900/90 to-slate-950/90 px-4 py-3 shadow-inner backdrop-blur-md",
+        "relative flex w-full flex-col items-center justify-center rounded-xl border-2 border-black bg-white px-4 py-3 shadow-neo-sm",
         className
       )}
     >
       {/* Visualizer Bars Container */}
       <div
-        className="flex w-full items-center justify-center gap-1.5 sm:gap-2 overflow-hidden"
+        className="flex w-full items-end justify-center gap-1.5 sm:gap-2 overflow-hidden px-2"
         style={{ height: `${height}px` }}
         role="region"
         aria-label="Live Audio Waveform"
       >
         {bars.map((val, idx) => {
-          // Compute bar height percentage (min 10%, max 100%)
+          // Compute bar height percentage (min 12%, max 100%)
           const barHeightPercent = isPaused
-            ? 8
+            ? 12
             : !isListening
-            ? 10
-            : Math.max(10, Math.min(100, Math.round(val * 100)));
+            ? 12
+            : Math.max(12, Math.min(100, Math.round(val * 100)));
 
-          // Gradient color changes depending on energy level
+          // High vs medium energy color accents with black border
           const isHighEnergy = val > 0.65;
-          const isMedEnergy = val > 0.3;
+          const isMedEnergy = val > 0.35;
 
           return (
             <div
               key={idx}
-              className="flex h-full w-1.5 sm:w-2 items-center justify-center"
+              className="flex h-full w-2 sm:w-2.5 items-end justify-center"
             >
               <div
                 style={{
                   height: `${barHeightPercent}%`,
-                  transition: "height 75ms cubic-bezier(0.4, 0, 0.2, 1)",
+                  transition: "height 60ms ease-out",
                 }}
                 className={cn(
-                  "w-full rounded-full transition-all duration-75",
+                  "w-full rounded-xs border-2 border-black transition-all",
                   isPaused
-                    ? "bg-slate-700/50"
+                    ? "bg-neutral-300"
                     : !isListening
-                    ? "bg-slate-800"
+                    ? "bg-neutral-200"
                     : isHighEnergy
-                    ? "bg-gradient-to-t from-indigo-500 via-purple-500 to-rose-400 shadow-sm shadow-rose-500/50"
+                    ? "bg-[#FEF08A]"
                     : isMedEnergy
-                    ? "bg-gradient-to-t from-indigo-600 via-indigo-400 to-emerald-400 shadow-sm shadow-indigo-500/30"
-                    : "bg-gradient-to-t from-slate-700 to-indigo-500/60"
+                    ? "bg-[#A7F3D0]"
+                    : "bg-black"
                 )}
               />
             </div>
@@ -104,43 +107,34 @@ export function WaveformVisualizer({
         })}
       </div>
 
-      {/* Optional Audio State Readout Badge */}
+      {/* Audio State & Gain Readout */}
       {showLevelBadge && (
-        <div className="mt-2.5 flex items-center justify-between w-full px-1 text-[11px] text-slate-400">
-          <div className="flex items-center gap-2">
+        <div className="mt-2.5 flex items-center justify-between w-full pt-2 border-t border-black/20 font-mono text-[11px]">
+          <div className="flex items-center gap-2 font-black uppercase text-black">
             <span
               className={cn(
-                "inline-block h-2 w-2 rounded-full",
+                "inline-block h-2.5 w-2.5 rounded-full border border-black",
                 isPaused
                   ? "bg-amber-400"
                   : isListening
-                  ? "bg-emerald-400 animate-pulse shadow-sm shadow-emerald-400/80"
-                  : "bg-slate-600"
+                  ? "bg-[#A7F3D0] animate-ping"
+                  : "bg-neutral-300"
               )}
             />
-            <span className="font-mono text-slate-300">
+            <span>
               {isPaused
-                ? "Microphone Paused"
+                ? "MIC PAUSED"
                 : isListening
                 ? audioLevel > 0.15
-                  ? "Speech Detected"
-                  : "Listening for speech..."
-                : "Standby"}
+                  ? "SPEECH DETECTED"
+                  : "LISTENING..."
+                : "STANDBY"}
             </span>
           </div>
 
-          <div className="flex items-center gap-1.5 font-mono text-[10px] text-slate-400">
-            <span>Input Gain:</span>
-            <span
-              className={cn(
-                "font-semibold",
-                displayLevel > 60
-                  ? "text-rose-400"
-                  : displayLevel > 25
-                  ? "text-emerald-400"
-                  : "text-slate-400"
-              )}
-            >
+          <div className="flex items-center gap-1.5 font-bold uppercase text-neutral-600">
+            <span>INPUT GAIN:</span>
+            <span className="font-black text-black">
               {displayLevel}%
             </span>
           </div>

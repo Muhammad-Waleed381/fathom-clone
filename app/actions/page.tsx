@@ -6,6 +6,7 @@ import { useMeetingStore } from "@/lib/store/use-meeting-store";
 import { DashboardHeader } from "@/components/dashboard/dashboard-header";
 import { CommandSearch } from "@/components/dashboard/command-search";
 import { ApiKeysModal } from "@/components/settings/api-keys-modal";
+import { MeetingRecorderModal } from "@/components/record/meeting-recorder-modal";
 import {
   ActionFilters,
   ActionStatusFilter,
@@ -16,8 +17,6 @@ import {
   EnrichedActionItem,
 } from "@/components/actions/actions-table";
 import { Speaker } from "@/types/meeting";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { formatTime } from "@/components/player/video-scrubber";
 import {
   Home,
@@ -29,16 +28,17 @@ import {
   Download,
   Copy,
   Check,
-  TrendingUp,
+  Percent,
 } from "lucide-react";
 
 export default function ActionsHubPage() {
   const meetings = useMeetingStore((s) => s.meetings);
   const toggleActionItem = useMeetingStore((s) => s.toggleActionItem);
 
-  // Search and settings modals
+  // Search, settings, and recorder modals
   const [searchOpen, setSearchOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [recorderOpen, setRecorderOpen] = useState(false);
 
   // Filters state
   const [statusFilter, setStatusFilter] = useState<ActionStatusFilter>("all");
@@ -248,168 +248,167 @@ export default function ActionsHubPage() {
   };
 
   return (
-    <div className="flex min-h-screen flex-col bg-slate-950 text-slate-100 selection:bg-primary/30 selection:text-white">
+    <div className="flex min-h-screen flex-col bg-[#FAF8F5] text-black font-sans selection:bg-[#FEF08A] selection:text-black">
       {/* Top Application Header */}
       <DashboardHeader
         onOpenSearch={() => setSearchOpen(true)}
-        onRecordClick={() => alert("Launching meeting recorder...")}
+        onRecordClick={() => setRecorderOpen(true)}
       />
 
       {/* Main Page Content */}
       <main className="mx-auto flex-1 w-full max-w-7xl px-4 sm:px-6 lg:px-8 py-8 space-y-6">
-        {/* Workspace Breadcrumbs & Action Buttons */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div className="flex flex-col gap-1.5">
-            {/* Breadcrumb Navigation */}
-            <nav className="flex items-center gap-2 text-xs text-slate-400">
+        {/* Workspace Breadcrumbs & Editorial Header */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b-2 border-black pb-5">
+          <div className="space-y-1.5">
+            {/* Editorial Breadcrumbs */}
+            <div className="flex items-center gap-2 font-mono text-xs font-black uppercase tracking-wider text-neutral-600">
               <Link
                 href="/"
-                className="flex items-center gap-1.5 transition-colors hover:text-white"
+                className="flex items-center gap-1 hover:text-black transition-colors"
               >
-                <Home className="h-3.5 w-3.5" />
-                <span>Workspace</span>
+                <Home className="h-3.5 w-3.5 stroke-[2.5]" />
+                <span>WORKSPACE</span>
               </Link>
-              <ChevronRight className="h-3 w-3 text-slate-600" />
-              <span className="font-medium text-slate-200">Action Items Hub</span>
-            </nav>
+              <ChevronRight className="h-3 w-3 stroke-[3]" />
+              <span className="text-black">ACTION ITEMS</span>
+            </div>
 
-            {/* Page Title */}
-            <div className="flex items-center gap-2.5 mt-1">
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 shadow-sm">
-                <ListTodo className="h-5 w-5" />
+            {/* Page Title & Subtitle */}
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-md border-2 border-black bg-[#FEF08A] shadow-neo-sm">
+                <ListTodo className="h-5 w-5 stroke-[2.5] text-black" />
               </div>
               <div>
-                <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-white">
-                  Action Items Hub
+                <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-black">
+                  ACTION ITEMS HUB
                 </h1>
-                <p className="text-xs text-slate-400">
-                  Centralized task execution, cross-meeting tracking, and team accountability.
+                <p className="font-mono text-xs font-bold uppercase text-neutral-600">
+                  TOTAL TASKS: {totalCount} • CROSS-MEETING EXECUTION MATRIX
                 </p>
               </div>
             </div>
           </div>
 
-          {/* Export Actions */}
-          <div className="flex items-center gap-2 self-start sm:self-auto">
-            <Button
-              variant="outline"
-              size="sm"
+          {/* Export Actions with Tactile Physics */}
+          <div className="flex items-center gap-2.5 self-start sm:self-auto">
+            <button
+              type="button"
               onClick={handleExportCsv}
-              className="h-9 gap-1.5 border-slate-800 bg-slate-900/80 px-3 text-xs font-medium text-slate-300 hover:border-slate-700 hover:bg-slate-800 hover:text-white transition-all shadow-sm"
+              className="h-10 flex items-center gap-2 rounded-md border-2 border-black bg-white px-3.5 font-mono text-xs font-black uppercase tracking-wider text-black shadow-neo-sm hover:-translate-x-0.5 hover:-translate-y-0.5 hover:bg-[#FAF8F5] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all"
             >
-              <Download className="h-3.5 w-3.5 text-slate-400" />
-              <span>Export CSV</span>
-            </Button>
+              <Download className="h-4 w-4 stroke-[2.5]" />
+              <span>EXPORT CSV</span>
+            </button>
 
-            <Button
-              variant="outline"
-              size="sm"
+            <button
+              type="button"
               onClick={handleCopySlack}
-              className="h-9 gap-1.5 border-slate-800 bg-slate-900/80 px-3 text-xs font-medium text-slate-300 hover:border-slate-700 hover:bg-slate-800 hover:text-white transition-all shadow-sm"
+              className={`h-10 flex items-center gap-2 rounded-md border-2 border-black px-3.5 font-mono text-xs font-black uppercase tracking-wider text-black shadow-neo-sm hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all ${
+                copiedSlack
+                  ? "bg-[#A7F3D0]"
+                  : "bg-[#FEF08A] hover:bg-[#FEF08A]/90"
+              }`}
             >
               {copiedSlack ? (
                 <>
-                  <Check className="h-3.5 w-3.5 text-emerald-400" />
-                  <span className="text-emerald-400 font-semibold">Copied!</span>
+                  <Check className="h-4 w-4 stroke-[3]" />
+                  <span>COPIED!</span>
                 </>
               ) : (
                 <>
-                  <Copy className="h-3.5 w-3.5 text-indigo-400" />
-                  <span>Copy for Slack/Markdown</span>
+                  <Copy className="h-4 w-4 stroke-[2.5]" />
+                  <span>COPY SLACK / MARKDOWN</span>
                 </>
               )}
-            </Button>
+            </button>
           </div>
         </div>
 
-        {/* Summary Metrics Cards */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-          {/* Card 1: Total Items */}
-          <Card className="border-slate-800/80 bg-slate-900/40 backdrop-blur-sm shadow-sm">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-medium text-slate-400">
-                  Total Actions
-                </span>
-                <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-slate-800 text-slate-400">
-                  <ListTodo className="h-3.5 w-3.5" />
-                </div>
+        {/* 4 High-Contrast KPI Cards with hard shadows */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          {/* Card 1: Total */}
+          <div className="flex flex-col justify-between rounded-xl border-2 border-black bg-white p-5 shadow-[4px_4px_0px_0px_#000]">
+            <div className="flex items-center justify-between">
+              <span className="font-mono text-xs font-black uppercase text-neutral-600">
+                TOTAL ACTIONS
+              </span>
+              <div className="flex h-7 w-7 items-center justify-center rounded border-2 border-black bg-[#FAF8F5]">
+                <ListTodo className="h-3.5 w-3.5 stroke-[2.5]" />
               </div>
-              <div className="mt-2 flex items-baseline gap-2">
-                <span className="text-2xl font-bold tracking-tight text-white">
-                  {totalCount}
-                </span>
-                <span className="text-[11px] text-slate-500">across {meetings.length} meetings</span>
+            </div>
+            <div className="mt-3">
+              <div className="font-mono text-3xl font-black text-black">
+                {totalCount}
               </div>
-            </CardContent>
-          </Card>
+              <p className="font-mono text-[11px] font-bold uppercase text-neutral-500 mt-0.5">
+                across {meetings.length} meetings
+              </p>
+            </div>
+          </div>
 
           {/* Card 2: Completed */}
-          <Card className="border-slate-800/80 bg-slate-900/40 backdrop-blur-sm shadow-sm">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-medium text-emerald-400">
-                  Completed
-                </span>
-                <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                  <CheckCircle2 className="h-3.5 w-3.5" />
-                </div>
+          <div className="flex flex-col justify-between rounded-xl border-2 border-black bg-[#A7F3D0] p-5 shadow-[4px_4px_0px_0px_#000]">
+            <div className="flex items-center justify-between">
+              <span className="font-mono text-xs font-black uppercase text-black">
+                COMPLETED
+              </span>
+              <div className="flex h-7 w-7 items-center justify-center rounded border-2 border-black bg-white">
+                <CheckCircle2 className="h-3.5 w-3.5 stroke-[2.5] text-black" />
               </div>
-              <div className="mt-2 flex items-baseline gap-2">
-                <span className="text-2xl font-bold tracking-tight text-emerald-400">
-                  {completedCount}
-                </span>
-                <span className="text-[11px] text-slate-500">resolved items</span>
+            </div>
+            <div className="mt-3">
+              <div className="font-mono text-3xl font-black text-black">
+                {completedCount}
               </div>
-            </CardContent>
-          </Card>
+              <p className="font-mono text-[11px] font-black uppercase text-neutral-800 mt-0.5">
+                resolved items
+              </p>
+            </div>
+          </div>
 
           {/* Card 3: Pending */}
-          <Card className="border-slate-800/80 bg-slate-900/40 backdrop-blur-sm shadow-sm">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-medium text-amber-400">
-                  Pending Execution
-                </span>
-                <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-amber-500/10 text-amber-400 border border-amber-500/20">
-                  <Clock className="h-3.5 w-3.5" />
-                </div>
+          <div className="flex flex-col justify-between rounded-xl border-2 border-black bg-[#FEF08A] p-5 shadow-[4px_4px_0px_0px_#000]">
+            <div className="flex items-center justify-between">
+              <span className="font-mono text-xs font-black uppercase text-black">
+                PENDING
+              </span>
+              <div className="flex h-7 w-7 items-center justify-center rounded border-2 border-black bg-white">
+                <Clock className="h-3.5 w-3.5 stroke-[2.5] text-black" />
               </div>
-              <div className="mt-2 flex items-baseline gap-2">
-                <span className="text-2xl font-bold tracking-tight text-amber-400">
-                  {pendingCount}
-                </span>
-                <span className="text-[11px] text-slate-500">open tasks</span>
+            </div>
+            <div className="mt-3">
+              <div className="font-mono text-3xl font-black text-black">
+                {pendingCount}
               </div>
-            </CardContent>
-          </Card>
+              <p className="font-mono text-[11px] font-black uppercase text-neutral-800 mt-0.5">
+                open execution
+              </p>
+            </div>
+          </div>
 
-          {/* Card 4: % Complete */}
-          <Card className="border-slate-800/80 bg-slate-900/40 backdrop-blur-sm shadow-sm">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-medium text-indigo-400">
-                  Team Progress
-                </span>
-                <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
-                  <Sparkles className="h-3.5 w-3.5" />
-                </div>
+          {/* Card 4: Completion Rate */}
+          <div className="flex flex-col justify-between rounded-xl border-2 border-black bg-[#DDD6FE] p-5 shadow-[4px_4px_0px_0px_#000]">
+            <div className="flex items-center justify-between">
+              <span className="font-mono text-xs font-black uppercase text-black">
+                COMPLETION RATE
+              </span>
+              <div className="flex h-7 w-7 items-center justify-center rounded border-2 border-black bg-white">
+                <Sparkles className="h-3.5 w-3.5 stroke-[2.5] text-black" />
               </div>
-              <div className="mt-2 flex items-baseline gap-2">
-                <span className="text-2xl font-bold tracking-tight text-indigo-400">
-                  {percentComplete}%
-                </span>
-                <span className="text-[11px] text-slate-500">completion rate</span>
+            </div>
+            <div className="mt-3">
+              <div className="font-mono text-3xl font-black text-black">
+                {percentComplete}%
               </div>
-              {/* Progress bar */}
-              <div className="mt-2.5 h-1.5 w-full overflow-hidden rounded-full bg-slate-800">
+              {/* Neobrutalist Progress Bar */}
+              <div className="mt-2 h-3 w-full overflow-hidden rounded-full border-2 border-black bg-white">
                 <div
-                  className="h-full rounded-full bg-gradient-to-r from-indigo-500 to-emerald-500 transition-all duration-500"
+                  className="h-full bg-black transition-all duration-500"
                   style={{ width: `${percentComplete}%` }}
                 />
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </div>
 
         {/* Filter Toolbar */}
@@ -445,6 +444,12 @@ export default function ActionsHubPage() {
 
       {/* Global AI Settings Modal */}
       <ApiKeysModal open={settingsOpen} onOpenChange={setSettingsOpen} />
+
+      {/* Meeting Recorder Modal */}
+      <MeetingRecorderModal
+        open={recorderOpen}
+        onOpenChange={setRecorderOpen}
+      />
     </div>
   );
 }

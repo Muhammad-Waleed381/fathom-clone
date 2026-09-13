@@ -4,10 +4,7 @@ import React from "react";
 import Link from "next/link";
 import { ActionItem, Speaker } from "@/types/meeting";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Card, CardContent } from "@/components/ui/card";
 import {
   Tooltip,
   TooltipContent,
@@ -20,12 +17,9 @@ import {
   Video,
   Play,
   Calendar,
-  Clock,
   CheckCircle2,
   ExternalLink,
   RotateCcw,
-  Sparkles,
-  AlertTriangle,
   Inbox,
   User,
 } from "lucide-react";
@@ -54,21 +48,21 @@ function getInitials(name: string): string {
     .substring(0, 2);
 }
 
-const PRIORITY_STYLES = {
+const PRIORITY_BADGES: Record<
+  "high" | "medium" | "low",
+  { bg: string; label: string }
+> = {
   high: {
-    badge: "border-rose-500/30 bg-rose-500/10 text-rose-300 font-semibold",
-    dot: "bg-rose-500",
-    label: "High",
+    bg: "bg-[#FECDD3] text-black border-2 border-black",
+    label: "HIGH",
   },
   medium: {
-    badge: "border-amber-500/30 bg-amber-500/10 text-amber-300 font-semibold",
-    dot: "bg-amber-500",
-    label: "Med",
+    bg: "bg-[#FEF08A] text-black border-2 border-black",
+    label: "MED",
   },
   low: {
-    badge: "border-sky-500/30 bg-sky-500/10 text-sky-300 font-semibold",
-    dot: "bg-sky-500",
-    label: "Low",
+    bg: "bg-[#BAE6FD] text-black border-2 border-black",
+    label: "LOW",
   },
 };
 
@@ -86,81 +80,78 @@ export function ActionsTable({
     if (nextCompleted && typeof window !== "undefined") {
       try {
         confetti({
-          particleCount: 50,
-          spread: 65,
+          particleCount: 60,
+          spread: 70,
           origin: { y: 0.7 },
-          colors: ["#6366f1", "#10b981", "#3b82f6", "#f59e0b", "#ec4899"],
+          colors: ["#FEF08A", "#A7F3D0", "#DDD6FE", "#000000", "#FECDD3"],
         });
       } catch {
-        // Graceful fallback in environments without canvas
+        // Graceful fallback
       }
     }
   };
 
   if (items.length === 0) {
     return (
-      <Card className="border-slate-800 bg-slate-900/40 backdrop-blur-sm">
-        <CardContent className="flex flex-col items-center justify-center py-16 px-4 text-center">
-          <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-800/80 ring-1 ring-slate-700/80 mb-4 shadow-inner">
-            {hasActiveFilters ? (
-              <Inbox className="h-7 w-7 text-slate-400" />
-            ) : (
-              <CheckCircle2 className="h-7 w-7 text-emerald-400" />
-            )}
-          </div>
-          <h3 className="text-base font-semibold text-white">
-            {hasActiveFilters
-              ? "No matching action items"
-              : "All action items completed!"}
-          </h3>
-          <p className="mt-1.5 max-w-sm text-xs text-slate-400">
-            {hasActiveFilters
-              ? "No tasks match your current filter criteria. Try adjusting or clearing filters to see more items."
-              : "Great job! All team action items across your meetings have been marked as completed."}
-          </p>
-          {hasActiveFilters && onResetFilters && (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={onResetFilters}
-              className="mt-5 h-8 gap-1.5 border-slate-700 bg-slate-800 text-xs font-medium text-slate-200 hover:bg-slate-700 hover:text-white"
-            >
-              <RotateCcw className="h-3.5 w-3.5" />
-              <span>Reset All Filters</span>
-            </Button>
+      <div className="flex flex-col items-center justify-center rounded-xl border-2 border-black bg-white py-16 px-4 text-center shadow-[4px_4px_0px_0px_#000]">
+        <div className="flex h-12 w-12 items-center justify-center rounded-lg border-2 border-black bg-[#FEF08A] mb-4 shadow-neo-sm">
+          {hasActiveFilters ? (
+            <Inbox className="h-6 w-6 text-black stroke-[2.5]" />
+          ) : (
+            <CheckCircle2 className="h-6 w-6 text-black stroke-[2.5]" />
           )}
-        </CardContent>
-      </Card>
+        </div>
+        <h3 className="font-mono text-base font-black uppercase text-black">
+          {hasActiveFilters
+            ? "No matching action items"
+            : "All action items completed"}
+        </h3>
+        <p className="mt-1.5 max-w-sm text-xs font-sans text-neutral-600 font-medium">
+          {hasActiveFilters
+            ? "No tasks match your current filter parameters. Adjust or clear filters to view items."
+            : "Zero pending action items across workspace meetings. High team velocity achieved."}
+        </p>
+        {hasActiveFilters && onResetFilters && (
+          <button
+            type="button"
+            onClick={onResetFilters}
+            className="mt-4 flex items-center gap-1.5 rounded-md border-2 border-black bg-white px-3 py-1.5 font-mono text-xs font-black uppercase text-black shadow-neo-sm hover:bg-[#FEF08A] hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all"
+          >
+            <RotateCcw className="h-3.5 w-3.5 stroke-[2.5]" />
+            <span>RESET ALL FILTERS</span>
+          </button>
+        )}
+      </div>
     );
   }
 
   return (
     <TooltipProvider delayDuration={150}>
-      <Card className="border-slate-800 bg-slate-900/40 backdrop-blur-sm shadow-xl overflow-hidden">
+      <div className="rounded-xl border-2 border-black bg-white shadow-[4px_4px_0px_0px_#000] overflow-hidden">
         {/* Table / List Header */}
-        <div className="hidden lg:grid grid-cols-12 gap-4 items-center px-4 py-3 border-b border-slate-800/80 bg-slate-950/60 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
-          <div className="col-span-5 flex items-center gap-3">
-            <span>Action Item</span>
+        <div className="hidden lg:grid grid-cols-12 gap-4 items-center px-4 py-3 border-b-2 border-black bg-[#FAF8F5] font-mono text-xs font-black text-black uppercase tracking-wider">
+          <div className="col-span-5 flex items-center gap-2">
+            <span>ACTION ITEM</span>
           </div>
-          <div className="col-span-3">Meeting Source</div>
-          <div className="col-span-2">Assignee</div>
-          <div className="col-span-1">Priority</div>
-          <div className="col-span-1 text-right">Due Date</div>
+          <div className="col-span-3">MEETING SOURCE</div>
+          <div className="col-span-2">ASSIGNEE</div>
+          <div className="col-span-1">PRIORITY</div>
+          <div className="col-span-1 text-right">DUE DATE</div>
         </div>
 
         {/* Rows */}
-        <div className="divide-y divide-slate-800/60">
+        <div className="divide-y-2 divide-black">
           {items.map((item) => {
             const priorityConfig = item.priority
-              ? PRIORITY_STYLES[item.priority]
+              ? PRIORITY_BADGES[item.priority]
               : null;
 
             return (
               <div
                 key={`${item.meetingId}-${item.id}`}
                 className={cn(
-                  "group flex flex-col lg:grid lg:grid-cols-12 gap-3 lg:gap-4 lg:items-center px-4 py-3.5 transition-all hover:bg-slate-850/50",
-                  item.completed && "bg-slate-950/20"
+                  "group flex flex-col lg:grid lg:grid-cols-12 gap-3 lg:gap-4 lg:items-center px-4 py-3.5 transition-colors hover:bg-[#FEF08A]/15",
+                  item.completed && "bg-[#FAF8F5]/80"
                 )}
               >
                 {/* Checkbox & Action Item Text */}
@@ -171,10 +162,8 @@ export function ActionsTable({
                       checked={item.completed}
                       onCheckedChange={() => handleToggle(item)}
                       className={cn(
-                        "h-4 w-4 rounded border-slate-700 data-[state=checked]:bg-emerald-500 data-[state=checked]:border-emerald-500 transition-all",
-                        item.completed
-                          ? "ring-2 ring-emerald-500/20"
-                          : "hover:border-slate-500"
+                        "h-5 w-5 rounded-none border-2 border-black shadow-neo-sm data-[state=checked]:bg-black data-[state=checked]:text-white transition-all cursor-pointer",
+                        item.completed && "bg-black text-white"
                       )}
                       aria-label={`Mark task as ${item.completed ? "pending" : "completed"}`}
                     />
@@ -183,35 +172,31 @@ export function ActionsTable({
                     <label
                       htmlFor={`check-${item.id}`}
                       className={cn(
-                        "text-xs sm:text-sm font-medium leading-snug cursor-pointer select-none transition-colors",
+                        "font-sans text-xs sm:text-sm font-bold leading-snug cursor-pointer select-none transition-colors",
                         item.completed
-                          ? "line-through text-slate-500"
-                          : "text-slate-100 group-hover:text-white"
+                          ? "line-through text-neutral-400 decoration-black decoration-2"
+                          : "text-black"
                       )}
                     >
                       {item.text}
                     </label>
 
-                    {/* Mobile-only tags row */}
+                    {/* Mobile-only badges row */}
                     <div className="flex flex-wrap items-center gap-2 pt-0.5 lg:hidden">
                       {priorityConfig && (
-                        <Badge
-                          variant="outline"
-                          className={cn("px-1.5 py-0 text-[10px]", priorityConfig.badge)}
+                        <span
+                          className={cn(
+                            "px-1.5 py-0.5 font-mono text-[10px] font-black uppercase rounded shadow-neo-sm",
+                            priorityConfig.bg
+                          )}
                         >
-                          <span
-                            className={cn(
-                              "mr-1 h-1.5 w-1.5 rounded-full inline-block",
-                              priorityConfig.dot
-                            )}
-                          />
                           {priorityConfig.label}
-                        </Badge>
+                        </span>
                       )}
                       {item.timestamp !== undefined && (
                         <Link
                           href={`/meetings/${item.meetingId}?t=${item.timestamp}`}
-                          className="inline-flex items-center gap-1 rounded bg-slate-800/80 px-1.5 py-0.5 text-[10px] font-mono text-slate-300 hover:bg-indigo-500/20 hover:text-indigo-300 border border-slate-700/60 transition-colors"
+                          className="inline-flex items-center gap-1 rounded border border-black bg-[#FEF08A] px-1.5 py-0.5 font-mono text-[10px] font-bold text-black shadow-neo-sm hover:bg-black hover:text-white transition-all"
                         >
                           <Play className="h-2 w-2 fill-current" />
                           <span>{formatTime(item.timestamp)}</span>
@@ -221,28 +206,28 @@ export function ActionsTable({
                   </div>
                 </div>
 
-                {/* Meeting Source Badge & Clickable Timestamp */}
+                {/* Meeting Source Badge & Clickable Deep-link Timestamp */}
                 <div className="col-span-3 flex flex-wrap items-center gap-2 min-w-0">
                   <Link
                     href={`/meetings/${item.meetingId}${
                       item.timestamp !== undefined ? `?t=${item.timestamp}` : ""
                     }`}
-                    className="group/link inline-flex items-center gap-1.5 max-w-full rounded-md border border-slate-800 bg-slate-900/80 px-2.5 py-1 text-xs text-slate-300 transition-colors hover:border-slate-700 hover:bg-slate-800 hover:text-indigo-300"
+                    className="group/link inline-flex items-center gap-1.5 max-w-full rounded-md border-2 border-black bg-white px-2.5 py-1 font-mono text-xs font-bold text-black shadow-neo-sm hover:bg-[#BAE6FD] hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all"
                     title={`Open meeting: ${item.meetingTitle}`}
                   >
-                    <Video className="h-3 w-3 text-indigo-400 shrink-0" />
-                    <span className="truncate font-medium">{item.meetingTitle}</span>
-                    <ExternalLink className="h-2.5 w-2.5 opacity-40 shrink-0 group-hover/link:opacity-90" />
+                    <Video className="h-3 w-3 stroke-[2.5] text-black shrink-0" />
+                    <span className="truncate font-sans font-bold">{item.meetingTitle}</span>
+                    <ExternalLink className="h-2.5 w-2.5 opacity-60 shrink-0 group-hover/link:opacity-100" />
                   </Link>
 
-                  {/* Timestamp tag */}
+                  {/* Timestamp deep link tag */}
                   {item.timestamp !== undefined && (
                     <Link
                       href={`/meetings/${item.meetingId}?t=${item.timestamp}`}
-                      className="hidden sm:inline-flex items-center gap-1 rounded border border-slate-800 bg-slate-950/80 px-1.5 py-0.5 text-[11px] font-mono text-slate-400 hover:border-indigo-500/40 hover:bg-indigo-500/10 hover:text-indigo-300 transition-colors"
+                      className="hidden sm:inline-flex items-center gap-1 rounded border-2 border-black bg-[#FEF08A] px-2 py-0.5 font-mono text-xs font-black text-black shadow-neo-sm hover:bg-black hover:text-white hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all"
                       title={`Jump directly to ${formatTime(item.timestamp)} in call`}
                     >
-                      <Play className="h-2.5 w-2.5 fill-current text-indigo-400" />
+                      <Play className="h-2.5 w-2.5 fill-current" />
                       <span>{formatTime(item.timestamp)}</span>
                     </Link>
                   )}
@@ -254,7 +239,7 @@ export function ActionsTable({
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <div className="flex items-center gap-2 cursor-pointer group/user max-w-full">
-                          <Avatar className="h-6 w-6 ring-1 ring-slate-700 shrink-0 group-hover/user:ring-indigo-400 transition-all">
+                          <Avatar className="h-6 w-6 border-2 border-black shadow-neo-sm shrink-0 transition-transform group-hover/user:scale-110">
                             {item.assignee.avatarUrl && (
                               <AvatarImage
                                 src={item.assignee.avatarUrl}
@@ -263,19 +248,19 @@ export function ActionsTable({
                             )}
                             <AvatarFallback
                               style={{
-                                backgroundColor: item.assignee.color || "#6366f1",
+                                backgroundColor: item.assignee.color || "#DDD6FE",
                               }}
-                              className="text-[9px] font-bold text-white"
+                              className="font-mono text-[9px] font-black text-black"
                             >
                               {getInitials(item.assignee.name)}
                             </AvatarFallback>
                           </Avatar>
                           <div className="flex flex-col min-w-0">
-                            <span className="truncate text-xs font-medium text-slate-200 group-hover/user:text-indigo-300 transition-colors">
+                            <span className="truncate font-sans text-xs font-bold text-black group-hover/user:underline">
                               {item.assignee.name}
                             </span>
                             {item.assignee.role && (
-                              <span className="truncate text-[10px] text-slate-500">
+                              <span className="truncate font-mono text-[9px] font-semibold uppercase text-neutral-600">
                                 {item.assignee.role}
                               </span>
                             )}
@@ -284,19 +269,19 @@ export function ActionsTable({
                       </TooltipTrigger>
                       <TooltipContent
                         side="top"
-                        className="bg-slate-900 border-slate-800 text-slate-200 p-2.5 shadow-xl max-w-xs"
+                        className="border-2 border-black bg-white p-2.5 text-black shadow-neo max-w-xs"
                       >
-                        <div className="flex flex-col gap-1 text-xs">
-                          <p className="font-semibold text-white">
+                        <div className="flex flex-col gap-1">
+                          <p className="font-sans font-bold text-xs text-black">
                             {item.assignee.name}
                           </p>
                           {item.assignee.role && (
-                            <p className="text-indigo-300 text-[11px]">
+                            <p className="font-mono text-[10px] font-semibold text-neutral-600 uppercase">
                               {item.assignee.role}
                             </p>
                           )}
                           {item.assignee.company && (
-                            <p className="text-slate-400 text-[10px]">
+                            <p className="font-sans text-[10px] text-neutral-500">
                               {item.assignee.company}
                             </p>
                           )}
@@ -304,11 +289,11 @@ export function ActionsTable({
                       </TooltipContent>
                     </Tooltip>
                   ) : (
-                    <div className="flex items-center gap-1.5 text-slate-500 text-xs">
-                      <div className="flex h-6 w-6 items-center justify-center rounded-full bg-slate-800 ring-1 ring-slate-700">
-                        <User className="h-3 w-3 text-slate-500" />
+                    <div className="flex items-center gap-1.5 text-neutral-500 font-mono text-xs">
+                      <div className="flex h-5 w-5 items-center justify-center rounded-full border border-black bg-[#FAF8F5]">
+                        <User className="h-3 w-3 text-black stroke-[2]" />
                       </div>
-                      <span className="text-[11px]">Unassigned</span>
+                      <span className="text-[11px] font-bold uppercase">Unassigned</span>
                     </div>
                   )}
                 </div>
@@ -316,20 +301,16 @@ export function ActionsTable({
                 {/* Priority Badge */}
                 <div className="col-span-1 hidden lg:flex items-center">
                   {priorityConfig ? (
-                    <Badge
-                      variant="outline"
-                      className={cn("px-2 py-0.5 text-[10px]", priorityConfig.badge)}
+                    <span
+                      className={cn(
+                        "px-2 py-0.5 rounded font-mono text-[10px] font-black uppercase shadow-neo-sm",
+                        priorityConfig.bg
+                      )}
                     >
-                      <span
-                        className={cn(
-                          "mr-1.5 h-1.5 w-1.5 rounded-full inline-block",
-                          priorityConfig.dot
-                        )}
-                      />
                       {priorityConfig.label}
-                    </Badge>
+                    </span>
                   ) : (
-                    <span className="text-xs text-slate-600">—</span>
+                    <span className="font-mono text-xs font-bold text-neutral-400">—</span>
                   )}
                 </div>
 
@@ -337,21 +318,21 @@ export function ActionsTable({
                 <div className="col-span-1 hidden lg:flex items-center justify-end">
                   {item.dueDate ? (
                     <div
-                      className="flex items-center gap-1 text-[11px] text-slate-400"
+                      className="flex items-center gap-1 font-mono text-xs font-bold text-neutral-800"
                       title={`Due Date: ${item.dueDate}`}
                     >
-                      <Calendar className="h-3 w-3 text-slate-500" />
+                      <Calendar className="h-3 w-3 stroke-[2.5]" />
                       <span>{item.dueDate}</span>
                     </div>
                   ) : (
-                    <span className="text-xs text-slate-600">—</span>
+                    <span className="font-mono text-xs font-bold text-neutral-400">—</span>
                   )}
                 </div>
               </div>
             );
           })}
         </div>
-      </Card>
+      </div>
     </TooltipProvider>
   );
 }

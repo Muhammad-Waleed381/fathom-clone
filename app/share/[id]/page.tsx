@@ -4,7 +4,6 @@ import React, { useEffect, useState, useMemo, Suspense } from "react";
 import { useParams, useSearchParams } from "next/navigation";
 import { useMeetingStore } from "@/lib/store/use-meeting-store";
 import { SEED_MEETINGS } from "@/data/seed-meetings";
-import { Meeting } from "@/types/meeting";
 import { PublicClipViewer } from "@/components/share/public-clip-viewer";
 
 function SharePageContent() {
@@ -101,10 +100,12 @@ export default function SharePage() {
   return (
     <Suspense
       fallback={
-        <div className="flex min-h-screen items-center justify-center bg-slate-950 text-slate-400">
-          <div className="flex flex-col items-center gap-3">
-            <div className="h-8 w-8 animate-spin rounded-full border-2 border-indigo-500 border-t-transparent" />
-            <p className="text-xs font-mono">Loading shared meeting clip...</p>
+        <div className="flex min-h-screen items-center justify-center bg-[#FAF8F5] text-black">
+          <div className="flex flex-col items-center gap-3 rounded-xl border-2 border-black bg-white p-8 shadow-neo">
+            <div className="h-8 w-8 animate-spin rounded-full border-4 border-black border-t-transparent" />
+            <p className="font-mono text-xs font-black uppercase text-black tracking-wider">
+              LOADING GUEST CLIP VIEWER...
+            </p>
           </div>
         </div>
       }

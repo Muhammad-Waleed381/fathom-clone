@@ -9,9 +9,6 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
 import { useMeetingStore } from "@/lib/store/use-meeting-store";
 import {
   useSpeechRecognition,
@@ -30,7 +27,6 @@ import {
 import { generateFallbackSummary } from "@/lib/openrouter";
 import {
   Mic,
-  MicOff,
   Square,
   Play,
   Pause,
@@ -39,12 +35,8 @@ import {
   Bot,
   Radio,
   Clock,
-  CheckCircle2,
   AlertCircle,
   Loader2,
-  Wand2,
-  Layers,
-  ChevronRight,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -68,7 +60,7 @@ export function MeetingRecorderModal({
   const [meetingTitle, setMeetingTitle] = useState<string>(() => {
     if (initialTitle) return initialTitle;
     const now = new Date();
-    return `Live Recording - ${now.toLocaleDateString(undefined, {
+    return `Studio Recording - ${now.toLocaleDateString(undefined, {
       month: "short",
       day: "numeric",
     })} ${now.toLocaleTimeString(undefined, {
@@ -91,7 +83,6 @@ export function MeetingRecorderModal({
     elapsedSeconds,
     interimTranscript,
     segments,
-    transcriptText,
     audioLevel,
     frequencyData,
     error,
@@ -182,6 +173,14 @@ export function MeetingRecorderModal({
     }
   };
 
+  // Trigger simulated sample audio explicitly
+  const handleSimulateSampleAudio = () => {
+    setRecordMode("simulate");
+    if (!isListening || !isSimulating) {
+      startSimulation();
+    }
+  };
+
   // AI Meeting Generation & Store Integration
   const handleStopAndGenerate = async () => {
     // 1. Stop audio/simulation capture
@@ -217,7 +216,7 @@ export function MeetingRecorderModal({
         }
       }
 
-      // If transcript was empty (user tested without speaking), create realistic initial segments
+      // If transcript was empty, create realistic initial segments
       if (finalSegments.length === 0) {
         finalSegments = SAMPLE_SIMULATION_DIALOGUE.slice(0, 4).map((line, i) => ({
           id: `seg-init-${i}`,
@@ -249,7 +248,6 @@ export function MeetingRecorderModal({
       for (const tId of templateIds) {
         setGenerationStep(`Synthesizing ${tId.replace("_", " ")} intelligence...`);
         try {
-          // Attempt API call to /api/ai/summarize
           const res = await fetch("/api/ai/summarize", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -285,7 +283,6 @@ export function MeetingRecorderModal({
       const newMeetingId = `rec-${Date.now()}`;
       const actionItemsList: ActionItem[] = [];
 
-      // Extract from action_items summary bullets
       const actionBullets =
         summaries.action_items?.sections?.flatMap((s) => s.bullets) || [];
 
@@ -310,13 +307,12 @@ export function MeetingRecorderModal({
           });
         });
       } else {
-        // Sensible default action items
         actionItemsList.push(
           {
             id: `act-${newMeetingId}-1`,
             meetingId: newMeetingId,
             meetingTitle,
-            text: "Review generated executive summary and share notes with attendees",
+            text: "Review generated executive summary and verify milestones",
             assigneeId: "You",
             completed: false,
             timestamp: 5,
@@ -327,7 +323,7 @@ export function MeetingRecorderModal({
             id: `act-${newMeetingId}-2`,
             meetingId: newMeetingId,
             meetingTitle,
-            text: "Schedule follow-up sync to evaluate technical milestones",
+            text: "Distribute transcript and action items to team leads",
             assigneeId: "You",
             completed: false,
             timestamp: 20,
@@ -344,9 +340,9 @@ export function MeetingRecorderModal({
         {
           id: "spk-user",
           name: "You",
-          role: "Host & Notetaker",
+          role: "Host & Lead",
           company: "Fathom Workspace",
-          color: "#6366F1",
+          color: "#BAE6FD",
           avatarUrl:
             "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&h=150&fit=crop&crop=face",
         },
@@ -355,7 +351,7 @@ export function MeetingRecorderModal({
           name: "Sarah Chen",
           role: "Staff Backend Engineer",
           company: "Fathom Engineering",
-          color: "#3B82F6",
+          color: "#FEF08A",
           avatarUrl:
             "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&h=150&fit=crop&crop=face",
         },
@@ -364,7 +360,7 @@ export function MeetingRecorderModal({
           name: "Alex Rivera",
           role: "Principal Infrastructure Architect",
           company: "Fathom Engineering",
-          color: "#10B981",
+          color: "#A7F3D0",
           avatarUrl:
             "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face",
         },
@@ -375,7 +371,7 @@ export function MeetingRecorderModal({
         {
           id: `hl-${newMeetingId}-1`,
           meetingId: newMeetingId,
-          title: "Discussion Kickoff & Key Outcomes",
+          title: "Discussion Kickoff & Architecture Decision",
           start: 0,
           end: Math.min(25, Math.max(15, elapsedSeconds)),
           category: "key_moment",
@@ -383,16 +379,14 @@ export function MeetingRecorderModal({
         },
       ];
 
-      // Total Duration
       const totalDuration = Math.max(
         elapsedSeconds,
         finalSegments[finalSegments.length - 1]?.end || 60
       );
 
-      // Construct Complete Meeting Object
       const newMeeting: Meeting = {
         id: newMeetingId,
-        title: meetingTitle.trim() || "Recorded Meeting Studio Session",
+        title: meetingTitle.trim() || "Recorded Meeting Session",
         date: new Date().toISOString(),
         duration: totalDuration,
         videoUrl:
@@ -405,7 +399,6 @@ export function MeetingRecorderModal({
         tags: ["Live Recording", "AI Generated", "Studio"],
       };
 
-      // Add to store & navigate directly
       useMeetingStore.getState().addMeeting(newMeeting);
       useMeetingStore.getState().setCurrentMeeting(newMeeting.id);
 
@@ -420,129 +413,137 @@ export function MeetingRecorderModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl bg-slate-950 border-slate-800 text-slate-100 p-0 overflow-hidden shadow-2xl">
-        {/* Header Bar with Bot Badge */}
-        <div className="flex items-center justify-between border-b border-slate-800/80 bg-slate-900/60 px-6 py-4">
+      <DialogContent className="max-w-2xl border-2 border-black bg-[#FAF8F5] p-0 text-black shadow-[6px_6px_0px_0px_#000] overflow-hidden">
+        {/* Retro Production Console Header */}
+        <div className="flex items-center justify-between border-b-2 border-black bg-white px-6 py-4">
           <div className="flex items-center gap-3">
-            <div className="relative flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-rose-500 via-purple-600 to-indigo-600 shadow-md shadow-rose-500/20">
-              <Radio className="h-5 w-5 text-white" />
+            <div className="relative flex h-10 w-10 items-center justify-center rounded-md border-2 border-black bg-[#FEF08A] shadow-neo-sm">
+              <Radio className="h-5 w-5 stroke-[2.5] text-black" />
               {isListening && !isPaused && (
-                <span className="absolute -top-0.5 -right-0.5 flex h-2.5 w-2.5">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75" />
-                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-rose-500" />
+                <span className="absolute -top-1 -right-1 flex h-3 w-3">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75" />
+                  <span className="relative inline-flex rounded-full h-3 w-3 bg-red-600 border border-black" />
                 </span>
               )}
             </div>
 
             <div>
-              <DialogTitle className="text-base font-bold text-white tracking-tight flex items-center gap-2">
-                <span>In-Browser Live Recording Studio</span>
+              <DialogTitle className="font-mono text-base font-black uppercase text-black tracking-tight flex items-center gap-2">
+                <span>LIVE RECORDING STUDIO // WORKSTATION</span>
               </DialogTitle>
-              <DialogDescription className="text-xs text-slate-400 mt-0.5">
-                Real-time speech-to-text diarization & AI meeting synthesis
+              <DialogDescription className="font-mono text-[11px] font-bold uppercase text-neutral-600">
+                REAL-TIME DIARIZATION & AI SYNTHESIS
               </DialogDescription>
             </div>
           </div>
 
-          {/* Fathom Bot Status Badge */}
+          {/* Bot Status Pill */}
           <div className="flex items-center gap-2">
-            <Badge
-              variant="outline"
+            <span
               className={cn(
-                "gap-1.5 px-2.5 py-1 text-xs font-semibold transition-all border",
+                "rounded-md border-2 border-black px-2.5 py-1 font-mono text-xs font-black uppercase shadow-neo-sm transition-all",
                 isListening && !isPaused
-                  ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-400"
+                  ? isSimulating
+                    ? "bg-[#DDD6FE] text-black animate-pulse"
+                    : "bg-[#A7F3D0] text-black"
                   : isPaused
-                  ? "border-amber-500/40 bg-amber-500/10 text-amber-400"
-                  : "border-slate-800 bg-slate-900 text-slate-400"
+                  ? "bg-[#FEF08A] text-black"
+                  : "bg-white text-black"
               )}
             >
-              <Bot className="h-3.5 w-3.5" />
-              <span>
-                {isListening && !isPaused
-                  ? isSimulating
-                    ? "Bot Simulating Call"
-                    : "Bot Listening & Diarizing"
-                  : isPaused
-                  ? "Bot Paused"
-                  : "Bot Ready"}
-              </span>
-            </Badge>
+              {isListening && !isPaused
+                ? isSimulating
+                  ? "SIMULATING CALL"
+                  : "RECORDING"
+                : isPaused
+                ? "PAUSED"
+                : "LISTENING / STANDBY"}
+            </span>
           </div>
         </div>
 
         {/* Modal Body */}
-        <div className="p-6 space-y-5">
-          {/* Meeting Title Input & Mode Toggles */}
+        <div className="p-6 space-y-4">
+          {/* Title Input & Mode Switchers */}
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
             <div className="flex-1">
-              <Input
+              <input
+                type="text"
                 value={meetingTitle}
                 onChange={(e) => setMeetingTitle(e.target.value)}
                 placeholder="Enter meeting title..."
-                className="h-10 border-slate-800 bg-slate-900/80 text-sm font-semibold text-white focus:border-indigo-500"
+                className="h-10 w-full rounded-md border-2 border-black bg-white px-3 font-mono text-xs font-bold text-black shadow-neo-sm focus:bg-[#FEF08A]/20 focus:outline-none"
               />
             </div>
 
-            {/* Microphone vs Simulation Selector */}
-            <div className="flex items-center rounded-xl border border-slate-800 bg-slate-900/60 p-1">
+            {/* Microphone vs Simulate Call Toggle */}
+            <div className="flex items-center gap-1.5 shrink-0">
               <button
                 type="button"
                 onClick={() => handleSwitchMode("mic")}
                 className={cn(
-                  "flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-xs font-medium transition-all",
+                  "h-9 flex items-center gap-1.5 rounded-md border-2 border-black px-3 font-mono text-xs font-black uppercase transition-all shadow-neo-sm hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 active:shadow-none",
                   recordMode === "mic"
-                    ? "bg-indigo-600 text-white shadow-sm"
-                    : "text-slate-400 hover:text-slate-200"
+                    ? "bg-black text-white"
+                    : "bg-white text-black hover:bg-[#FEF08A]"
                 )}
               >
-                <Mic className="h-3.5 w-3.5" />
-                <span>Microphone</span>
+                <Mic className="h-3.5 w-3.5 stroke-[2.5]" />
+                <span>MIC</span>
               </button>
 
               <button
                 type="button"
                 onClick={() => handleSwitchMode("simulate")}
                 className={cn(
-                  "flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-xs font-medium transition-all",
+                  "h-9 flex items-center gap-1.5 rounded-md border-2 border-black px-3 font-mono text-xs font-black uppercase transition-all shadow-neo-sm hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 active:shadow-none",
                   recordMode === "simulate"
-                    ? "bg-purple-600 text-white shadow-sm"
-                    : "text-slate-400 hover:text-slate-200"
+                    ? "bg-black text-white"
+                    : "bg-white text-black hover:bg-[#FEF08A]"
                 )}
               >
-                <Sparkles className="h-3.5 w-3.5 text-purple-200" />
-                <span>Simulate Call</span>
+                <Sparkles className="h-3.5 w-3.5 stroke-[2.5]" />
+                <span>SIMULATOR</span>
+              </button>
+
+              {/* Explicit simulate sample audio button */}
+              <button
+                type="button"
+                onClick={handleSimulateSampleAudio}
+                className="h-9 flex items-center gap-1.5 rounded-md border-2 border-black bg-[#FEF08A] px-3 font-mono text-xs font-black uppercase text-black shadow-neo-sm hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all"
+                title="Inject sample audio dialogue for quick testing"
+              >
+                <span>SAMPLE AUDIO</span>
               </button>
             </div>
           </div>
 
           {/* Browser Mic Notice if unsupported or errored */}
           {error && (
-            <div className="flex items-center justify-between gap-3 rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-2.5 text-xs text-amber-300">
+            <div className="flex items-center justify-between gap-3 rounded-lg border-2 border-black bg-[#FECDD3] px-4 py-2.5 font-mono text-xs text-black shadow-neo-sm">
               <div className="flex items-center gap-2">
-                <AlertCircle className="h-4 w-4 shrink-0 text-amber-400" />
+                <AlertCircle className="h-4 w-4 shrink-0 stroke-[2.5]" />
                 <span>{error}</span>
               </div>
-              <Button
-                variant="secondary"
-                size="sm"
+              <button
+                type="button"
                 onClick={() => handleSwitchMode("simulate")}
-                className="h-7 text-xs bg-amber-500/20 hover:bg-amber-500/30 text-amber-200"
+                className="rounded border border-black bg-white px-2 py-1 font-mono text-[10px] font-black uppercase shadow-neo-sm hover:bg-[#FEF08A]"
               >
-                Switch to Simulator
-              </Button>
+                USE SIMULATOR
+              </button>
             </div>
           )}
 
-          {/* Timer & Audio Waveform Banner */}
+          {/* Digital Timer & Audio Waveform Banner */}
           <div className="flex flex-col sm:flex-row items-center gap-4">
-            {/* Live Elapsed Timer */}
-            <div className="flex sm:flex-col items-center justify-center gap-2 rounded-2xl border border-slate-800/80 bg-slate-900/80 px-5 py-3 shrink-0 shadow-inner">
-              <div className="flex items-center gap-1.5 text-slate-400 text-xs">
-                <Clock className="h-3.5 w-3.5 text-indigo-400" />
-                <span>Duration</span>
+            {/* Live Digital Timer Display */}
+            <div className="flex sm:flex-col items-center justify-center gap-1 rounded-xl border-2 border-black bg-black px-5 py-3 shrink-0 shadow-neo-sm">
+              <div className="flex items-center gap-1 font-mono text-[10px] font-black uppercase text-neutral-400">
+                <Clock className="h-3 w-3 stroke-[2.5]" />
+                <span>REC TIME</span>
               </div>
-              <span className="font-mono text-2xl font-black tracking-wider text-white">
+              <span className="font-mono text-3xl font-black tracking-widest text-[#A7F3D0]">
                 {formatTimer(elapsedSeconds)}
               </span>
             </div>
@@ -560,35 +561,35 @@ export function MeetingRecorderModal({
           </div>
 
           {/* Streaming Live Transcript Box */}
-          <div className="rounded-2xl border border-slate-800 bg-slate-900/50 p-4">
-            <div className="flex items-center justify-between mb-2.5 pb-2 border-b border-slate-800/60 text-xs text-slate-400">
+          <div className="rounded-xl border-2 border-black bg-white p-4 shadow-neo-sm">
+            <div className="flex items-center justify-between mb-2.5 pb-2 border-b-2 border-black font-mono text-xs text-black">
               <div className="flex items-center gap-2">
-                <span className="font-semibold text-slate-200">
-                  Live Stream Transcript
+                <span className="font-black uppercase">
+                  STREAMING DIARIZATION LOG
                 </span>
                 {isListening && !isPaused && (
                   <span className="relative flex h-2 w-2">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75" />
-                    <span className="relative inline-flex rounded-full h-2 w-2 bg-indigo-500" />
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-black opacity-75" />
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-black" />
                   </span>
                 )}
               </div>
-              <span className="text-[11px] text-slate-500">
-                {segments.length} segments captured
+              <span className="font-bold text-neutral-600">
+                {segments.length} SEGMENTS CAPTURED
               </span>
             </div>
 
             <div
               ref={transcriptScrollRef}
-              className="h-48 overflow-y-auto space-y-3 pr-2 scrollbar-thin"
+              className="h-44 overflow-y-auto space-y-2.5 pr-2 font-mono text-xs"
             >
               {segments.length === 0 && !interimTranscript && (
-                <div className="flex flex-col items-center justify-center h-full text-center py-6 text-slate-500 text-xs">
-                  <Mic className="h-8 w-8 text-slate-700 mb-2" />
-                  <p>
+                <div className="flex flex-col items-center justify-center h-full text-center py-6 text-neutral-500">
+                  <Mic className="h-8 w-8 stroke-[1.5] text-neutral-400 mb-2" />
+                  <p className="font-bold uppercase text-[11px]">
                     {isListening
-                      ? "Listening for speech... Speak into your mic or start simulated dialogue."
-                      : "Ready to record. Click 'Start Recording' or 'Simulate Call' below."}
+                      ? "Listening for audio speech... Speak into mic or click 'SAMPLE AUDIO'."
+                      : "Workstation Standby. Click 'Start Recording' or 'Sample Audio' to initiate."}
                   </p>
                 </div>
               )}
@@ -597,32 +598,33 @@ export function MeetingRecorderModal({
               {segments.map((seg, idx) => (
                 <div
                   key={seg.id || idx}
-                  className="flex flex-col gap-1 rounded-xl bg-slate-950/60 p-2.5 border border-slate-800/60 text-xs"
+                  className="flex flex-col gap-1 rounded-md border-2 border-black bg-[#FAF8F5] p-2.5 shadow-neo-sm"
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <span className="h-2 w-2 rounded-full bg-indigo-400" />
-                      <span className="font-semibold text-slate-200">
+                      <span className="rounded border border-black bg-[#DDD6FE] px-1.5 py-0.2 font-mono text-[9px] font-black uppercase">
                         {seg.speakerId === "spk-user"
-                          ? "You"
-                          : seg.speakerId.replace("spk-sim-", "Speaker ")}
+                          ? "YOU"
+                          : seg.speakerId.replace("spk-sim-", "SPEAKER ")}
                       </span>
                     </div>
-                    <span className="font-mono text-[10px] text-slate-500">
+                    <span className="font-mono text-[10px] font-black text-neutral-600">
                       {formatTimer(seg.start)} - {formatTimer(seg.end)}
                     </span>
                   </div>
-                  <p className="text-slate-300 pl-4">{seg.text}</p>
+                  <p className="font-sans text-xs font-medium text-black pl-1 mt-0.5">
+                    {seg.text}
+                  </p>
                 </div>
               ))}
 
               {/* Streaming Interim Transcript */}
               {interimTranscript && (
-                <div className="rounded-xl bg-indigo-950/30 p-2.5 border border-indigo-500/30 text-xs">
-                  <span className="font-mono text-[10px] text-indigo-400 block mb-1">
-                    Live Diarizing...
+                <div className="rounded-md border-2 border-dashed border-black bg-[#FEF08A]/40 p-2.5 shadow-neo-sm">
+                  <span className="font-mono text-[9px] font-black uppercase text-neutral-600 block mb-0.5">
+                    LIVE STREAMING...
                   </span>
-                  <p className="italic text-indigo-200 animate-pulse">
+                  <p className="font-sans text-xs font-bold text-black italic animate-pulse">
                     {interimTranscript}
                   </p>
                 </div>
@@ -631,77 +633,72 @@ export function MeetingRecorderModal({
           </div>
         </div>
 
-        {/* Modal Footer Controls */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 border-t border-slate-800/80 bg-slate-900/60 px-6 py-4">
+        {/* Modal Footer Controls with Tactile Physics */}
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 border-t-2 border-black bg-white px-6 py-4">
           {/* Left: Recording Controls */}
           <div className="flex items-center gap-2 w-full sm:w-auto">
-            <Button
+            <button
               type="button"
-              variant={isListening ? "outline" : "default"}
-              size="sm"
               onClick={handleToggleRecord}
               disabled={isGenerating}
               className={cn(
-                "h-9 gap-2 text-xs font-semibold rounded-xl",
+                "h-10 flex items-center gap-2 rounded-md border-2 border-black px-4 font-mono text-xs font-black uppercase tracking-wider transition-all shadow-neo-sm hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 active:shadow-none disabled:opacity-50",
                 !isListening
-                  ? "bg-rose-600 hover:bg-rose-500 text-white shadow-md shadow-rose-600/20"
+                  ? "bg-[#FEF08A] text-black"
                   : isPaused
-                  ? "border-emerald-500 text-emerald-400 hover:bg-emerald-500/10"
-                  : "border-amber-500 text-amber-400 hover:bg-amber-500/10"
+                  ? "bg-[#A7F3D0] text-black"
+                  : "bg-black text-white"
               )}
             >
               {!isListening ? (
                 <>
-                  <Mic className="h-3.5 w-3.5" />
-                  <span>Start Recording</span>
+                  <Mic className="h-4 w-4 stroke-[2.5]" />
+                  <span>START RECORDING</span>
                 </>
               ) : isPaused ? (
                 <>
-                  <Play className="h-3.5 w-3.5" />
-                  <span>Resume</span>
+                  <Play className="h-4 w-4 fill-current stroke-[2]" />
+                  <span>RESUME</span>
                 </>
               ) : (
                 <>
-                  <Pause className="h-3.5 w-3.5" />
-                  <span>Pause</span>
+                  <Pause className="h-4 w-4 stroke-[2.5]" />
+                  <span>PAUSE</span>
                 </>
               )}
-            </Button>
+            </button>
 
-            <Button
+            <button
               type="button"
-              variant="ghost"
-              size="sm"
               onClick={resetRecording}
               disabled={isGenerating || (!isListening && segments.length === 0)}
-              className="h-9 gap-1.5 text-xs text-slate-400 hover:text-white"
+              className="h-10 flex items-center gap-1.5 rounded-md border-2 border-black bg-white px-3 font-mono text-xs font-black uppercase text-black shadow-neo-sm hover:bg-[#FECDD3] hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 active:shadow-none disabled:opacity-50 transition-all"
             >
-              <RotateCcw className="h-3.5 w-3.5" />
-              <span>Reset</span>
-            </Button>
+              <RotateCcw className="h-3.5 w-3.5 stroke-[2.5]" />
+              <span>RESET</span>
+            </button>
           </div>
 
           {/* Right: Primary AI Generation Button */}
           <div className="w-full sm:w-auto flex justify-end">
-            <Button
+            <button
               type="button"
-              size="sm"
               onClick={handleStopAndGenerate}
               disabled={isGenerating}
-              className="h-9 w-full sm:w-auto gap-2 rounded-xl bg-gradient-to-r from-indigo-500 via-primary to-purple-600 px-4 text-xs font-bold text-white shadow-lg shadow-indigo-600/25 transition-all hover:scale-102 hover:shadow-indigo-600/35 active:scale-98"
+              className="h-10 w-full sm:w-auto flex items-center justify-center gap-2 rounded-md border-2 border-black bg-[#A7F3D0] px-5 font-mono text-xs font-black uppercase tracking-wider text-black shadow-neo hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 active:shadow-none disabled:opacity-50 transition-all"
             >
               {isGenerating ? (
                 <>
-                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                  <span>{generationStep || "Generating AI Notes..."}</span>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <span>{generationStep || "GENERATING AI NOTES..."}</span>
                 </>
               ) : (
                 <>
-                  <Sparkles className="h-3.5 w-3.5" />
-                  <span>Stop & Generate AI Notes</span>
+                  <Sparkles className="h-4 w-4 stroke-[2.5]" />
+                  <span>STOP & GENERATE AI NOTES</span>
                 </>
               )}
-            </Button>
+            </button>
           </div>
         </div>
       </DialogContent>

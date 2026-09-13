@@ -9,9 +9,6 @@ import {
   DialogDescription,
   DialogFooter,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { useMeetingStore } from "@/lib/store/use-meeting-store";
 import { MeetingHighlight } from "@/types/meeting";
 import { formatTime } from "@/components/player/video-scrubber";
@@ -27,6 +24,7 @@ import {
   Minus,
   Film,
 } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 export type HighlightCategory = "key_moment" | "decision" | "action" | "risk";
 
@@ -47,42 +45,37 @@ interface CategoryOption {
   label: string;
   icon: React.ComponentType<{ className?: string }>;
   color: string;
-  badgeClass: string;
-  selectedClass: string;
+  activeBg: string;
 }
 
 const CATEGORIES: CategoryOption[] = [
   {
     id: "key_moment",
-    label: "Key Moment",
+    label: "KEY MOMENT",
     icon: Sparkles,
-    color: "#F59E0B",
-    badgeClass: "border-amber-500/30 text-amber-300 bg-amber-500/10 hover:bg-amber-500/20",
-    selectedClass: "border-amber-400 bg-amber-500/25 text-amber-200 ring-2 ring-amber-400/50 shadow-sm",
+    color: "#FEF08A",
+    activeBg: "bg-[#FEF08A]",
   },
   {
     id: "decision",
-    label: "Decision",
+    label: "DECISION",
     icon: CheckCircle2,
-    color: "#10B981",
-    badgeClass: "border-emerald-500/30 text-emerald-300 bg-emerald-500/10 hover:bg-emerald-500/20",
-    selectedClass: "border-emerald-400 bg-emerald-500/25 text-emerald-200 ring-2 ring-emerald-400/50 shadow-sm",
+    color: "#A7F3D0",
+    activeBg: "bg-[#A7F3D0]",
   },
   {
     id: "action",
-    label: "Action Item",
+    label: "ACTION ITEM",
     icon: Zap,
-    color: "#818CF8",
-    badgeClass: "border-indigo-500/30 text-indigo-300 bg-indigo-500/10 hover:bg-indigo-500/20",
-    selectedClass: "border-indigo-400 bg-indigo-500/25 text-indigo-200 ring-2 ring-indigo-400/50 shadow-sm",
+    color: "#DDD6FE",
+    activeBg: "bg-[#DDD6FE]",
   },
   {
     id: "risk",
-    label: "Risk / Blocker",
+    label: "RISK / BLOCKER",
     icon: AlertTriangle,
-    color: "#F43F5E",
-    badgeClass: "border-rose-500/30 text-rose-300 bg-rose-500/10 hover:bg-rose-500/20",
-    selectedClass: "border-rose-400 bg-rose-500/25 text-rose-200 ring-2 ring-rose-400/50 shadow-sm",
+    color: "#FECDD3",
+    activeBg: "bg-[#FECDD3]",
   },
 ];
 
@@ -176,7 +169,7 @@ export function HighlightModal({
       start: startTime,
       end: endTime,
       category,
-      color: catObj?.color || "#F59E0B",
+      color: catObj?.color || "#FEF08A",
       createdAt: new Date().toISOString(),
     };
 
@@ -195,35 +188,38 @@ export function HighlightModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md border-slate-800 bg-slate-950 p-6 text-slate-100 shadow-2xl sm:rounded-xl">
-        <DialogHeader className="space-y-1.5 text-left">
-          <div className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-500/10 border border-indigo-500/20 text-indigo-400">
-              <Bookmark className="h-4 w-4" />
+      <DialogContent className="max-w-md border-2 border-black bg-[#FAF8F5] p-6 text-black shadow-[6px_6px_0px_0px_#000] sm:rounded-xl">
+        <DialogHeader className="space-y-1.5 text-left border-b-2 border-black pb-4">
+          <div className="flex items-center gap-2.5">
+            <div className="flex h-9 w-9 items-center justify-center rounded-md border-2 border-black bg-[#FEF08A] shadow-neo-sm">
+              <Bookmark className="h-5 w-5 stroke-[2.5] text-black" />
             </div>
             <div>
-              <DialogTitle className="text-base font-semibold text-white">
-                Create Highlight & Clip
+              <DialogTitle className="font-mono text-base font-black uppercase text-black">
+                CREATE HIGHLIGHT & CLIP
               </DialogTitle>
-              <DialogDescription className="text-xs text-slate-400">
-                Capture an important moment to bookmark or share publicly.
+              <DialogDescription className="font-mono text-[11px] font-bold uppercase text-neutral-600">
+                BOOKMARK & EXTRACT BOUNDED CALL CLIP
               </DialogDescription>
             </div>
           </div>
         </DialogHeader>
 
-        <div className="space-y-4 py-2 text-xs">
+        <div className="space-y-4 py-2">
           {/* Title input */}
           <div className="space-y-1.5">
-            <label className="text-xs font-medium text-slate-300">Highlight Title</label>
-            <Input
+            <label className="font-mono text-xs font-black uppercase text-black">
+              HIGHLIGHT TITLE
+            </label>
+            <input
+              type="text"
               value={title}
               onChange={(e) => {
                 setTitle(e.target.value);
                 if (error) setError(null);
               }}
               placeholder="e.g. Consensus on microservice split"
-              className="border-slate-800 bg-slate-900/80 text-sm text-slate-100 placeholder:text-slate-500 focus-visible:ring-indigo-500"
+              className="h-10 w-full rounded-md border-2 border-black bg-white px-3 font-mono text-xs font-bold text-black shadow-neo-sm focus:bg-[#FEF08A]/20 focus:outline-none"
               maxLength={120}
               autoFocus
             />
@@ -231,9 +227,11 @@ export function HighlightModal({
 
           {/* Category Pill Selector */}
           <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <label className="text-xs font-medium text-slate-300">Category</label>
-              <span className="text-[11px] text-slate-500">Color coded on timeline</span>
+            <div className="flex items-center justify-between font-mono text-xs">
+              <label className="font-black uppercase text-black">CATEGORY</label>
+              <span className="font-bold uppercase text-neutral-500 text-[10px]">
+                COLOR-CODED TIMELINE
+              </span>
             </div>
             <div className="grid grid-cols-2 gap-2">
               {CATEGORIES.map((cat) => {
@@ -244,14 +242,15 @@ export function HighlightModal({
                     key={cat.id}
                     type="button"
                     onClick={() => setCategory(cat.id)}
-                    className={`flex items-center gap-2 rounded-lg border px-2.5 py-2 text-left transition-all ${
+                    className={cn(
+                      "flex items-center gap-2 rounded-md border-2 border-black px-3 py-2 font-mono text-xs font-black uppercase transition-all shadow-neo-sm hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 active:shadow-none",
                       isSelected
-                        ? cat.selectedClass
-                        : "border-slate-800 bg-slate-900/40 text-slate-400 hover:border-slate-700 hover:text-slate-200"
-                    }`}
+                        ? `${cat.activeBg} text-black ring-2 ring-black`
+                        : "bg-white text-black hover:bg-[#FAF8F5]"
+                    )}
                   >
-                    <Icon className="h-3.5 w-3.5 shrink-0" />
-                    <span className="text-xs font-medium">{cat.label}</span>
+                    <Icon className="h-4 w-4 stroke-[2.5] shrink-0" />
+                    <span>{cat.label}</span>
                   </button>
                 );
               })}
@@ -259,49 +258,42 @@ export function HighlightModal({
           </div>
 
           {/* Time boundaries */}
-          <div className="rounded-lg border border-slate-800 bg-slate-900/50 p-3 space-y-3">
-            <div className="flex items-center justify-between border-b border-slate-800/80 pb-2">
-              <div className="flex items-center gap-1.5 text-slate-300">
-                <Clock className="h-3.5 w-3.5 text-indigo-400" />
-                <span className="font-medium">Clip Interval</span>
+          <div className="rounded-xl border-2 border-black bg-white p-4 shadow-neo-sm space-y-3">
+            <div className="flex items-center justify-between border-b-2 border-black pb-2">
+              <div className="flex items-center gap-1.5 font-mono text-xs font-black uppercase text-black">
+                <Clock className="h-4 w-4 stroke-[2.5]" />
+                <span>CLIP INTERVAL</span>
               </div>
-              <Badge
-                variant="outline"
-                className="border-indigo-500/30 bg-indigo-500/10 text-indigo-300 text-[11px] font-mono px-2 py-0.5"
-              >
-                Duration: {formatTime(duration)} ({duration}s)
-              </Badge>
+              <span className="rounded border-2 border-black bg-[#FEF08A] px-2 py-0.5 font-mono text-xs font-black text-black shadow-neo-sm">
+                DURATION: {formatTime(duration)} ({duration}S)
+              </span>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-3">
               {/* Start Time Adjuster */}
               <div className="space-y-1">
-                <div className="flex items-center justify-between text-[11px] text-slate-400">
-                  <span>Start Time</span>
-                  <span className="font-mono text-slate-200 font-semibold">{formatTime(startTime)}</span>
+                <div className="flex items-center justify-between font-mono text-[11px] font-bold text-neutral-600 uppercase">
+                  <span>START TIME</span>
+                  <span className="font-black text-black">{formatTime(startTime)}</span>
                 </div>
                 <div className="flex items-center gap-1">
-                  <Button
+                  <button
                     type="button"
-                    variant="outline"
-                    size="sm"
                     onClick={() => adjustStartTime(-5)}
-                    className="h-7 w-7 p-0 border-slate-800 bg-slate-900 text-slate-300 hover:bg-slate-800 hover:text-white"
-                    title="-5 seconds"
+                    className="h-8 w-8 rounded border-2 border-black bg-[#FAF8F5] font-mono text-xs font-black text-black shadow-neo-sm hover:bg-[#FEF08A] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all"
+                    title="-5s"
                   >
                     -5
-                  </Button>
-                  <Button
+                  </button>
+                  <button
                     type="button"
-                    variant="outline"
-                    size="sm"
                     onClick={() => adjustStartTime(-1)}
-                    className="h-7 w-7 p-0 border-slate-800 bg-slate-900 text-slate-300 hover:bg-slate-800 hover:text-white"
-                    title="-1 second"
+                    className="h-8 w-8 flex items-center justify-center rounded border-2 border-black bg-[#FAF8F5] font-mono text-black shadow-neo-sm hover:bg-[#FEF08A] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all"
+                    title="-1s"
                   >
-                    <Minus className="h-3 w-3" />
-                  </Button>
-                  <Input
+                    <Minus className="h-3.5 w-3.5 stroke-[3]" />
+                  </button>
+                  <input
                     type="number"
                     min={0}
                     max={endTime - 1}
@@ -312,59 +304,51 @@ export function HighlightModal({
                         setStartTime(Math.max(0, Math.min(endTime - 1, val)));
                       }
                     }}
-                    className="h-7 text-center font-mono text-xs border-slate-800 bg-slate-950 px-1 text-slate-100"
+                    className="h-8 w-full rounded border-2 border-black bg-white text-center font-mono text-xs font-black text-black shadow-neo-sm focus:outline-none"
                   />
-                  <Button
+                  <button
                     type="button"
-                    variant="outline"
-                    size="sm"
                     onClick={() => adjustStartTime(1)}
-                    className="h-7 w-7 p-0 border-slate-800 bg-slate-900 text-slate-300 hover:bg-slate-800 hover:text-white"
-                    title="+1 second"
+                    className="h-8 w-8 flex items-center justify-center rounded border-2 border-black bg-[#FAF8F5] font-mono text-black shadow-neo-sm hover:bg-[#FEF08A] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all"
+                    title="+1s"
                   >
-                    <Plus className="h-3 w-3" />
-                  </Button>
-                  <Button
+                    <Plus className="h-3.5 w-3.5 stroke-[3]" />
+                  </button>
+                  <button
                     type="button"
-                    variant="outline"
-                    size="sm"
                     onClick={() => adjustStartTime(5)}
-                    className="h-7 w-7 p-0 border-slate-800 bg-slate-900 text-slate-300 hover:bg-slate-800 hover:text-white"
-                    title="+5 seconds"
+                    className="h-8 w-8 rounded border-2 border-black bg-[#FAF8F5] font-mono text-xs font-black text-black shadow-neo-sm hover:bg-[#FEF08A] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all"
+                    title="+5s"
                   >
                     +5
-                  </Button>
+                  </button>
                 </div>
               </div>
 
               {/* End Time Adjuster */}
               <div className="space-y-1">
-                <div className="flex items-center justify-between text-[11px] text-slate-400">
-                  <span>End Time</span>
-                  <span className="font-mono text-slate-200 font-semibold">{formatTime(endTime)}</span>
+                <div className="flex items-center justify-between font-mono text-[11px] font-bold text-neutral-600 uppercase">
+                  <span>END TIME</span>
+                  <span className="font-black text-black">{formatTime(endTime)}</span>
                 </div>
                 <div className="flex items-center gap-1">
-                  <Button
+                  <button
                     type="button"
-                    variant="outline"
-                    size="sm"
                     onClick={() => adjustEndTime(-5)}
-                    className="h-7 w-7 p-0 border-slate-800 bg-slate-900 text-slate-300 hover:bg-slate-800 hover:text-white"
-                    title="-5 seconds"
+                    className="h-8 w-8 rounded border-2 border-black bg-[#FAF8F5] font-mono text-xs font-black text-black shadow-neo-sm hover:bg-[#FEF08A] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all"
+                    title="-5s"
                   >
                     -5
-                  </Button>
-                  <Button
+                  </button>
+                  <button
                     type="button"
-                    variant="outline"
-                    size="sm"
                     onClick={() => adjustEndTime(-1)}
-                    className="h-7 w-7 p-0 border-slate-800 bg-slate-900 text-slate-300 hover:bg-slate-800 hover:text-white"
-                    title="-1 second"
+                    className="h-8 w-8 flex items-center justify-center rounded border-2 border-black bg-[#FAF8F5] font-mono text-black shadow-neo-sm hover:bg-[#FEF08A] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all"
+                    title="-1s"
                   >
-                    <Minus className="h-3 w-3" />
-                  </Button>
-                  <Input
+                    <Minus className="h-3.5 w-3.5 stroke-[3]" />
+                  </button>
+                  <input
                     type="number"
                     min={startTime + 1}
                     max={maxDuration}
@@ -375,73 +359,64 @@ export function HighlightModal({
                         setEndTime(Math.max(startTime + 1, Math.min(maxDuration, val)));
                       }
                     }}
-                    className="h-7 text-center font-mono text-xs border-slate-800 bg-slate-950 px-1 text-slate-100"
+                    className="h-8 w-full rounded border-2 border-black bg-white text-center font-mono text-xs font-black text-black shadow-neo-sm focus:outline-none"
                   />
-                  <Button
+                  <button
                     type="button"
-                    variant="outline"
-                    size="sm"
                     onClick={() => adjustEndTime(1)}
-                    className="h-7 w-7 p-0 border-slate-800 bg-slate-900 text-slate-300 hover:bg-slate-800 hover:text-white"
-                    title="+1 second"
+                    className="h-8 w-8 flex items-center justify-center rounded border-2 border-black bg-[#FAF8F5] font-mono text-black shadow-neo-sm hover:bg-[#FEF08A] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all"
+                    title="+1s"
                   >
-                    <Plus className="h-3 w-3" />
-                  </Button>
-                  <Button
+                    <Plus className="h-3.5 w-3.5 stroke-[3]" />
+                  </button>
+                  <button
                     type="button"
-                    variant="outline"
-                    size="sm"
                     onClick={() => adjustEndTime(5)}
-                    className="h-7 w-7 p-0 border-slate-800 bg-slate-900 text-slate-300 hover:bg-slate-800 hover:text-white"
-                    title="+5 seconds"
+                    className="h-8 w-8 rounded border-2 border-black bg-[#FAF8F5] font-mono text-xs font-black text-black shadow-neo-sm hover:bg-[#FEF08A] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all"
+                    title="+5s"
                   >
                     +5
-                  </Button>
+                  </button>
                 </div>
               </div>
             </div>
           </div>
 
           {error && (
-            <div className="rounded-md border border-rose-500/40 bg-rose-500/10 px-3 py-2 text-[11px] text-rose-300">
+            <div className="rounded-md border-2 border-black bg-[#FECDD3] px-3 py-2 font-mono text-xs font-bold text-black shadow-neo-sm">
               {error}
             </div>
           )}
         </div>
 
-        <DialogFooter className="flex flex-col-reverse sm:flex-row sm:justify-between sm:space-x-2 gap-2 pt-2 border-t border-slate-800/80">
-          <Button
+        <DialogFooter className="flex flex-col-reverse sm:flex-row sm:justify-between sm:space-x-2 gap-2 pt-3 border-t-2 border-black">
+          <button
             type="button"
-            variant="ghost"
-            size="sm"
             onClick={() => onOpenChange(false)}
-            className="text-slate-400 hover:bg-slate-800 hover:text-slate-200"
+            className="h-9 rounded-md border-2 border-black bg-white px-3 font-mono text-xs font-black uppercase text-black shadow-neo-sm hover:bg-neutral-100 active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all"
           >
-            Cancel
-          </Button>
+            CANCEL
+          </button>
 
           <div className="flex items-center gap-2">
             {onOpenShareModal && (
-              <Button
+              <button
                 type="button"
-                variant="outline"
-                size="sm"
                 onClick={() => handleSave(true)}
-                className="gap-1.5 border-slate-700 bg-slate-800/60 text-slate-200 hover:bg-slate-800 hover:text-white"
+                className="h-9 flex items-center gap-1.5 rounded-md border-2 border-black bg-white px-3.5 font-mono text-xs font-black uppercase text-black shadow-neo-sm hover:bg-[#DDD6FE] hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all"
               >
-                <Share2 className="h-3.5 w-3.5 text-indigo-400" />
-                Save & Share
-              </Button>
+                <Share2 className="h-3.5 w-3.5 stroke-[2.5]" />
+                <span>SAVE & SHARE</span>
+              </button>
             )}
-            <Button
+            <button
               type="button"
-              size="sm"
               onClick={() => handleSave(false)}
-              className="gap-1.5 bg-indigo-600 font-medium text-white hover:bg-indigo-500 shadow-md shadow-indigo-600/30"
+              className="h-9 flex items-center gap-1.5 rounded-md border-2 border-black bg-[#FEF08A] px-4 font-mono text-xs font-black uppercase tracking-wider text-black shadow-neo hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all"
             >
-              <Film className="h-3.5 w-3.5" />
-              Save Highlight
-            </Button>
+              <Film className="h-3.5 w-3.5 stroke-[2.5]" />
+              <span>SAVE HIGHLIGHT</span>
+            </button>
           </div>
         </DialogFooter>
       </DialogContent>
