@@ -1,0 +1,25 @@
+{
+  "agent-capture": {
+    "PreInvocation": [
+      {
+        "type": "command",
+        "command": "/usr/bin/python3 /home/waleed/Desktop/fathom-clone/.agents/capture.py",
+        "timeout": 30
+      }
+    ],
+    "PostInvocation": [
+      {
+        "type": "command",
+        "command": "/usr/bin/python3 /home/waleed/Desktop/fathom-clone/.agents/capture.py",
+        "timeout": 30
+      }
+    ],
+    "Stop": [
+      {
+        "type": "command",
+        "command": "/usr/bin/python3 /home/waleed/Desktop/fathom-clone/.agents/capture.py",
+        "timeout": 30
+      }
+    ]
+  }
+}
