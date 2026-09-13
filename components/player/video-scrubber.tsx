@@ -1,7 +1,6 @@
 "use client";
 
-import React, { useState, useRef, useMemo } from "react";
-import { Slider } from "@/components/ui/slider";
+import React, { useState, useRef, useMemo, useCallback } from "react";
 import {
   Tooltip,
   TooltipContent,
@@ -44,31 +43,31 @@ const CATEGORY_COLORS: Record<
   { border: string; bg: string; text: string; badge: string; label: string }
 > = {
   key_moment: {
-    border: "border-amber-400",
-    bg: "bg-amber-400",
-    text: "text-amber-300",
-    badge: "bg-amber-500/20 text-amber-300 border-amber-500/30",
+    border: "border-black",
+    bg: "bg-[#FEF08A]",
+    text: "text-black",
+    badge: "bg-[#FEF08A] text-black border-black",
     label: "Key Moment",
   },
   decision: {
-    border: "border-emerald-400",
-    bg: "bg-emerald-400",
-    text: "text-emerald-300",
-    badge: "bg-emerald-500/20 text-emerald-300 border-emerald-500/30",
+    border: "border-black",
+    bg: "bg-[#A7F3D0]",
+    text: "text-black",
+    badge: "bg-[#A7F3D0] text-black border-black",
     label: "Decision",
   },
   action: {
-    border: "border-indigo-400",
-    bg: "bg-indigo-400",
-    text: "text-indigo-300",
-    badge: "bg-indigo-500/20 text-indigo-300 border-indigo-500/30",
+    border: "border-black",
+    bg: "bg-[#DDD6FE]",
+    text: "text-black",
+    badge: "bg-[#DDD6FE] text-black border-black",
     label: "Action Item",
   },
   risk: {
-    border: "border-rose-400",
-    bg: "bg-rose-400",
-    text: "text-rose-300",
-    badge: "bg-rose-500/20 text-rose-300 border-rose-500/30",
+    border: "border-black",
+    bg: "bg-[#FECDD3]",
+    text: "text-black",
+    badge: "bg-[#FECDD3] text-black border-black",
     label: "Risk / Blocker",
   },
 };
@@ -85,7 +84,8 @@ export function VideoScrubber({
   const currentMeeting = useMeetingStore((s) => s.currentMeeting);
   const storeSeekTo = useMeetingStore((s) => s.seekTo);
 
-  const currentTime = propCurrentTime !== undefined ? propCurrentTime : storeCurrentTime;
+  const currentTime =
+    propCurrentTime !== undefined ? propCurrentTime : storeCurrentTime;
   const duration =
     propDuration !== undefined
       ? propDuration
@@ -100,13 +100,51 @@ export function VideoScrubber({
     x: number;
     time: number;
   } | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
   const trackRef = useRef<HTMLDivElement>(null);
 
   // Group highlights or speaker segments for visualization
   const speakerSegments = useMemo(() => {
     if (!showSpeakerSegments || !currentMeeting?.transcript) return [];
-    return currentMeeting.transcript.slice(0, 120); // Keep reasonable sample for track ticks
+    return currentMeeting.transcript.slice(0, 120);
   }, [showSpeakerSegments, currentMeeting]);
+
+  const getTimeFromEvent = useCallback(
+    (clientX: number) => {
+      if (!trackRef.current || duration <= 0) return 0;
+      const rect = trackRef.current.getBoundingClientRect();
+      const x = Math.max(0, Math.min(clientX - rect.left, rect.width));
+      const percentage = x / rect.width;
+      return percentage * duration;
+    },
+    [duration]
+  );
+
+  const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setIsDragging(true);
+    const newTime = getTimeFromEvent(e.clientX);
+    handleSeek(newTime);
+
+    const onPointerMove = (moveEvent: PointerEvent) => {
+      const movedTime = getTimeFromEvent(moveEvent.clientX);
+      handleSeek(movedTime);
+      if (trackRef.current) {
+        const rect = trackRef.current.getBoundingClientRect();
+        const x = Math.max(0, Math.min(moveEvent.clientX - rect.left, rect.width));
+        setHoverPosition({ x, time: movedTime });
+      }
+    };
+
+    const onPointerUp = () => {
+      setIsDragging(false);
+      window.removeEventListener("pointermove", onPointerMove);
+      window.removeEventListener("pointerup", onPointerUp);
+    };
+
+    window.addEventListener("pointermove", onPointerMove);
+    window.addEventListener("pointerup", onPointerUp);
+  };
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!trackRef.current || duration <= 0) return;
@@ -118,8 +156,12 @@ export function VideoScrubber({
   };
 
   const handleMouseLeave = () => {
-    setHoverPosition(null);
+    if (!isDragging) {
+      setHoverPosition(null);
+    }
   };
+
+  const progressPercent = duration > 0 ? Math.min(100, Math.max(0, (currentTime / duration) * 100)) : 0;
 
   return (
     <TooltipProvider delayDuration={150}>
@@ -127,50 +169,60 @@ export function VideoScrubber({
         {/* Scrubber track container */}
         <div
           ref={trackRef}
+          onPointerDown={handlePointerDown}
           onMouseMove={handleMouseMove}
           onMouseLeave={handleMouseLeave}
-          className="group relative flex h-6 w-full items-center cursor-pointer"
+          className="group relative flex h-7 w-full items-center cursor-pointer touch-none"
         >
-          {/* Hover Time Tooltip Tag */}
+          {/* Hover Time Tooltip */}
           {hoverPosition && (
             <div
-              className="pointer-events-none absolute -top-8 z-30 -translate-x-1/2 rounded bg-slate-900/95 border border-slate-700 px-2 py-0.5 text-[11px] font-mono font-medium text-slate-200 shadow-md backdrop-blur-sm"
+              className="pointer-events-none absolute -top-8 z-40 -translate-x-1/2 rounded border-2 border-black bg-black px-2 py-0.5 font-mono text-[11px] font-black text-white shadow-neo-sm"
               style={{ left: `${hoverPosition.x}px` }}
             >
               {formatTime(hoverPosition.time)}
             </div>
           )}
 
-          {/* Underlay: Speaker colored segments tick bar */}
-          {showSpeakerSegments && speakerSegments.length > 0 && duration > 0 && (
-            <div className="pointer-events-none absolute inset-x-0 h-1.5 rounded-full overflow-hidden opacity-35">
-              {speakerSegments.map((segment) => {
-                const left = (segment.start / duration) * 100;
-                const width = Math.max(0.3, ((segment.end - segment.start) / duration) * 100);
-                const speaker = currentMeeting?.participants.find(
-                  (p) => p.id === segment.speakerId
-                );
-                return (
-                  <div
-                    key={segment.id}
-                    className="absolute top-0 bottom-0"
-                    style={{
-                      left: `${left}%`,
-                      width: `${width}%`,
-                      backgroundColor: speaker?.color || "#6366F1",
-                    }}
-                  />
-                );
-              })}
-            </div>
-          )}
+          {/* Solid black border track (border-2 border-black bg-zinc-200) */}
+          <div className="relative h-3.5 w-full rounded-md border-2 border-black bg-zinc-200 overflow-hidden shadow-neo-sm">
+            {/* Underlay: Speaker colored segments tick bar */}
+            {showSpeakerSegments && speakerSegments.length > 0 && duration > 0 && (
+              <div className="pointer-events-none absolute inset-0 flex opacity-40">
+                {speakerSegments.map((segment) => {
+                  const left = (segment.start / duration) * 100;
+                  const width = Math.max(0.3, ((segment.end - segment.start) / duration) * 100);
+                  const speaker = currentMeeting?.participants.find(
+                    (p) => p.id === segment.speakerId
+                  );
+                  return (
+                    <div
+                      key={segment.id}
+                      className="absolute top-0 bottom-0 border-r border-black/20"
+                      style={{
+                        left: `${left}%`,
+                        width: `${width}%`,
+                        backgroundColor: speaker?.color || "#DDD6FE",
+                      }}
+                    />
+                  );
+                })}
+              </div>
+            )}
+
+            {/* Vibrant electric yellow progress bar (bg-[#FEF08A]) */}
+            <div
+              className="h-full bg-[#FEF08A] border-r-2 border-black transition-[width] duration-75"
+              style={{ width: `${progressPercent}%` }}
+            />
+          </div>
 
           {/* Highlight Markers along the scrubber track */}
           {duration > 0 &&
             highlights.map((hl) => {
               const leftPercent = Math.min(100, Math.max(0, (hl.start / duration) * 100));
               const widthPercent = Math.max(
-                0.8,
+                1,
                 Math.min(100 - leftPercent, ((hl.end - hl.start) / duration) * 100)
               );
               const styleConfig =
@@ -186,37 +238,39 @@ export function VideoScrubber({
                         handleSeek(hl.start);
                       }}
                       className={cn(
-                        "absolute z-20 h-3 -translate-y-1/2 top-1/2 rounded-sm transition-all hover:h-4.5 hover:z-30",
+                        "absolute z-20 h-4 -translate-y-1/2 top-1/2 rounded-xs border border-black transition-all hover:h-5 hover:z-30",
                         styleConfig.bg,
-                        "shadow-[0_0_8px_rgba(0,0,0,0.4)] opacity-90 hover:opacity-100 ring-1 ring-black/40"
+                        "shadow-[1px_1px_0px_0px_#000] hover:scale-110"
                       )}
                       style={{
                         left: `${leftPercent}%`,
-                        width: `${Math.max(widthPercent, 0.9)}%`,
-                        minWidth: "6px",
+                        width: `${Math.max(widthPercent, 1.2)}%`,
+                        minWidth: "8px",
                       }}
                       aria-label={`Jump to highlight: ${hl.title}`}
                     />
                   </TooltipTrigger>
                   <TooltipContent
                     side="top"
-                    className="max-w-xs border border-slate-700 bg-slate-900/95 p-2 text-slate-100 shadow-xl backdrop-blur-md"
+                    className="max-w-xs border-2 border-black bg-white p-2.5 text-black shadow-neo"
                   >
                     <div className="flex items-center gap-2 mb-1">
-                      <Badge
-                        variant="outline"
-                        className={cn("text-[10px] px-1.5 py-0", styleConfig.badge)}
+                      <span
+                        className={cn(
+                          "rounded border border-black px-1.5 py-0.2 font-mono text-[10px] font-black uppercase",
+                          styleConfig.badge
+                        )}
                       >
                         {styleConfig.label}
-                      </Badge>
-                      <span className="font-mono text-[11px] text-slate-400">
+                      </span>
+                      <span className="font-mono text-[11px] font-bold text-neutral-600">
                         {formatTime(hl.start)} – {formatTime(hl.end)}
                       </span>
                     </div>
-                    <p className="text-xs font-medium text-slate-200 line-clamp-2">
+                    <p className="text-xs font-bold text-black line-clamp-2">
                       {hl.title}
                     </p>
-                    <p className="text-[10px] text-indigo-400 mt-1 font-mono">
+                    <p className="text-[10px] font-mono font-bold text-black underline mt-1">
                       Click to jump
                     </p>
                   </TooltipContent>
@@ -224,32 +278,33 @@ export function VideoScrubber({
               );
             })}
 
-          {/* Core Interactive Slider */}
-          <Slider
-            value={[Math.min(Math.max(0, currentTime), duration || 100)]}
-            min={0}
-            max={duration > 0 ? duration : 100}
-            step={0.1}
-            onValueChange={([val]) => handleSeek(val)}
-            className="w-full relative z-10 py-1"
-          />
+          {/* Physical square or pill scrubber thumb with hard shadow */}
+          <div
+            className={cn(
+              "pointer-events-none absolute top-1/2 z-30 -translate-y-1/2 -translate-x-1/2 h-5 w-5 rounded-md border-2 border-black bg-white shadow-[2px_2px_0px_0px_#000] transition-transform",
+              isDragging ? "scale-125 bg-[#FEF08A]" : "group-hover:scale-110"
+            )}
+            style={{ left: `${progressPercent}%` }}
+          >
+            {/* Center tactile dot */}
+            <div className="h-1.5 w-1.5 rounded-full bg-black mx-auto mt-1" />
+          </div>
         </div>
 
         {/* Timestamps and Progress Indicators */}
-        <div className="flex items-center justify-between text-xs font-mono text-slate-400 px-0.5">
-          <div className="flex items-center gap-2">
-            <span className="text-slate-200 font-semibold">
+        <div className="flex items-center justify-between font-mono text-xs text-black px-0.5">
+          <div className="flex items-center gap-1.5 font-bold">
+            <span className="text-black font-black">
               {formatTime(currentTime)}
             </span>
-            <span className="text-slate-600">/</span>
-            <span>{formatTime(duration)}</span>
+            <span className="text-neutral-400">/</span>
+            <span className="text-neutral-600">{formatTime(duration)}</span>
           </div>
 
           {highlights.length > 0 && (
-            <div className="hidden sm:flex items-center gap-1.5 text-[11px] text-slate-400">
-              <span className="inline-block w-1.5 h-1.5 rounded-full bg-amber-400" />
-              <span>
-                {highlights.length} highlight{highlights.length === 1 ? "" : "s"}
+            <div className="flex items-center gap-1.5">
+              <span className="inline-flex items-center rounded border border-black bg-[#FEF08A] px-1.5 py-0.2 font-mono text-[10px] font-black text-black shadow-neo-sm">
+                {highlights.length} HIGHLIGHT{highlights.length === 1 ? "" : "S"}
               </span>
             </div>
           )}
