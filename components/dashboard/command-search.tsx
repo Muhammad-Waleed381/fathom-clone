@@ -9,7 +9,6 @@ import {
 } from "@/components/ui/dialog";
 import {
   Command,
-  CommandInput,
   CommandList,
   CommandEmpty,
   CommandGroup,
@@ -22,16 +21,11 @@ import { formatTime } from "@/components/player/video-scrubber";
 import {
   Search,
   Video,
-  User,
   ListTodo,
-  FileText,
-  Clock,
+  Settings,
   Sparkles,
   Play,
   ArrowRight,
-  Settings,
-  CheckCircle2,
-  Calendar,
   Quote,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -101,7 +95,7 @@ export function CommandSearch({
       return matchTitle || matchTags || matchOverview;
     });
 
-    // 2. Match Speakers across all meetings
+    // 2. Match Speakers
     const matchedSpeakers: {
       speakerId: string;
       name: string;
@@ -119,7 +113,6 @@ export function CommandSearch({
           (p.role && p.role.toLowerCase().includes(cleanQuery)) ||
           (p.company && p.company.toLowerCase().includes(cleanQuery))
         ) {
-          // Avoid duplicate speakers for same meeting
           if (!matchedSpeakers.some((s) => s.speakerId === p.id && s.meetingId === m.id)) {
             matchedSpeakers.push({
               speakerId: p.id,
@@ -165,7 +158,7 @@ export function CommandSearch({
       });
     });
 
-    // 4. Match Transcript Quotes (with timestamp jump!)
+    // 4. Match Transcript Quotes (with timestamp jump)
     const matchedTranscript: {
       id: string;
       meetingId: string;
@@ -177,7 +170,6 @@ export function CommandSearch({
       matchedSnippet: string;
     }[] = [];
 
-    // Limit searching transcript across meetings to first 8 matches to keep response instantaneous
     let matchCount = 0;
     for (const m of meetings) {
       if (matchCount >= 8) break;
@@ -188,9 +180,8 @@ export function CommandSearch({
         if (index !== -1) {
           matchCount++;
           const speaker = m.participants.find((p) => p.id === seg.speakerId);
-          // Extract snippet around matched phrase
-          const snippetStart = Math.max(0, index - 30);
-          const snippetEnd = Math.min(seg.text.length, index + cleanQuery.length + 40);
+          const snippetStart = Math.max(0, index - 25);
+          const snippetEnd = Math.min(seg.text.length, index + cleanQuery.length + 35);
           const snippet =
             (snippetStart > 0 ? "…" : "") +
             seg.text.slice(snippetStart, snippetEnd) +
@@ -201,7 +192,7 @@ export function CommandSearch({
             meetingId: m.id,
             meetingTitle: m.title,
             speakerName: speaker?.name || "Speaker",
-            speakerColor: speaker?.color || "#6366f1",
+            speakerColor: speaker?.color || "#FEF08A",
             text: seg.text,
             start: seg.start,
             matchedSnippet: snippet,
@@ -258,36 +249,38 @@ export function CommandSearch({
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogContent className="max-w-2xl overflow-hidden p-0 border-slate-800 bg-slate-950 text-slate-100 shadow-2xl">
-        <Command shouldFilter={false} className="bg-transparent border-none">
-          <div className="flex items-center border-b border-slate-800 px-3 bg-slate-950">
-            <Search className="mr-2.5 h-4 w-4 shrink-0 text-slate-400" />
+      <DialogContent className="max-w-2xl overflow-hidden p-0 border-2 border-black bg-white text-black shadow-[6px_6px_0px_0px_#000] rounded-lg">
+        <Command shouldFilter={false} className="border-none shadow-none bg-white">
+          {/* Top Search Input */}
+          <div className="flex items-center border-b-2 border-black px-4 bg-white">
+            <Search className="mr-3 h-4 w-4 shrink-0 text-black stroke-[2.5]" />
             <input
               type="text"
               placeholder="Search meetings, speakers, transcripts, action items..."
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              className="flex h-12 w-full rounded-md bg-transparent py-3 text-sm text-slate-100 outline-none placeholder:text-slate-500 disabled:cursor-not-allowed disabled:opacity-50"
+              className="flex h-12 w-full bg-transparent py-3 font-mono text-sm text-black placeholder:text-neutral-400 outline-none"
+              autoFocus
             />
             {query && (
               <button
                 type="button"
                 onClick={() => setQuery("")}
-                className="text-xs text-slate-400 hover:text-white px-2 py-1 rounded bg-slate-900 border border-slate-800"
+                className="rounded border border-black bg-[#FAF8F5] px-2 py-0.5 font-mono text-[10px] font-bold uppercase text-black hover:bg-[#FEF08A]"
               >
-                Clear
+                CLEAR
               </button>
             )}
           </div>
 
-          <CommandList className="max-h-[420px] overflow-y-auto p-2 scrollbar-thin">
+          <CommandList className="max-h-[420px] overflow-y-auto p-2 scrollbar-none">
             {cleanQuery && !hasResults && (
-              <CommandEmpty className="py-12 text-center text-sm text-slate-400">
-                No matching results found for &ldquo;{query}&rdquo;
+              <CommandEmpty className="py-12 text-center font-mono text-xs font-bold uppercase text-neutral-500">
+                No matching results for &ldquo;{query}&rdquo;
               </CommandEmpty>
             )}
 
-            {/* Default Quick Options when query is empty */}
+            {/* Quick Navigation when query is empty */}
             {!cleanQuery && (
               <>
                 <CommandGroup heading="Quick Navigation">
@@ -296,24 +289,24 @@ export function CommandSearch({
                       setIsOpen(false);
                       router.push("/meetings/meeting-1");
                     }}
-                    className="flex items-center justify-between rounded-lg px-3 py-2.5 text-xs text-slate-200 cursor-pointer hover:bg-slate-900 aria-selected:bg-slate-900"
+                    className="flex items-center justify-between rounded border border-black/10 px-3 py-2 text-xs font-medium text-black cursor-pointer hover:bg-[#FEF08A] hover:border-black data-[selected=true]:bg-[#FEF08A] data-[selected=true]:border-black mb-1.5 transition-none"
                   >
                     <div className="flex items-center gap-2.5">
-                      <div className="flex h-7 w-7 items-center justify-center rounded-md bg-primary/10 text-primary border border-primary/20">
+                      <div className="flex h-7 w-7 items-center justify-center rounded border border-black bg-[#FEF08A] text-black">
                         <Sparkles className="h-4 w-4" />
                       </div>
                       <div>
-                        <p className="font-semibold text-white">
-                          8-Person Benchmark Call (Q3 Scalability Sync)
+                        <p className="font-bold text-black">
+                          Q3 Platform Architecture & Scalability Sync
                         </p>
-                        <p className="text-[11px] text-slate-400">
-                          Full 42m recording with multi-speaker diarization
+                        <p className="font-mono text-[10px] text-neutral-600">
+                          42m 15s • 8 Attendees • Multi-speaker diarization
                         </p>
                       </div>
                     </div>
-                    <Badge variant="outline" className="border-indigo-500/30 text-indigo-400 text-[10px]">
-                      Benchmark
-                    </Badge>
+                    <span className="rounded border border-black bg-black px-1.5 py-0.5 font-mono text-[10px] font-black uppercase text-white shadow-neo-sm">
+                      BENCHMARK
+                    </span>
                   </CommandItem>
 
                   <CommandItem
@@ -321,20 +314,20 @@ export function CommandSearch({
                       setIsOpen(false);
                       router.push("/actions");
                     }}
-                    className="flex items-center justify-between rounded-lg px-3 py-2.5 text-xs text-slate-200 cursor-pointer hover:bg-slate-900 aria-selected:bg-slate-900"
+                    className="flex items-center justify-between rounded border border-black/10 px-3 py-2 text-xs font-medium text-black cursor-pointer hover:bg-[#FEF08A] hover:border-black data-[selected=true]:bg-[#FEF08A] data-[selected=true]:border-black mb-1.5 transition-none"
                   >
                     <div className="flex items-center gap-2.5">
-                      <div className="flex h-7 w-7 items-center justify-center rounded-md bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
+                      <div className="flex h-7 w-7 items-center justify-center rounded border border-black bg-[#DDD6FE] text-black">
                         <ListTodo className="h-4 w-4" />
                       </div>
                       <div>
-                        <p className="font-semibold text-white">Action Items Hub</p>
-                        <p className="text-[11px] text-slate-400">
-                          View all action items across recorded meetings
+                        <p className="font-bold text-black">Action Items Hub</p>
+                        <p className="font-mono text-[10px] text-neutral-600">
+                          Cross-meeting task tracker and sync status
                         </p>
                       </div>
                     </div>
-                    <ArrowRight className="h-3.5 w-3.5 text-slate-500" />
+                    <ArrowRight className="h-3.5 w-3.5 text-black" />
                   </CommandItem>
 
                   <CommandItem
@@ -342,37 +335,37 @@ export function CommandSearch({
                       setIsOpen(false);
                       if (onOpenSettings) onOpenSettings();
                     }}
-                    className="flex items-center justify-between rounded-lg px-3 py-2.5 text-xs text-slate-200 cursor-pointer hover:bg-slate-900 aria-selected:bg-slate-900"
+                    className="flex items-center justify-between rounded border border-black/10 px-3 py-2 text-xs font-medium text-black cursor-pointer hover:bg-[#FEF08A] hover:border-black data-[selected=true]:bg-[#FEF08A] data-[selected=true]:border-black mb-1.5 transition-none"
                   >
                     <div className="flex items-center gap-2.5">
-                      <div className="flex h-7 w-7 items-center justify-center rounded-md bg-purple-500/10 text-purple-400 border border-purple-500/20">
+                      <div className="flex h-7 w-7 items-center justify-center rounded border border-black bg-[#A7F3D0] text-black">
                         <Settings className="h-4 w-4" />
                       </div>
                       <div>
-                        <p className="font-semibold text-white">AI & API Key Settings</p>
-                        <p className="text-[11px] text-slate-400">
-                          Configure OpenRouter or Deepgram Nova-2 keys
+                        <p className="font-bold text-black">AI & API Settings</p>
+                        <p className="font-mono text-[10px] text-neutral-600">
+                          OpenRouter & Deepgram Nova-2 keys
                         </p>
                       </div>
                     </div>
-                    <ArrowRight className="h-3.5 w-3.5 text-slate-500" />
+                    <ArrowRight className="h-3.5 w-3.5 text-black" />
                   </CommandItem>
                 </CommandGroup>
 
-                <CommandSeparator className="my-1 bg-slate-800" />
+                <CommandSeparator className="my-2 bg-black h-[2px]" />
 
                 <CommandGroup heading="Recent Meetings">
                   {meetings.map((m) => (
                     <CommandItem
                       key={m.id}
                       onSelect={() => handleSelectMeeting(m.id)}
-                      className="flex items-center justify-between rounded-lg px-3 py-2 text-xs text-slate-200 cursor-pointer hover:bg-slate-900 aria-selected:bg-slate-900"
+                      className="flex items-center justify-between rounded border border-black/10 px-3 py-1.5 text-xs text-black cursor-pointer hover:bg-[#FEF08A] hover:border-black data-[selected=true]:bg-[#FEF08A] data-[selected=true]:border-black mb-1 transition-none"
                     >
                       <div className="flex items-center gap-2.5">
-                        <Video className="h-4 w-4 text-slate-400" />
-                        <span className="font-medium text-slate-200 line-clamp-1">{m.title}</span>
+                        <Video className="h-3.5 w-3.5 text-black" />
+                        <span className="font-bold text-black truncate max-w-sm">{m.title}</span>
                       </div>
-                      <span className="font-mono text-[11px] text-slate-500">
+                      <span className="font-mono text-[11px] font-bold text-neutral-600">
                         {formatTime(m.duration)}
                       </span>
                     </CommandItem>
@@ -381,152 +374,146 @@ export function CommandSearch({
               </>
             )}
 
-            {/* Results Group: Meetings */}
+            {/* Meetings Results */}
             {searchResults.meetings.length > 0 && (
               <CommandGroup heading={`Meetings (${searchResults.meetings.length})`}>
                 {searchResults.meetings.map((m) => (
                   <CommandItem
                     key={`m-${m.id}`}
                     onSelect={() => handleSelectMeeting(m.id)}
-                    className="flex items-center justify-between rounded-lg px-3 py-2.5 text-xs cursor-pointer hover:bg-slate-900 aria-selected:bg-slate-900"
+                    className="flex items-center justify-between rounded border border-black/10 px-3 py-2 text-xs cursor-pointer hover:bg-[#FEF08A] hover:border-black data-[selected=true]:bg-[#FEF08A] data-[selected=true]:border-black mb-1.5 transition-none"
                   >
                     <div className="flex items-center gap-2.5">
-                      <div className="flex h-7 w-7 items-center justify-center rounded-md bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
+                      <div className="flex h-7 w-7 items-center justify-center rounded border border-black bg-black text-white">
                         <Video className="h-3.5 w-3.5" />
                       </div>
                       <div>
-                        <p className="font-semibold text-white line-clamp-1">{m.title}</p>
-                        <div className="flex items-center gap-2 text-[11px] text-slate-400">
-                          <span>{m.participants.length} speakers</span>
+                        <p className="font-bold text-black line-clamp-1">{m.title}</p>
+                        <div className="flex items-center gap-2 font-mono text-[10px] text-neutral-600">
+                          <span>{m.participants.length} ATTENDEES</span>
                           <span>•</span>
                           <span>{formatTime(m.duration)}</span>
                         </div>
                       </div>
                     </div>
-                    <ArrowRight className="h-3.5 w-3.5 text-slate-500" />
+                    <ArrowRight className="h-3.5 w-3.5 text-black" />
                   </CommandItem>
                 ))}
               </CommandGroup>
             )}
 
-            {/* Results Group: Transcript Moments with Timestamp Jump */}
+            {/* Transcript Moments */}
             {searchResults.transcriptMatches.length > 0 && (
               <CommandGroup heading={`Transcript Moments (${searchResults.transcriptMatches.length})`}>
                 {searchResults.transcriptMatches.map((t) => (
                   <CommandItem
                     key={`trans-${t.id}`}
                     onSelect={() => handleSelectTranscriptMatch(t.meetingId, t.start)}
-                    className="flex items-start justify-between gap-3 rounded-lg px-3 py-2.5 text-xs cursor-pointer hover:bg-slate-900 aria-selected:bg-slate-900"
+                    className="flex items-start justify-between gap-3 rounded border border-black/10 px-3 py-2 text-xs cursor-pointer hover:bg-[#FEF08A] hover:border-black data-[selected=true]:bg-[#FEF08A] data-[selected=true]:border-black mb-1.5 transition-none"
                   >
                     <div className="flex items-start gap-2.5">
-                      <div className="mt-0.5 flex h-6 w-6 items-center justify-center rounded-md bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                      <div className="mt-0.5 flex h-6 w-6 items-center justify-center rounded border border-black bg-[#FEF08A] text-black shrink-0">
                         <Quote className="h-3 w-3" />
                       </div>
                       <div>
                         <div className="flex items-center gap-2">
-                          <span
-                            style={{ color: t.speakerColor }}
-                            className="font-semibold text-[11px]"
-                          >
+                          <span className="font-bold text-[11px] text-black">
                             {t.speakerName}
                           </span>
-                          <span className="text-[10px] text-slate-500">in {t.meetingTitle}</span>
+                          <span className="font-mono text-[10px] text-neutral-500">in {t.meetingTitle}</span>
                         </div>
-                        <p className="mt-1 text-slate-300 italic leading-relaxed text-[11px]">
+                        <p className="mt-0.5 font-sans text-[11px] text-neutral-800 italic leading-snug">
                           &ldquo;{t.matchedSnippet}&rdquo;
                         </p>
                       </div>
                     </div>
-                    <Badge
-                      variant="outline"
-                      className="shrink-0 border-amber-500/40 bg-amber-500/10 text-amber-300 font-mono text-[10px] gap-1"
-                    >
+                    <span className="shrink-0 rounded border border-black bg-white px-1.5 py-0.5 font-mono text-[10px] font-black text-black shadow-neo-sm flex items-center gap-1">
                       <Play className="h-2.5 w-2.5 fill-current" />
                       {formatTime(t.start)}
-                    </Badge>
+                    </span>
                   </CommandItem>
                 ))}
               </CommandGroup>
             )}
 
-            {/* Results Group: Action Items */}
+            {/* Action Items */}
             {searchResults.actionItems.length > 0 && (
               <CommandGroup heading={`Action Items (${searchResults.actionItems.length})`}>
                 {searchResults.actionItems.map((item) => (
                   <CommandItem
                     key={`act-${item.id}`}
                     onSelect={() => handleSelectActionItem(item.meetingId, item.timestamp)}
-                    className="flex items-center justify-between gap-3 rounded-lg px-3 py-2 text-xs cursor-pointer hover:bg-slate-900 aria-selected:bg-slate-900"
+                    className="flex items-center justify-between gap-3 rounded border border-black/10 px-3 py-2 text-xs cursor-pointer hover:bg-[#FEF08A] hover:border-black data-[selected=true]:bg-[#FEF08A] data-[selected=true]:border-black mb-1.5 transition-none"
                   >
                     <div className="flex items-center gap-2.5">
-                      <ListTodo className="h-3.5 w-3.5 text-indigo-400 shrink-0" />
+                      <ListTodo className="h-4 w-4 text-black shrink-0" />
                       <div>
-                        <p className="font-medium text-slate-200 line-clamp-1">{item.text}</p>
-                        <p className="text-[10px] text-slate-500">
+                        <p className="font-bold text-black line-clamp-1">{item.text}</p>
+                        <p className="font-mono text-[10px] text-neutral-500">
                           {item.assigneeName ? `Assigned to ${item.assigneeName} • ` : ""}
                           {item.meetingTitle}
                         </p>
                       </div>
                     </div>
                     {item.timestamp !== undefined && (
-                      <Badge variant="outline" className="text-[10px] font-mono border-slate-700 text-slate-400">
+                      <span className="rounded border border-black bg-white px-1.5 py-0.5 font-mono text-[10px] font-bold text-black shadow-neo-sm">
                         {formatTime(item.timestamp)}
-                      </Badge>
+                      </span>
                     )}
                   </CommandItem>
                 ))}
               </CommandGroup>
             )}
 
-            {/* Results Group: Speakers */}
+            {/* Speakers */}
             {searchResults.speakers.length > 0 && (
               <CommandGroup heading={`Speakers (${searchResults.speakers.length})`}>
                 {searchResults.speakers.map((s, idx) => (
                   <CommandItem
                     key={`spk-${s.speakerId}-${s.meetingId}-${idx}`}
                     onSelect={() => handleSelectSpeaker(s.meetingId, s.speakerId)}
-                    className="flex items-center justify-between rounded-lg px-3 py-2 text-xs cursor-pointer hover:bg-slate-900 aria-selected:bg-slate-900"
+                    className="flex items-center justify-between rounded border border-black/10 px-3 py-2 text-xs cursor-pointer hover:bg-[#FEF08A] hover:border-black data-[selected=true]:bg-[#FEF08A] data-[selected=true]:border-black mb-1.5 transition-none"
                   >
                     <div className="flex items-center gap-2.5">
-                      <Avatar className="h-6 w-6 border border-slate-700">
+                      <Avatar className="h-6 w-6 rounded-full border border-black">
                         <AvatarImage src={s.avatarUrl} />
                         <AvatarFallback
                           style={{ backgroundColor: s.color }}
-                          className="text-[9px] font-bold text-white"
+                          className="font-mono text-[9px] font-bold text-black"
                         >
                           {s.name.slice(0, 2)}
                         </AvatarFallback>
                       </Avatar>
                       <div>
-                        <p className="font-semibold text-white">{s.name}</p>
-                        <p className="text-[10px] text-slate-400">
+                        <p className="font-bold text-black">{s.name}</p>
+                        <p className="font-mono text-[10px] text-neutral-500">
                           {s.role ? `${s.role} • ` : ""}
                           {s.meetingTitle}
                         </p>
                       </div>
                     </div>
-                    <ArrowRight className="h-3.5 w-3.5 text-slate-500" />
+                    <ArrowRight className="h-3.5 w-3.5 text-black" />
                   </CommandItem>
                 ))}
               </CommandGroup>
             )}
           </CommandList>
 
-          <div className="flex items-center justify-between border-t border-slate-800 bg-slate-950 px-3.5 py-2 text-[11px] text-slate-500">
+          {/* Dialog Footer */}
+          <div className="flex items-center justify-between border-t-2 border-black bg-[#FAF8F5] px-4 py-2 font-mono text-[11px] text-neutral-700">
             <div className="flex items-center gap-2">
-              <span>Navigation:</span>
-              <kbd className="rounded bg-slate-900 px-1.5 py-0.5 font-mono text-[10px] text-slate-300 border border-slate-800">
+              <span>NAVIGATE:</span>
+              <kbd className="rounded border border-black bg-white px-1.5 py-0.5 font-bold text-black shadow-neo-sm">
                 ↑↓
               </kbd>
-              <span>to select</span>
-              <kbd className="rounded bg-slate-900 px-1.5 py-0.5 font-mono text-[10px] text-slate-300 border border-slate-800">
+              <span>SELECT:</span>
+              <kbd className="rounded border border-black bg-white px-1.5 py-0.5 font-bold text-black shadow-neo-sm">
                 ↵
               </kbd>
-              <span>to open</span>
             </div>
             <div className="flex items-center gap-1.5">
-              <span>Exit:</span>
-              <kbd className="rounded bg-slate-900 px-1.5 py-0.5 font-mono text-[10px] text-slate-300 border border-slate-800">
+              <span>CLOSE:</span>
+              <kbd className="rounded border border-black bg-white px-1.5 py-0.5 font-bold text-black shadow-neo-sm">
                 ESC
               </kbd>
             </div>

@@ -1,20 +1,15 @@
 "use client";
 
 import React, { useState } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Meeting } from "@/types/meeting";
-import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { formatTime } from "@/components/player/video-scrubber";
 import {
   Clock,
   Calendar as CalendarIcon,
@@ -23,10 +18,7 @@ import {
   Check,
   Share2,
   ListTodo,
-  ExternalLink,
   Sparkles,
-  FileText,
-  Users,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -41,7 +33,7 @@ export function MeetingCard({ meeting, className, onShare }: MeetingCardProps) {
   const [copiedSummary, setCopiedSummary] = useState(false);
   const [copiedShare, setCopiedShare] = useState(false);
 
-  // Format Date: e.g. "Sep 12, 2026 · 2:00 PM"
+  // Format Date: e.g. "Sep 12, 2026"
   const formattedDate = (() => {
     try {
       const d = new Date(meeting.date);
@@ -72,13 +64,13 @@ export function MeetingCard({ meeting, className, onShare }: MeetingCardProps) {
     meeting.summaries?.executive?.overview ||
     meeting.summaries?.engineering?.overview ||
     meeting.summaries?.sales?.overview ||
-    "AI summary generated with key highlights, decisions, and action items.";
+    "Key highlights, architectural decisions, and next steps recorded.";
 
   // Action items count
   const totalActions = meeting.actionItems?.length || 0;
   const pendingActions = meeting.actionItems?.filter((a) => !a.completed).length || 0;
 
-  // Max avatars to show in stack
+  // Max avatars to show
   const maxAvatars = 4;
   const visibleParticipants = meeting.participants.slice(0, maxAvatars);
   const remainingCount = meeting.participants.length - maxAvatars;
@@ -132,92 +124,86 @@ export function MeetingCard({ meeting, className, onShare }: MeetingCardProps) {
   };
 
   return (
-    <TooltipProvider delayDuration={200}>
-      <Card
+    <TooltipProvider delayDuration={150}>
+      <div
         onClick={handleCardClick}
         className={cn(
-          "group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-slate-800/80 bg-slate-900/40 text-slate-100 transition-all duration-200 hover:-translate-y-0.5 hover:border-slate-700 hover:bg-slate-900/80 hover:shadow-xl hover:shadow-indigo-500/5 cursor-pointer",
+          "group relative flex flex-col justify-between rounded-lg border-2 border-black bg-white shadow-[4px_4px_0px_0px_#000] transition-all hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_#000] cursor-pointer overflow-hidden",
           className
         )}
       >
-        {/* Top Header */}
-        <CardHeader className="p-5 pb-3">
+        {/* Top Content Area */}
+        <div className="p-4 sm:p-5 pb-3">
+          {/* Header Badges */}
           <div className="flex items-start justify-between gap-3">
-            {/* Tag Pills */}
             <div className="flex flex-wrap items-center gap-1.5">
               {meeting.tags?.slice(0, 2).map((tag) => (
-                <Badge
+                <span
                   key={tag}
-                  variant="outline"
-                  className="border-slate-800 bg-slate-950/80 px-2 py-0.5 text-[11px] font-medium text-slate-300"
+                  className="rounded border border-black bg-[#FAF8F5] px-2 py-0.5 font-mono text-[10px] font-bold uppercase tracking-wider text-black shadow-neo-sm"
                 >
                   {tag}
-                </Badge>
+                </span>
               ))}
               {meeting.highlights?.length > 0 && (
-                <Badge
-                  variant="outline"
-                  className="border-amber-500/30 bg-amber-500/10 px-2 py-0.5 text-[10px] font-semibold text-amber-300 gap-1"
-                >
+                <span className="flex items-center gap-1 rounded border border-black bg-[#FEF08A] px-2 py-0.5 font-mono text-[10px] font-black uppercase text-black shadow-neo-sm">
                   <Sparkles className="h-2.5 w-2.5" />
-                  {meeting.highlights.length} clips
-                </Badge>
+                  {meeting.highlights.length} CLIPS
+                </span>
               )}
             </div>
 
             {/* Duration Badge */}
-            <div className="flex items-center gap-1.5 rounded-lg border border-slate-800 bg-slate-950/70 px-2.5 py-1 text-xs font-mono font-medium text-slate-300">
-              <Clock className="h-3 w-3 text-indigo-400" />
+            <div className="flex items-center gap-1 rounded border border-black bg-white px-2 py-0.5 font-mono text-xs font-bold text-black shadow-neo-sm shrink-0">
+              <Clock className="h-3 w-3" />
               <span>{formattedDuration}</span>
             </div>
           </div>
 
           {/* Title */}
-          <h3 className="mt-2.5 line-clamp-2 text-base font-bold tracking-tight text-white group-hover:text-primary transition-colors">
+          <h3 className="mt-3 line-clamp-2 text-base font-black tracking-tight text-black group-hover:underline">
             {meeting.title}
           </h3>
 
-          {/* Date & Participants info */}
-          <div className="mt-1 flex items-center gap-2 text-xs text-slate-400">
-            <CalendarIcon className="h-3.5 w-3.5 text-slate-500" />
+          {/* Date & Participant count */}
+          <div className="mt-1 flex items-center gap-2 font-mono text-xs text-neutral-600">
+            <CalendarIcon className="h-3.5 w-3.5 text-black" />
             <span>{formattedDate}</span>
-            <span className="text-slate-600">•</span>
-            <span>{meeting.participants.length} participants</span>
+            <span>•</span>
+            <span>{meeting.participants.length} ATTENDEES</span>
           </div>
-        </CardHeader>
 
-        {/* Card Body: Summary Snippet & Participant Avatar Stack */}
-        <CardContent className="px-5 py-2">
           {/* Summary Snippet */}
-          <p className="line-clamp-2 text-xs leading-relaxed text-slate-400">
+          <p className="mt-2.5 line-clamp-2 text-xs leading-relaxed text-neutral-700">
             {summarySnippet}
           </p>
 
-          <div className="mt-4 flex items-center justify-between">
-            {/* Participant Avatar Stack */}
+          {/* Metadata Row: Avatars & Actions Badge */}
+          <div className="mt-4 flex items-center justify-between gap-2 pt-1">
+            {/* Avatar Cluster */}
             <div className="flex items-center -space-x-2 overflow-hidden py-1">
               {visibleParticipants.map((p) => (
                 <Tooltip key={p.id}>
                   <TooltipTrigger asChild>
-                    <Avatar className="h-7 w-7 border-2 border-slate-900 ring-1 ring-slate-800 transition-transform hover:scale-110 hover:z-10">
+                    <Avatar className="h-7 w-7 rounded-full border-2 border-black bg-white shadow-neo-sm transition-transform hover:scale-115 hover:z-20">
                       <AvatarImage src={p.avatarUrl} alt={p.name} />
                       <AvatarFallback
-                        style={{ backgroundColor: p.color || "#6366f1" }}
-                        className="text-[10px] font-bold text-white"
+                        style={{ backgroundColor: p.color || "#FEF08A" }}
+                        className="font-mono text-[10px] font-bold text-black"
                       >
                         {p.name.slice(0, 2).toUpperCase()}
                       </AvatarFallback>
                     </Avatar>
                   </TooltipTrigger>
-                  <TooltipContent side="top" className="text-xs">
-                    <p className="font-semibold">{p.name}</p>
-                    {p.role && <p className="text-[10px] text-slate-400">{p.role}</p>}
+                  <TooltipContent side="top" className="border-2 border-black bg-white text-xs font-bold text-black shadow-neo-sm">
+                    <p>{p.name}</p>
+                    {p.role && <p className="text-[10px] font-normal text-neutral-600">{p.role}</p>}
                   </TooltipContent>
                 </Tooltip>
               ))}
 
               {remainingCount > 0 && (
-                <div className="flex h-7 w-7 items-center justify-center rounded-full border-2 border-slate-900 bg-slate-800 text-[10px] font-semibold text-slate-300 ring-1 ring-slate-700">
+                <div className="flex h-7 w-7 items-center justify-center rounded-full border-2 border-black bg-black font-mono text-[10px] font-black text-white shadow-neo-sm">
                   +{remainingCount}
                 </div>
               )}
@@ -225,91 +211,74 @@ export function MeetingCard({ meeting, className, onShare }: MeetingCardProps) {
 
             {/* Action Item Counter */}
             {totalActions > 0 && (
-              <div className="flex items-center gap-1.5 rounded-md border border-slate-800 bg-slate-950/60 px-2 py-1 text-[11px] font-medium text-slate-300">
-                <ListTodo className="h-3.5 w-3.5 text-indigo-400" />
+              <div className="flex items-center gap-1.5 rounded border border-black bg-[#DDD6FE] px-2 py-0.5 font-mono text-[11px] font-bold text-black shadow-neo-sm">
+                <ListTodo className="h-3.5 w-3.5 text-black" />
                 <span>
-                  {pendingActions} / {totalActions} tasks
+                  {pendingActions}/{totalActions} TASKS
                 </span>
               </div>
             )}
           </div>
-        </CardContent>
+        </div>
 
-        {/* Card Footer: 1-Click Actions */}
-        <CardFooter className="flex items-center justify-between border-t border-slate-800/80 bg-slate-950/40 p-3 px-5">
+        {/* Card Footer: 1-Click Quick Actions */}
+        <div className="flex items-center justify-between border-t-2 border-black bg-[#FAF8F5] p-2.5 sm:px-4">
           <div className="flex items-center gap-1.5">
             {/* Copy Summary Button */}
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  onClick={handleCopySummary}
-                  className="h-8 gap-1.5 px-2.5 text-xs text-slate-400 hover:bg-slate-800 hover:text-white"
-                >
-                  {copiedSummary ? (
-                    <>
-                      <Check className="h-3.5 w-3.5 text-emerald-400" />
-                      <span className="text-emerald-400 font-medium">Copied!</span>
-                    </>
-                  ) : (
-                    <>
-                      <Copy className="h-3.5 w-3.5" />
-                      <span>Summary</span>
-                    </>
-                  )}
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent side="bottom" className="text-xs">
-                Copy AI Executive Summary
-              </TooltipContent>
-            </Tooltip>
+            <button
+              type="button"
+              onClick={handleCopySummary}
+              className="flex items-center gap-1.5 rounded border border-black bg-white px-2.5 py-1 text-xs font-bold text-black shadow-neo-sm transition-all hover:bg-[#FEF08A] active:translate-x-0.5 active:translate-y-0.5"
+              title="Copy Executive Summary"
+            >
+              {copiedSummary ? (
+                <>
+                  <Check className="h-3 w-3 stroke-[3]" />
+                  <span>COPIED</span>
+                </>
+              ) : (
+                <>
+                  <Copy className="h-3 w-3" />
+                  <span>SUMMARY</span>
+                </>
+              )}
+            </button>
 
             {/* Share Button */}
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  onClick={handleShare}
-                  className="h-8 gap-1.5 px-2.5 text-xs text-slate-400 hover:bg-slate-800 hover:text-white"
-                >
-                  {copiedShare ? (
-                    <>
-                      <Check className="h-3.5 w-3.5 text-emerald-400" />
-                      <span className="text-emerald-400 font-medium">Link Copied!</span>
-                    </>
-                  ) : (
-                    <>
-                      <Share2 className="h-3.5 w-3.5" />
-                      <span>Share</span>
-                    </>
-                  )}
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent side="bottom" className="text-xs">
-                Copy Shareable Link
-              </TooltipContent>
-            </Tooltip>
+            <button
+              type="button"
+              onClick={handleShare}
+              className="flex items-center gap-1.5 rounded border border-black bg-white px-2.5 py-1 text-xs font-bold text-black shadow-neo-sm transition-all hover:bg-[#FEF08A] active:translate-x-0.5 active:translate-y-0.5"
+              title="Share Recording"
+            >
+              {copiedShare ? (
+                <>
+                  <Check className="h-3 w-3 stroke-[3]" />
+                  <span>COPIED</span>
+                </>
+              ) : (
+                <>
+                  <Share2 className="h-3 w-3" />
+                  <span>SHARE</span>
+                </>
+              )}
+            </button>
           </div>
 
-          {/* Open Recording Primary Action */}
-          <Button
+          {/* Open Recording */}
+          <button
             type="button"
-            size="sm"
             onClick={(e) => {
               e.stopPropagation();
               handleCardClick();
             }}
-            className="h-8 gap-1.5 bg-primary/90 px-3 text-xs font-semibold text-primary-foreground shadow-sm hover:bg-primary"
+            className="flex items-center gap-1.5 rounded border-2 border-black bg-black px-3 py-1 font-mono text-xs font-black uppercase tracking-wider text-white shadow-neo-sm transition-all hover:bg-neutral-900 active:translate-x-0.5 active:translate-y-0.5"
           >
             <Play className="h-3 w-3 fill-current" />
-            <span>Open Recording</span>
-          </Button>
-        </CardFooter>
-      </Card>
+            <span>OPEN</span>
+          </button>
+        </div>
+      </div>
     </TooltipProvider>
   );
 }

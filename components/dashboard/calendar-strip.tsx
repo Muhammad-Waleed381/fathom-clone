@@ -2,19 +2,14 @@
 
 import React, { useState } from "react";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import {
   Calendar,
-  CheckCircle2,
   Clock,
-  Video,
   Bot,
-  ExternalLink,
-  ChevronRight,
-  Sparkles,
-  Zap,
   PlayCircle,
   Radio,
+  Check,
+  Pause,
 } from "lucide-react";
 import { MeetingRecorderModal } from "@/components/record/meeting-recorder-modal";
 import { cn } from "@/lib/utils";
@@ -79,6 +74,19 @@ export function CalendarStrip({
   const [recorderTitle, setRecorderTitle] = useState<string>("");
   const [autoSimulate, setAutoSimulate] = useState<boolean>(false);
 
+  const toggleGlobalBot = () => {
+    setBotActive((prev) => {
+      const next = !prev;
+      setMeetings((current) =>
+        current.map((m) => ({
+          ...m,
+          botStatus: next ? "confirmed" : "paused",
+        }))
+      );
+      return next;
+    });
+  };
+
   const toggleMeetingBot = (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
     setMeetings((prev) =>
@@ -115,123 +123,106 @@ export function CalendarStrip({
   return (
     <div
       className={cn(
-        "rounded-2xl border border-slate-800/80 bg-slate-900/40 p-4 backdrop-blur-md transition-all hover:border-slate-700/80",
+        "rounded-lg border-2 border-black bg-white p-3.5 sm:p-4 shadow-neo",
         className
       )}
     >
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-        {/* Left: Google Calendar Connected Indicator & Bot Status */}
-        <div className="flex flex-wrap items-center gap-3">
-          <div className="flex items-center gap-2.5 rounded-xl border border-slate-800 bg-slate-950/60 px-3.5 py-2">
-            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-blue-500/10 border border-blue-500/20 text-blue-400">
-              <Calendar className="h-4 w-4" />
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="text-xs font-semibold text-white">
-                  Google Calendar
-                </span>
-                <span className="flex h-2 w-2 relative">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
-                </span>
-              </div>
-              <p className="text-[11px] text-slate-400">
-                Connected & Synced
-              </p>
-            </div>
+        {/* Left: Desk Planner Controls */}
+        <div className="flex flex-wrap items-center gap-2.5 sm:gap-3 shrink-0">
+          {/* Google Calendar Connected Badge */}
+          <div className="flex items-center gap-2 rounded-md border-2 border-black bg-white px-3 py-1.5 shadow-neo-sm">
+            <span className="relative flex h-2 w-2">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
+            </span>
+            <span className="font-mono text-[11px] font-black uppercase tracking-wider text-black">
+              CALENDAR CONNECTED
+            </span>
           </div>
 
-          {/* Bot Status Pill */}
-          <div className="flex items-center gap-2 rounded-xl border border-slate-800 bg-slate-950/60 px-3.5 py-2">
-            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-purple-500/10 border border-purple-500/20 text-purple-400">
-              <Bot className="h-4 w-4" />
-            </div>
-            <div>
-              <div className="flex items-center gap-1.5">
-                <span className="text-xs font-semibold text-slate-200">
-                  Fathom Notetaker
-                </span>
-                <Badge
-                  variant="outline"
-                  className={cn(
-                    "px-1.5 py-0 text-[10px] font-medium transition-colors",
-                    botActive
-                      ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-400"
-                      : "border-slate-700 bg-slate-800 text-slate-400"
-                  )}
-                >
-                  {botActive ? "Active & Auto-Joining" : "Paused"}
-                </Badge>
-              </div>
-              <p className="text-[11px] text-slate-400">
-                Scheduled for {meetings.filter((m) => m.botStatus === "confirmed").length} calls today
-              </p>
-            </div>
-          </div>
-
-          {/* Direct Record Now Studio Trigger */}
-          <Button
+          {/* 1-Click Global Bot Switch */}
+          <button
             type="button"
-            size="sm"
-            onClick={handleRecordNow}
-            className="h-10 gap-2 rounded-xl bg-rose-600 px-3.5 text-xs font-semibold text-white shadow-md shadow-rose-600/20 transition-all hover:bg-rose-500 active:scale-95 shrink-0"
+            onClick={toggleGlobalBot}
+            className={cn(
+              "flex items-center gap-2 rounded-md border-2 border-black px-3 py-1.5 font-mono text-[11px] font-black uppercase tracking-wider shadow-neo-sm transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0 active:translate-y-0",
+              botActive
+                ? "bg-[#A7F3D0] text-black hover:bg-[#86efac]"
+                : "bg-neutral-200 text-neutral-600 hover:bg-neutral-300"
+            )}
+            title="1-Click Bot Switch"
           >
-            <Radio className="h-3.5 w-3.5 animate-pulse" />
-            <span>Record Now</span>
-          </Button>
+            <Bot className="h-3.5 w-3.5 text-black" />
+            <span>BOT: {botActive ? "AUTO-JOIN ON" : "PAUSED"}</span>
+            {botActive ? (
+              <Check className="h-3 w-3 stroke-[3]" />
+            ) : (
+              <Pause className="h-3 w-3" />
+            )}
+          </button>
+
+          {/* Record Now Trigger */}
+          <button
+            type="button"
+            onClick={handleRecordNow}
+            className="flex items-center gap-2 rounded-md border-2 border-black bg-black px-3 py-1.5 font-mono text-[11px] font-black uppercase tracking-wider text-white shadow-neo-sm transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:bg-neutral-900 active:translate-x-0 active:translate-y-0"
+          >
+            <Radio className="h-3 w-3 text-red-400 animate-pulse" />
+            <span>RECORD NOW</span>
+          </button>
         </div>
 
-        {/* Center/Right: Quick Interactive Schedule Strip */}
-        <div className="flex flex-1 items-center gap-2.5 overflow-x-auto pb-1 lg:pb-0 scrollbar-thin">
+        {/* Right: Editorial Desk Agenda Meetings */}
+        <div className="flex flex-1 items-center gap-2.5 overflow-x-auto pb-1 lg:pb-0 scrollbar-none">
           {meetings.map((m) => {
             const isSimulating = simulatedId === m.id;
+            const isBotConfirmed = m.botStatus === "confirmed";
+
             return (
               <div
                 key={m.id}
                 onClick={() => handleSimulate(m)}
                 className={cn(
-                  "group relative flex min-w-[240px] flex-1 cursor-pointer flex-col justify-between rounded-xl border border-slate-800/80 bg-slate-950/70 p-3 transition-all hover:border-slate-700 hover:bg-slate-950 hover:shadow-md",
-                  isSimulating && "ring-1 ring-primary border-primary/50"
+                  "group relative flex min-w-[250px] flex-1 cursor-pointer flex-col justify-between rounded-md border-2 border-black bg-[#FAF8F5] p-2.5 transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:bg-white hover:shadow-neo-sm active:translate-x-0 active:translate-y-0",
+                  isSimulating && "bg-[#FEF08A] hover:bg-[#FEF08A]"
                 )}
               >
+                {/* Time & Bot Toggle */}
                 <div className="flex items-center justify-between gap-2">
-                  <div className="flex items-center gap-1.5 text-[11px] font-medium text-slate-400">
-                    <Clock className="h-3 w-3 text-indigo-400" />
-                    <span className="text-slate-200 font-semibold">{m.time}</span>
-                    <span className="text-slate-500">({m.duration})</span>
+                  <div className="flex items-center gap-1.5 font-mono text-[11px] font-bold text-black">
+                    <Clock className="h-3 w-3" />
+                    <span>{m.time}</span>
+                    <span className="text-neutral-500 font-normal">({m.duration})</span>
                   </div>
+
                   <button
                     type="button"
                     onClick={(e) => toggleMeetingBot(m.id, e)}
-                    className="transition-transform active:scale-90"
-                    title={m.botStatus === "confirmed" ? "Click to pause bot" : "Click to enable bot"}
+                    className={cn(
+                      "rounded border border-black px-1.5 py-0.2 font-mono text-[10px] font-black uppercase tracking-wider transition-all",
+                      isBotConfirmed
+                        ? "bg-[#A7F3D0] text-black hover:bg-[#6ee7b7]"
+                        : "bg-neutral-200 text-neutral-600 hover:bg-neutral-300"
+                    )}
+                    title={isBotConfirmed ? "Click to pause bot" : "Click to activate bot"}
                   >
-                    <Badge
-                      variant="outline"
-                      className={cn(
-                        "gap-1 px-1.5 py-0 text-[10px] cursor-pointer transition-all",
-                        m.botStatus === "confirmed"
-                          ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20"
-                          : "border-amber-500/40 bg-amber-500/10 text-amber-400 hover:bg-amber-500/20"
-                      )}
-                    >
-                      <Bot className="h-2.5 w-2.5" />
-                      <span>{m.botStatus === "confirmed" ? "Bot Scheduled" : "Paused"}</span>
-                    </Badge>
+                    {isBotConfirmed ? "BOT ON" : "OFF"}
                   </button>
                 </div>
 
-                <p className="mt-1.5 line-clamp-1 text-xs font-semibold text-slate-200 group-hover:text-white transition-colors">
+                {/* Title */}
+                <p className="mt-1.5 line-clamp-1 text-xs font-bold text-black group-hover:underline">
                   {m.title}
                 </p>
 
-                <div className="mt-2 flex items-center justify-between text-[11px] text-slate-400">
-                  <span className="rounded bg-slate-900 px-1.5 py-0.5 text-[10px] text-slate-300 border border-slate-800">
+                {/* Platform & Action */}
+                <div className="mt-2 flex items-center justify-between border-t border-black/15 pt-1.5 text-[10px] font-mono">
+                  <span className="rounded border border-black bg-white px-1.5 py-0.2 font-bold text-black">
                     {m.platform}
                   </span>
-                  <div className="flex items-center gap-1 text-[11px] text-slate-400 group-hover:text-primary transition-colors">
-                    <span>Simulate</span>
+                  <div className="flex items-center gap-1 font-bold text-black group-hover:text-black">
+                    <span>SIMULATE</span>
                     <PlayCircle className="h-3 w-3" />
                   </div>
                 </div>
