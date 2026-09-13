@@ -3,14 +3,12 @@
 import React, { useState, useMemo } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { motion } from "framer-motion";
 import { useMeetingStore } from "@/lib/store/use-meeting-store";
-import { DashboardHeader } from "@/components/dashboard/dashboard-header";
 import { CalendarStrip } from "@/components/dashboard/calendar-strip";
 import { MeetingCard } from "@/components/dashboard/meeting-card";
-import { CommandSearch } from "@/components/dashboard/command-search";
 import { ClipShareModal } from "@/components/highlights/clip-share-modal";
-import { ApiKeysModal } from "@/components/settings/api-keys-modal";
-import { TiltCard, TiltLayer } from "@/components/motion/tilt-card";
+import { FluidAudioWave } from "@/components/hero/fluid-audio-wave";
 import { Meeting } from "@/types/meeting";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -26,16 +24,18 @@ import {
   ListTodo,
   Share2,
   Video,
+  CheckCircle2,
+  ArrowRight,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 type CategoryFilter = "all" | "engineering" | "sales" | "design" | "1-on-1s";
 
 const CATEGORY_TABS: { id: CategoryFilter; label: string }[] = [
-  { id: "all", label: "All Meetings" },
+  { id: "all", label: "All" },
   { id: "engineering", label: "Engineering" },
-  { id: "sales", label: "Sales & Deals" },
-  { id: "design", label: "Product & Design" },
+  { id: "sales", label: "Sales" },
+  { id: "design", label: "Design" },
   { id: "1-on-1s", label: "1-on-1s" },
 ];
 
@@ -44,8 +44,6 @@ export default function DashboardPage() {
   const meetings = useMeetingStore((s) => s.meetings);
   const setCurrentMeeting = useMeetingStore((s) => s.setCurrentMeeting);
 
-  const [searchOpen, setSearchOpen] = useState(false);
-  const [settingsOpen, setSettingsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<CategoryFilter>("all");
   const [filterQuery, setFilterQuery] = useState("");
 
@@ -117,142 +115,197 @@ export default function DashboardPage() {
     setShareMeeting(meeting);
   };
 
+  // Concise key takeaways from the benchmark sync
+  const benchmarkHighlights = [
+    "Standardized on active-active CockroachDB v24 across us-east, us-west, and eu-central to achieve 99.99% availability.",
+    "Eliminated Envoy sidecar memory overhead via Istio Ambient Mesh ztunnel architecture.",
+    "Integrated sub-100ms API latency SLO synthetic testing directly into CI/CD pipelines.",
+  ];
+
   return (
     <TooltipProvider delayDuration={150}>
-      <div className="min-h-screen bg-[#FAF8F5] text-black flex flex-col font-sans selection:bg-[#FEF08A] selection:text-black">
-        {/* Global Dashboard Navigation Header */}
-        <DashboardHeader
-          onOpenSearch={() => setSearchOpen(true)}
-          onRecordClick={() => {
-            handleOpenBenchmark();
-          }}
-        />
+      <div className="min-h-screen bg-white text-zinc-950 font-sans selection:bg-zinc-200 selection:text-zinc-950 flex flex-col">
+        {/* Hero Section with Generative Fluid Audio-Wave Canvas */}
+        <section className="relative w-full overflow-hidden border-b border-zinc-200/80 bg-white">
+          {/* Audio-Wave HTML5 Canvas Background */}
+          <div className="absolute inset-0 h-full w-full pointer-events-none overflow-hidden">
+            <FluidAudioWave className="h-full w-full opacity-65" />
+            <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-white via-white/80 to-transparent pointer-events-none" />
+          </div>
 
-        <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-8">
-          {/* Calendar Strip: Auto-record bot status & Desk schedule */}
-          <section aria-label="Today's Schedule & Bot Status">
-            <CalendarStrip
-              onSimulateCall={() => {
-                handleOpenBenchmark();
-              }}
-            />
-          </section>
+          {/* Hero Foreground Content */}
+          <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-14 sm:pt-14 sm:pb-18">
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1.0] }}
+              className="max-w-3xl"
+            >
+              {/* Monospace Metadata Strip */}
+              <div className="inline-flex items-center gap-2 rounded-md border border-zinc-200 bg-white/80 px-3 py-1 font-mono text-xs text-zinc-700 backdrop-blur-xs shadow-xs">
+                <span className="font-semibold text-zinc-900">42M 15S BENCHMARK CALL</span>
+                <span className="text-zinc-300">·</span>
+                <span>8 PARTICIPANTS</span>
+                <span className="text-zinc-300">·</span>
+                <span>92 DIARIZED SEGMENTS</span>
+              </div>
 
-          {/* 3D Cursor-Reactive Benchmark Hero Card */}
-          {benchmarkMeeting && (
-            <section aria-label="Featured Benchmark Call">
-              <TiltCard
-                maxTilt={6}
-                glare={true}
-                glareMaxOpacity={0.25}
-                className="w-full rounded-xl border-2 border-black bg-[#FEF08A] shadow-[6px_6px_0px_0px_#000] p-6 sm:p-8 relative overflow-hidden"
+              {/* Concise Editorial Title */}
+              <h1 className="mt-4 text-3xl sm:text-4xl lg:text-5xl font-semibold tracking-tight text-zinc-950 leading-[1.12]">
+                Conversations into structured intelligence.
+              </h1>
+              <p className="mt-3 text-sm sm:text-base text-zinc-600 max-w-2xl leading-relaxed">
+                Synchronized playback, multi-speaker diarization, and dynamic AI notes from engineering syncs to executive briefs.
+              </p>
+            </motion.div>
+
+            {/* Featured Benchmark Call Card */}
+            {benchmarkMeeting && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.55, delay: 0.1, ease: [0.25, 0.1, 0.25, 1.0] }}
+                className="mt-8 rounded-xl border border-zinc-200 bg-white/95 p-6 shadow-xl shadow-black/[0.04] backdrop-blur-sm"
               >
-                <div className="relative z-10 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
-                  {/* Left Column: Parallax Depth Layers */}
+                <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
+                  {/* Left Column: Metadata, Title, Summary */}
                   <div className="space-y-4 max-w-3xl">
-                    {/* Floating Badges */}
-                    <TiltLayer z={25} className="flex flex-wrap items-center gap-2">
-                      <span className="flex items-center gap-1.5 rounded-md border-2 border-black bg-black px-2.5 py-1 font-mono text-xs font-black uppercase tracking-wider text-white shadow-neo-sm">
-                        <Sparkles className="h-3.5 w-3.5 text-[#FEF08A]" />
-                        BENCHMARK CALL
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="inline-flex items-center gap-1.5 rounded-md border border-zinc-200 bg-zinc-50 px-2.5 py-1 font-mono text-[11px] font-medium text-zinc-900">
+                        <Sparkles className="h-3 w-3 text-zinc-700" />
+                        Featured Call
                       </span>
-                      <span className="rounded-md border-2 border-black bg-white px-2.5 py-1 font-mono text-xs font-black uppercase text-black shadow-neo-sm">
-                        42:15 • 8 ATTENDEES
+                      <span className="rounded-md border border-zinc-200 bg-zinc-50 px-2.5 py-1 font-mono text-[11px] text-zinc-600">
+                        42m 15s · 8 Attendees
                       </span>
-                      <span className="rounded-md border-2 border-black bg-[#A7F3D0] px-2.5 py-1 font-mono text-xs font-black uppercase text-black shadow-neo-sm">
-                        85+ SEGMENTS
+                      <span className="rounded-md border border-zinc-200 bg-zinc-50 px-2.5 py-1 font-mono text-[11px] text-zinc-600">
+                        92 Segments
                       </span>
-                      <span className="rounded-md border-2 border-black bg-[#DDD6FE] px-2.5 py-1 font-mono text-xs font-black uppercase text-black shadow-neo-sm">
-                        7 ACTIONS
+                      <span className="rounded-md border border-zinc-200 bg-zinc-50 px-2.5 py-1 font-mono text-[11px] text-zinc-600">
+                        {benchmarkMeeting.actionItems?.length || 7} Actions
                       </span>
-                    </TiltLayer>
+                    </div>
 
-                    {/* Title & Concise Summary */}
-                    <TiltLayer z={20}>
-                      <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight text-black leading-tight">
+                    <div>
+                      <h2 className="text-xl sm:text-2xl font-semibold tracking-tight text-zinc-950">
                         {benchmarkMeeting.title}
                       </h2>
-                      <p className="mt-2 text-sm font-medium text-neutral-900 leading-relaxed max-w-2xl">
+                      <p className="mt-1.5 text-xs sm:text-sm text-zinc-600 leading-relaxed">
                         {benchmarkMeeting.summaries?.executive?.overview ||
-                          "CockroachDB multi-region sharding, Istio ambient mesh rollout, and sub-100ms API latency SLOs."}
+                          "Multi-region database sharding, Istio ambient service mesh rollout, and sub-100ms API latency SLOs."}
                       </p>
-                    </TiltLayer>
+                    </div>
+
+                    {/* Summary Bullet Points */}
+                    <div className="space-y-2 pt-1">
+                      {benchmarkHighlights.map((highlight, idx) => (
+                        <div key={idx} className="flex items-start gap-2.5 text-xs text-zinc-700">
+                          <CheckCircle2 className="h-3.5 w-3.5 text-zinc-900 mt-0.5 shrink-0" />
+                          <span>{highlight}</span>
+                        </div>
+                      ))}
+                    </div>
 
                     {/* Participant Avatar Stack */}
-                    <TiltLayer z={25} className="flex flex-wrap items-center gap-3 pt-1">
-                      <div className="flex items-center -space-x-2.5 overflow-hidden py-1">
+                    <div className="flex items-center gap-3 pt-2">
+                      <div className="flex items-center -space-x-2 overflow-hidden py-1">
                         {benchmarkMeeting.participants.map((p) => (
                           <Tooltip key={p.id}>
                             <TooltipTrigger asChild>
-                              <Avatar className="h-8 w-8 rounded-full border-2 border-black bg-white shadow-neo-sm transition-transform hover:scale-115 hover:z-20">
+                              <Avatar className="h-7 w-7 rounded-md border border-white bg-zinc-100 transition-transform hover:scale-110 hover:z-20 shadow-xs">
                                 <AvatarImage src={p.avatarUrl} alt={p.name} />
-                                <AvatarFallback
-                                  style={{ backgroundColor: p.color || "#A7F3D0" }}
-                                  className="font-mono text-[11px] font-black text-black"
-                                >
+                                <AvatarFallback className="rounded-md font-mono text-[10px] font-medium text-zinc-800">
                                   {p.name.slice(0, 2).toUpperCase()}
                                 </AvatarFallback>
                               </Avatar>
                             </TooltipTrigger>
-                            <TooltipContent side="bottom" className="border-2 border-black bg-white text-xs font-bold text-black shadow-neo-sm">
-                              <p>{p.name}</p>
+                            <TooltipContent
+                              side="bottom"
+                              className="border border-zinc-200 bg-white text-xs font-medium text-zinc-900 shadow-md rounded-md"
+                            >
+                              <p className="font-semibold">{p.name}</p>
                               {p.role && (
-                                <p className="font-mono text-[10px] text-neutral-600">
-                                  {p.role} • {p.company}
+                                <p className="font-mono text-[10px] text-zinc-500">
+                                  {p.role} · {p.company}
                                 </p>
                               )}
                             </TooltipContent>
                           </Tooltip>
                         ))}
                       </div>
-                      <span className="font-mono text-xs font-black uppercase tracking-wider text-black">
-                        8 LEADERS PRESENT
+                      <span className="font-mono text-xs text-zinc-500">
+                        8 leaders present
                       </span>
-                    </TiltLayer>
+                    </div>
                   </div>
 
-                  {/* Right Column: CTA Buttons with Tactile Physics */}
-                  <TiltLayer z={30} className="flex flex-col sm:flex-row lg:flex-col gap-3 lg:items-end shrink-0">
+                  {/* Right Column: CTA Buttons */}
+                  <div className="flex flex-col sm:flex-row lg:flex-col gap-2.5 lg:items-end shrink-0 pt-2 lg:pt-0">
                     <button
                       type="button"
                       onClick={handleOpenBenchmark}
-                      className="h-12 flex items-center justify-center gap-2.5 rounded-md border-2 border-black bg-black px-6 font-mono text-xs sm:text-sm font-black uppercase tracking-wider text-white shadow-neo hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all"
+                      className="h-10 flex items-center justify-center gap-2 rounded-md bg-zinc-950 px-4 font-mono text-xs font-medium uppercase tracking-wider text-white hover:bg-zinc-800 transition-colors shadow-xs"
                     >
-                      <Play className="h-4 w-4 fill-current" />
-                      <span>OPEN BENCHMARK SYNC</span>
+                      <Play className="h-3.5 w-3.5 fill-current" />
+                      <span>Launch Benchmark Call</span>
                     </button>
 
                     <div className="flex items-center gap-2">
                       <button
                         type="button"
                         onClick={() => handleShareClick(benchmarkMeeting)}
-                        className="h-9 flex items-center gap-1.5 rounded-md border-2 border-black bg-white px-3.5 font-mono text-xs font-bold uppercase text-black shadow-neo-sm hover:-translate-x-0.5 hover:-translate-y-0.5 hover:bg-[#FAF8F5] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all"
+                        className="h-9 flex items-center gap-1.5 rounded-md border border-zinc-200 bg-white px-3 font-mono text-xs font-medium text-zinc-700 hover:bg-zinc-50 hover:text-zinc-950 hover:border-zinc-300 transition-colors shadow-xs"
                       >
-                        <Share2 className="h-3.5 w-3.5 text-black" />
-                        <span>SHARE CLIP</span>
+                        <Share2 className="h-3.5 w-3.5 text-zinc-500" />
+                        <span>Share Clip</span>
                       </button>
 
                       <Link href="/actions">
                         <button
                           type="button"
-                          className="h-9 flex items-center gap-1.5 rounded-md border-2 border-black bg-white px-3.5 font-mono text-xs font-bold uppercase text-black shadow-neo-sm hover:-translate-x-0.5 hover:-translate-y-0.5 hover:bg-[#FAF8F5] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all"
+                          className="h-9 flex items-center gap-1.5 rounded-md border border-zinc-200 bg-white px-3 font-mono text-xs font-medium text-zinc-700 hover:bg-zinc-50 hover:text-zinc-950 hover:border-zinc-300 transition-colors shadow-xs"
                         >
-                          <ListTodo className="h-3.5 w-3.5 text-black" />
-                          <span>ACTIONS ({benchmarkMeeting.actionItems?.length || 7})</span>
+                          <ListTodo className="h-3.5 w-3.5 text-zinc-500" />
+                          <span>Actions ({benchmarkMeeting.actionItems?.length || 7})</span>
                         </button>
                       </Link>
                     </div>
-                  </TiltLayer>
+                  </div>
                 </div>
-              </TiltCard>
-            </section>
-          )}
+              </motion.div>
+            )}
+          </div>
+        </section>
+
+        {/* Main Content Area */}
+        <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+          {/* Calendar Strip: Today's Schedule & Auto-Record Bot */}
+          <motion.section
+            aria-label="Today's Schedule & Bot Status"
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.45 }}
+          >
+            <CalendarStrip
+              onSimulateCall={() => {
+                handleOpenBenchmark();
+              }}
+            />
+          </motion.section>
 
           {/* Directory Filter Tabs & Inline Search Bar */}
-          <section aria-label="Meeting Directory" className="space-y-5">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b-2 border-black pb-4">
-              {/* Category Filter Tabs */}
-              <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0 scrollbar-none">
+          <motion.section
+            aria-label="Meeting Directory"
+            className="space-y-6"
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.45 }}
+          >
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-zinc-200 pb-4">
+              {/* Rectangular Category Filter Tabs */}
+              <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0 scrollbar-none">
                 {CATEGORY_TABS.map((tab) => {
                   const isActive = activeTab === tab.id;
                   return (
@@ -261,18 +314,18 @@ export default function DashboardPage() {
                       type="button"
                       onClick={() => setActiveTab(tab.id)}
                       className={cn(
-                        "flex items-center gap-2 rounded-md border-2 border-black px-3.5 py-1.5 font-mono text-xs font-bold uppercase tracking-wider transition-all whitespace-nowrap",
+                        "flex items-center gap-2 rounded-md px-3 py-1.5 text-xs font-medium transition-colors whitespace-nowrap",
                         isActive
-                          ? "bg-black text-white shadow-neo-sm"
-                          : "bg-white text-black hover:bg-[#FEF08A] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-neo-sm"
+                          ? "bg-zinc-900 text-white shadow-xs"
+                          : "border border-zinc-200 bg-white text-zinc-600 hover:bg-zinc-50 hover:text-zinc-900"
                       )}
                     >
                       <span>{tab.label}</span>
                       {tab.id === "all" && (
                         <span
                           className={cn(
-                            "rounded border border-current px-1 py-0.2 font-mono text-[10px] font-black",
-                            isActive ? "bg-white text-black" : "bg-[#FAF8F5] text-black"
+                            "rounded-sm px-1 py-0.2 font-mono text-[10px]",
+                            isActive ? "bg-zinc-800 text-zinc-200" : "bg-zinc-100 text-zinc-600"
                           )}
                         >
                           {meetings.length}
@@ -285,13 +338,13 @@ export default function DashboardPage() {
 
               {/* Quick Inline Search Input */}
               <div className="relative w-full sm:w-64">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-black stroke-[2.5]" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-zinc-400" />
                 <input
                   type="text"
                   placeholder="Filter meetings..."
                   value={filterQuery}
                   onChange={(e) => setFilterQuery(e.target.value)}
-                  className="h-9 w-full rounded-md border-2 border-black bg-white pl-8 pr-3 font-mono text-xs text-black placeholder:text-neutral-500 shadow-neo-sm focus:bg-[#FEF08A]/20 focus:outline-none"
+                  className="h-9 w-full rounded-md border border-zinc-200 bg-white pl-8 pr-3 font-mono text-xs text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:border-zinc-400 focus:ring-1 focus:ring-zinc-400 transition-colors shadow-xs"
                 />
               </div>
             </div>
@@ -308,13 +361,13 @@ export default function DashboardPage() {
                 ))}
               </div>
             ) : (
-              <div className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-black bg-white py-16 text-center shadow-neo-sm">
-                <Video className="h-10 w-10 text-neutral-400 mb-3 stroke-[1.5]" />
-                <p className="font-mono text-sm font-bold uppercase text-black">
+              <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-zinc-200 bg-zinc-50/50 py-16 text-center">
+                <Video className="h-8 w-8 text-zinc-400 mb-3" />
+                <p className="font-mono text-xs font-medium uppercase tracking-wider text-zinc-900">
                   No matching meetings found
                 </p>
-                <p className="mt-1 text-xs text-neutral-600 font-sans">
-                  Try adjusting the filter query or switching category tabs.
+                <p className="mt-1 text-xs text-zinc-500 font-sans">
+                  Try adjusting your search keywords or switching category filters.
                 </p>
                 <button
                   type="button"
@@ -322,27 +375,14 @@ export default function DashboardPage() {
                     setActiveTab("all");
                     setFilterQuery("");
                   }}
-                  className="mt-4 rounded-md border-2 border-black bg-white px-3 py-1.5 font-mono text-xs font-bold uppercase text-black shadow-neo-sm hover:bg-[#FEF08A] hover:-translate-x-0.5 hover:-translate-y-0.5 transition-all"
+                  className="mt-4 rounded-md border border-zinc-200 bg-white px-3 py-1.5 font-mono text-xs font-medium text-zinc-700 hover:bg-zinc-50 hover:border-zinc-300 transition-colors shadow-xs"
                 >
-                  RESET FILTERS
+                  Reset filters
                 </button>
               </div>
             )}
-          </section>
+          </motion.section>
         </main>
-
-        {/* Global Command Search Omnibar (Cmd+K) */}
-        <CommandSearch
-          open={searchOpen}
-          onOpenChange={setSearchOpen}
-          onOpenSettings={() => setSettingsOpen(true)}
-        />
-
-        {/* AI Settings Modal */}
-        <ApiKeysModal
-          open={settingsOpen}
-          onOpenChange={setSettingsOpen}
-        />
 
         {/* Clip Share Modal */}
         {shareMeeting && (

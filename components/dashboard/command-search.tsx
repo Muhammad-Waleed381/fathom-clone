@@ -15,7 +15,6 @@ import {
   CommandItem,
   CommandSeparator,
 } from "@/components/ui/command";
-import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { formatTime } from "@/components/player/video-scrubber";
 import {
@@ -192,7 +191,7 @@ export function CommandSearch({
             meetingId: m.id,
             meetingTitle: m.title,
             speakerName: speaker?.name || "Speaker",
-            speakerColor: speaker?.color || "#FEF08A",
+            speakerColor: speaker?.color || "#F4F4F5",
             text: seg.text,
             start: seg.start,
             matchedSnippet: snippet,
@@ -249,33 +248,33 @@ export function CommandSearch({
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogContent className="max-w-2xl overflow-hidden p-0 border-2 border-black bg-white text-black shadow-[6px_6px_0px_0px_#000] rounded-lg">
+      <DialogContent className="max-w-2xl overflow-hidden p-0 border border-zinc-200 bg-white text-zinc-950 shadow-2xl rounded-xl">
         <Command shouldFilter={false} className="border-none shadow-none bg-white">
           {/* Top Search Input */}
-          <div className="flex items-center border-b-2 border-black px-4 bg-white">
-            <Search className="mr-3 h-4 w-4 shrink-0 text-black stroke-[2.5]" />
+          <div className="flex items-center border-b border-zinc-200 px-4 bg-white">
+            <Search className="mr-3 h-4 w-4 shrink-0 text-zinc-400" />
             <input
               type="text"
               placeholder="Search meetings, speakers, transcripts, action items..."
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              className="flex h-12 w-full bg-transparent py-3 font-mono text-sm text-black placeholder:text-neutral-400 outline-none"
+              className="flex h-12 w-full bg-transparent py-3 font-mono text-sm text-zinc-900 placeholder:text-zinc-400 outline-none"
               autoFocus
             />
             {query && (
               <button
                 type="button"
                 onClick={() => setQuery("")}
-                className="rounded border border-black bg-[#FAF8F5] px-2 py-0.5 font-mono text-[10px] font-bold uppercase text-black hover:bg-[#FEF08A]"
+                className="rounded-md border border-zinc-200 bg-zinc-50 px-2 py-0.5 font-mono text-[10px] font-medium uppercase text-zinc-600 hover:bg-zinc-100 transition-colors"
               >
-                CLEAR
+                Clear
               </button>
             )}
           </div>
 
           <CommandList className="max-h-[420px] overflow-y-auto p-2 scrollbar-none">
             {cleanQuery && !hasResults && (
-              <CommandEmpty className="py-12 text-center font-mono text-xs font-bold uppercase text-neutral-500">
+              <CommandEmpty className="py-12 text-center font-mono text-xs font-medium text-zinc-500">
                 No matching results for &ldquo;{query}&rdquo;
               </CommandEmpty>
             )}
@@ -289,22 +288,22 @@ export function CommandSearch({
                       setIsOpen(false);
                       router.push("/meetings/meeting-1");
                     }}
-                    className="flex items-center justify-between rounded border border-black/10 px-3 py-2 text-xs font-medium text-black cursor-pointer hover:bg-[#FEF08A] hover:border-black data-[selected=true]:bg-[#FEF08A] data-[selected=true]:border-black mb-1.5 transition-none"
+                    className="flex items-center justify-between rounded-md border border-transparent px-3 py-2 text-xs font-medium text-zinc-900 cursor-pointer hover:bg-zinc-50 hover:border-zinc-200/70 data-[selected=true]:bg-zinc-100 data-[selected=true]:border-zinc-200/80 mb-1 transition-colors"
                   >
                     <div className="flex items-center gap-2.5">
-                      <div className="flex h-7 w-7 items-center justify-center rounded border border-black bg-[#FEF08A] text-black">
-                        <Sparkles className="h-4 w-4" />
+                      <div className="flex h-7 w-7 items-center justify-center rounded-md border border-zinc-200 bg-zinc-50 text-zinc-900">
+                        <Sparkles className="h-3.5 w-3.5" />
                       </div>
                       <div>
-                        <p className="font-bold text-black">
+                        <p className="font-semibold text-zinc-950">
                           Q3 Platform Architecture & Scalability Sync
                         </p>
-                        <p className="font-mono text-[10px] text-neutral-600">
+                        <p className="font-mono text-[10px] text-zinc-500">
                           42m 15s • 8 Attendees • Multi-speaker diarization
                         </p>
                       </div>
                     </div>
-                    <span className="rounded border border-black bg-black px-1.5 py-0.5 font-mono text-[10px] font-black uppercase text-white shadow-neo-sm">
+                    <span className="rounded-md border border-zinc-200 bg-zinc-50 px-1.5 py-0.5 font-mono text-[10px] font-medium text-zinc-700">
                       BENCHMARK
                     </span>
                   </CommandItem>
@@ -314,20 +313,20 @@ export function CommandSearch({
                       setIsOpen(false);
                       router.push("/actions");
                     }}
-                    className="flex items-center justify-between rounded border border-black/10 px-3 py-2 text-xs font-medium text-black cursor-pointer hover:bg-[#FEF08A] hover:border-black data-[selected=true]:bg-[#FEF08A] data-[selected=true]:border-black mb-1.5 transition-none"
+                    className="flex items-center justify-between rounded-md border border-transparent px-3 py-2 text-xs font-medium text-zinc-900 cursor-pointer hover:bg-zinc-50 hover:border-zinc-200/70 data-[selected=true]:bg-zinc-100 data-[selected=true]:border-zinc-200/80 mb-1 transition-colors"
                   >
                     <div className="flex items-center gap-2.5">
-                      <div className="flex h-7 w-7 items-center justify-center rounded border border-black bg-[#DDD6FE] text-black">
-                        <ListTodo className="h-4 w-4" />
+                      <div className="flex h-7 w-7 items-center justify-center rounded-md border border-zinc-200 bg-zinc-50 text-zinc-900">
+                        <ListTodo className="h-3.5 w-3.5" />
                       </div>
                       <div>
-                        <p className="font-bold text-black">Action Items Hub</p>
-                        <p className="font-mono text-[10px] text-neutral-600">
+                        <p className="font-semibold text-zinc-950">Action Items Hub</p>
+                        <p className="font-mono text-[10px] text-zinc-500">
                           Cross-meeting task tracker and sync status
                         </p>
                       </div>
                     </div>
-                    <ArrowRight className="h-3.5 w-3.5 text-black" />
+                    <ArrowRight className="h-3.5 w-3.5 text-zinc-400" />
                   </CommandItem>
 
                   <CommandItem
@@ -335,37 +334,37 @@ export function CommandSearch({
                       setIsOpen(false);
                       if (onOpenSettings) onOpenSettings();
                     }}
-                    className="flex items-center justify-between rounded border border-black/10 px-3 py-2 text-xs font-medium text-black cursor-pointer hover:bg-[#FEF08A] hover:border-black data-[selected=true]:bg-[#FEF08A] data-[selected=true]:border-black mb-1.5 transition-none"
+                    className="flex items-center justify-between rounded-md border border-transparent px-3 py-2 text-xs font-medium text-zinc-900 cursor-pointer hover:bg-zinc-50 hover:border-zinc-200/70 data-[selected=true]:bg-zinc-100 data-[selected=true]:border-zinc-200/80 mb-1 transition-colors"
                   >
                     <div className="flex items-center gap-2.5">
-                      <div className="flex h-7 w-7 items-center justify-center rounded border border-black bg-[#A7F3D0] text-black">
-                        <Settings className="h-4 w-4" />
+                      <div className="flex h-7 w-7 items-center justify-center rounded-md border border-zinc-200 bg-zinc-50 text-zinc-900">
+                        <Settings className="h-3.5 w-3.5" />
                       </div>
                       <div>
-                        <p className="font-bold text-black">AI & API Settings</p>
-                        <p className="font-mono text-[10px] text-neutral-600">
+                        <p className="font-semibold text-zinc-950">AI & API Settings</p>
+                        <p className="font-mono text-[10px] text-zinc-500">
                           OpenRouter & Deepgram Nova-2 keys
                         </p>
                       </div>
                     </div>
-                    <ArrowRight className="h-3.5 w-3.5 text-black" />
+                    <ArrowRight className="h-3.5 w-3.5 text-zinc-400" />
                   </CommandItem>
                 </CommandGroup>
 
-                <CommandSeparator className="my-2 bg-black h-[2px]" />
+                <CommandSeparator className="my-2 bg-zinc-200 h-px" />
 
                 <CommandGroup heading="Recent Meetings">
                   {meetings.map((m) => (
                     <CommandItem
                       key={m.id}
                       onSelect={() => handleSelectMeeting(m.id)}
-                      className="flex items-center justify-between rounded border border-black/10 px-3 py-1.5 text-xs text-black cursor-pointer hover:bg-[#FEF08A] hover:border-black data-[selected=true]:bg-[#FEF08A] data-[selected=true]:border-black mb-1 transition-none"
+                      className="flex items-center justify-between rounded-md border border-transparent px-3 py-1.5 text-xs text-zinc-900 cursor-pointer hover:bg-zinc-50 hover:border-zinc-200/70 data-[selected=true]:bg-zinc-100 data-[selected=true]:border-zinc-200/80 mb-1 transition-colors"
                     >
                       <div className="flex items-center gap-2.5">
-                        <Video className="h-3.5 w-3.5 text-black" />
-                        <span className="font-bold text-black truncate max-w-sm">{m.title}</span>
+                        <Video className="h-3.5 w-3.5 text-zinc-400" />
+                        <span className="font-medium text-zinc-900 truncate max-w-sm">{m.title}</span>
                       </div>
-                      <span className="font-mono text-[11px] font-bold text-neutral-600">
+                      <span className="font-mono text-[11px] text-zinc-500">
                         {formatTime(m.duration)}
                       </span>
                     </CommandItem>
@@ -381,22 +380,22 @@ export function CommandSearch({
                   <CommandItem
                     key={`m-${m.id}`}
                     onSelect={() => handleSelectMeeting(m.id)}
-                    className="flex items-center justify-between rounded border border-black/10 px-3 py-2 text-xs cursor-pointer hover:bg-[#FEF08A] hover:border-black data-[selected=true]:bg-[#FEF08A] data-[selected=true]:border-black mb-1.5 transition-none"
+                    className="flex items-center justify-between rounded-md border border-transparent px-3 py-2 text-xs cursor-pointer hover:bg-zinc-50 hover:border-zinc-200/70 data-[selected=true]:bg-zinc-100 data-[selected=true]:border-zinc-200/80 mb-1 transition-colors"
                   >
                     <div className="flex items-center gap-2.5">
-                      <div className="flex h-7 w-7 items-center justify-center rounded border border-black bg-black text-white">
+                      <div className="flex h-7 w-7 items-center justify-center rounded-md border border-zinc-200 bg-zinc-950 text-white">
                         <Video className="h-3.5 w-3.5" />
                       </div>
                       <div>
-                        <p className="font-bold text-black line-clamp-1">{m.title}</p>
-                        <div className="flex items-center gap-2 font-mono text-[10px] text-neutral-600">
+                        <p className="font-semibold text-zinc-950 line-clamp-1">{m.title}</p>
+                        <div className="flex items-center gap-2 font-mono text-[10px] text-zinc-500">
                           <span>{m.participants.length} ATTENDEES</span>
                           <span>•</span>
                           <span>{formatTime(m.duration)}</span>
                         </div>
                       </div>
                     </div>
-                    <ArrowRight className="h-3.5 w-3.5 text-black" />
+                    <ArrowRight className="h-3.5 w-3.5 text-zinc-400" />
                   </CommandItem>
                 ))}
               </CommandGroup>
@@ -409,25 +408,25 @@ export function CommandSearch({
                   <CommandItem
                     key={`trans-${t.id}`}
                     onSelect={() => handleSelectTranscriptMatch(t.meetingId, t.start)}
-                    className="flex items-start justify-between gap-3 rounded border border-black/10 px-3 py-2 text-xs cursor-pointer hover:bg-[#FEF08A] hover:border-black data-[selected=true]:bg-[#FEF08A] data-[selected=true]:border-black mb-1.5 transition-none"
+                    className="flex items-start justify-between gap-3 rounded-md border border-transparent px-3 py-2 text-xs cursor-pointer hover:bg-zinc-50 hover:border-zinc-200/70 data-[selected=true]:bg-zinc-100 data-[selected=true]:border-zinc-200/80 mb-1 transition-colors"
                   >
                     <div className="flex items-start gap-2.5">
-                      <div className="mt-0.5 flex h-6 w-6 items-center justify-center rounded border border-black bg-[#FEF08A] text-black shrink-0">
+                      <div className="mt-0.5 flex h-6 w-6 items-center justify-center rounded-md border border-zinc-200 bg-zinc-100 text-zinc-700 shrink-0">
                         <Quote className="h-3 w-3" />
                       </div>
                       <div>
                         <div className="flex items-center gap-2">
-                          <span className="font-bold text-[11px] text-black">
+                          <span className="font-semibold text-[11px] text-zinc-950">
                             {t.speakerName}
                           </span>
-                          <span className="font-mono text-[10px] text-neutral-500">in {t.meetingTitle}</span>
+                          <span className="font-mono text-[10px] text-zinc-500">in {t.meetingTitle}</span>
                         </div>
-                        <p className="mt-0.5 font-sans text-[11px] text-neutral-800 italic leading-snug">
+                        <p className="mt-0.5 font-sans text-[11px] text-zinc-600 italic leading-snug">
                           &ldquo;{t.matchedSnippet}&rdquo;
                         </p>
                       </div>
                     </div>
-                    <span className="shrink-0 rounded border border-black bg-white px-1.5 py-0.5 font-mono text-[10px] font-black text-black shadow-neo-sm flex items-center gap-1">
+                    <span className="shrink-0 rounded-md border border-zinc-200 bg-zinc-50 px-1.5 py-0.5 font-mono text-[10px] font-medium text-zinc-700 flex items-center gap-1">
                       <Play className="h-2.5 w-2.5 fill-current" />
                       {formatTime(t.start)}
                     </span>
@@ -443,20 +442,20 @@ export function CommandSearch({
                   <CommandItem
                     key={`act-${item.id}`}
                     onSelect={() => handleSelectActionItem(item.meetingId, item.timestamp)}
-                    className="flex items-center justify-between gap-3 rounded border border-black/10 px-3 py-2 text-xs cursor-pointer hover:bg-[#FEF08A] hover:border-black data-[selected=true]:bg-[#FEF08A] data-[selected=true]:border-black mb-1.5 transition-none"
+                    className="flex items-center justify-between gap-3 rounded-md border border-transparent px-3 py-2 text-xs cursor-pointer hover:bg-zinc-50 hover:border-zinc-200/70 data-[selected=true]:bg-zinc-100 data-[selected=true]:border-zinc-200/80 mb-1 transition-colors"
                   >
                     <div className="flex items-center gap-2.5">
-                      <ListTodo className="h-4 w-4 text-black shrink-0" />
+                      <ListTodo className="h-4 w-4 text-zinc-500 shrink-0" />
                       <div>
-                        <p className="font-bold text-black line-clamp-1">{item.text}</p>
-                        <p className="font-mono text-[10px] text-neutral-500">
+                        <p className="font-semibold text-zinc-950 line-clamp-1">{item.text}</p>
+                        <p className="font-mono text-[10px] text-zinc-500">
                           {item.assigneeName ? `Assigned to ${item.assigneeName} • ` : ""}
                           {item.meetingTitle}
                         </p>
                       </div>
                     </div>
                     {item.timestamp !== undefined && (
-                      <span className="rounded border border-black bg-white px-1.5 py-0.5 font-mono text-[10px] font-bold text-black shadow-neo-sm">
+                      <span className="rounded-md border border-zinc-200 bg-zinc-50 px-1.5 py-0.5 font-mono text-[10px] font-medium text-zinc-700">
                         {formatTime(item.timestamp)}
                       </span>
                     )}
@@ -472,27 +471,24 @@ export function CommandSearch({
                   <CommandItem
                     key={`spk-${s.speakerId}-${s.meetingId}-${idx}`}
                     onSelect={() => handleSelectSpeaker(s.meetingId, s.speakerId)}
-                    className="flex items-center justify-between rounded border border-black/10 px-3 py-2 text-xs cursor-pointer hover:bg-[#FEF08A] hover:border-black data-[selected=true]:bg-[#FEF08A] data-[selected=true]:border-black mb-1.5 transition-none"
+                    className="flex items-center justify-between rounded-md border border-transparent px-3 py-2 text-xs cursor-pointer hover:bg-zinc-50 hover:border-zinc-200/70 data-[selected=true]:bg-zinc-100 data-[selected=true]:border-zinc-200/80 mb-1 transition-colors"
                   >
                     <div className="flex items-center gap-2.5">
-                      <Avatar className="h-6 w-6 rounded-full border border-black">
+                      <Avatar className="h-6 w-6 rounded-md border border-zinc-200">
                         <AvatarImage src={s.avatarUrl} />
-                        <AvatarFallback
-                          style={{ backgroundColor: s.color }}
-                          className="font-mono text-[9px] font-bold text-black"
-                        >
+                        <AvatarFallback className="rounded-md bg-zinc-100 font-mono text-[9px] font-medium text-zinc-800">
                           {s.name.slice(0, 2)}
                         </AvatarFallback>
                       </Avatar>
                       <div>
-                        <p className="font-bold text-black">{s.name}</p>
-                        <p className="font-mono text-[10px] text-neutral-500">
+                        <p className="font-semibold text-zinc-950">{s.name}</p>
+                        <p className="font-mono text-[10px] text-zinc-500">
                           {s.role ? `${s.role} • ` : ""}
                           {s.meetingTitle}
                         </p>
                       </div>
                     </div>
-                    <ArrowRight className="h-3.5 w-3.5 text-black" />
+                    <ArrowRight className="h-3.5 w-3.5 text-zinc-400" />
                   </CommandItem>
                 ))}
               </CommandGroup>
@@ -500,20 +496,20 @@ export function CommandSearch({
           </CommandList>
 
           {/* Dialog Footer */}
-          <div className="flex items-center justify-between border-t-2 border-black bg-[#FAF8F5] px-4 py-2 font-mono text-[11px] text-neutral-700">
+          <div className="flex items-center justify-between border-t border-zinc-200 bg-zinc-50/80 px-4 py-2.5 font-mono text-[11px] text-zinc-500">
             <div className="flex items-center gap-2">
-              <span>NAVIGATE:</span>
-              <kbd className="rounded border border-black bg-white px-1.5 py-0.5 font-bold text-black shadow-neo-sm">
+              <span>Navigate:</span>
+              <kbd className="rounded border border-zinc-200 bg-white px-1.5 py-0.5 text-zinc-700 shadow-2xs">
                 ↑↓
               </kbd>
-              <span>SELECT:</span>
-              <kbd className="rounded border border-black bg-white px-1.5 py-0.5 font-bold text-black shadow-neo-sm">
+              <span>Select:</span>
+              <kbd className="rounded border border-zinc-200 bg-white px-1.5 py-0.5 text-zinc-700 shadow-2xs">
                 ↵
               </kbd>
             </div>
             <div className="flex items-center gap-1.5">
-              <span>CLOSE:</span>
-              <kbd className="rounded border border-black bg-white px-1.5 py-0.5 font-bold text-black shadow-neo-sm">
+              <span>Close:</span>
+              <kbd className="rounded border border-zinc-200 bg-white px-1.5 py-0.5 text-zinc-700 shadow-2xs">
                 ESC
               </kbd>
             </div>

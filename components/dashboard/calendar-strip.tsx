@@ -1,9 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Badge } from "@/components/ui/badge";
 import {
-  Calendar,
   Clock,
   Bot,
   PlayCircle,
@@ -123,7 +121,7 @@ export function CalendarStrip({
   return (
     <div
       className={cn(
-        "rounded-lg border-2 border-black bg-white p-3.5 sm:p-4 shadow-neo",
+        "rounded-xl border border-zinc-200 bg-white p-5 shadow-sm",
         className
       )}
     >
@@ -131,13 +129,13 @@ export function CalendarStrip({
         {/* Left: Desk Planner Controls */}
         <div className="flex flex-wrap items-center gap-2.5 sm:gap-3 shrink-0">
           {/* Google Calendar Connected Badge */}
-          <div className="flex items-center gap-2 rounded-md border-2 border-black bg-white px-3 py-1.5 shadow-neo-sm">
+          <div className="flex items-center gap-2 rounded-md border border-zinc-200 bg-zinc-50 px-2.5 py-1.5">
             <span className="relative flex h-2 w-2">
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
               <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
             </span>
-            <span className="font-mono text-[11px] font-black uppercase tracking-wider text-black">
-              CALENDAR CONNECTED
+            <span className="font-mono text-[11px] font-medium uppercase tracking-wider text-zinc-700">
+              Calendar Connected
             </span>
           </div>
 
@@ -146,17 +144,17 @@ export function CalendarStrip({
             type="button"
             onClick={toggleGlobalBot}
             className={cn(
-              "flex items-center gap-2 rounded-md border-2 border-black px-3 py-1.5 font-mono text-[11px] font-black uppercase tracking-wider shadow-neo-sm transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0 active:translate-y-0",
+              "flex items-center gap-2 rounded-md border px-3 py-1.5 font-mono text-[11px] font-medium uppercase tracking-wider transition-colors",
               botActive
-                ? "bg-[#A7F3D0] text-black hover:bg-[#86efac]"
-                : "bg-neutral-200 text-neutral-600 hover:bg-neutral-300"
+                ? "border-zinc-900 bg-zinc-900 text-white hover:bg-zinc-800"
+                : "border-zinc-200 bg-zinc-50 text-zinc-600 hover:bg-zinc-100"
             )}
             title="1-Click Bot Switch"
           >
-            <Bot className="h-3.5 w-3.5 text-black" />
-            <span>BOT: {botActive ? "AUTO-JOIN ON" : "PAUSED"}</span>
+            <Bot className="h-3.5 w-3.5" />
+            <span>Bot: {botActive ? "Auto-Join On" : "Paused"}</span>
             {botActive ? (
-              <Check className="h-3 w-3 stroke-[3]" />
+              <Check className="h-3 w-3 stroke-[2.5]" />
             ) : (
               <Pause className="h-3 w-3" />
             )}
@@ -166,10 +164,10 @@ export function CalendarStrip({
           <button
             type="button"
             onClick={handleRecordNow}
-            className="flex items-center gap-2 rounded-md border-2 border-black bg-black px-3 py-1.5 font-mono text-[11px] font-black uppercase tracking-wider text-white shadow-neo-sm transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:bg-neutral-900 active:translate-x-0 active:translate-y-0"
+            className="flex items-center gap-2 rounded-md border border-zinc-200 bg-white px-3 py-1.5 font-mono text-[11px] font-medium uppercase tracking-wider text-zinc-900 hover:bg-zinc-50 hover:border-zinc-300 transition-colors shadow-xs"
           >
-            <Radio className="h-3 w-3 text-red-400 animate-pulse" />
-            <span>RECORD NOW</span>
+            <Radio className="h-3 w-3 text-red-500 animate-pulse" />
+            <span>Record Now</span>
           </button>
         </div>
 
@@ -184,45 +182,45 @@ export function CalendarStrip({
                 key={m.id}
                 onClick={() => handleSimulate(m)}
                 className={cn(
-                  "group relative flex min-w-[250px] flex-1 cursor-pointer flex-col justify-between rounded-md border-2 border-black bg-[#FAF8F5] p-2.5 transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:bg-white hover:shadow-neo-sm active:translate-x-0 active:translate-y-0",
-                  isSimulating && "bg-[#FEF08A] hover:bg-[#FEF08A]"
+                  "group relative flex min-w-[240px] flex-1 cursor-pointer flex-col justify-between rounded-lg border border-zinc-200 bg-zinc-50/60 p-3 transition-all hover:bg-white hover:border-zinc-300 hover:shadow-xs",
+                  isSimulating && "bg-zinc-100/90 border-zinc-300 ring-1 ring-zinc-300"
                 )}
               >
                 {/* Time & Bot Toggle */}
                 <div className="flex items-center justify-between gap-2">
-                  <div className="flex items-center gap-1.5 font-mono text-[11px] font-bold text-black">
-                    <Clock className="h-3 w-3" />
-                    <span>{m.time}</span>
-                    <span className="text-neutral-500 font-normal">({m.duration})</span>
+                  <div className="flex items-center gap-1.5 font-mono text-[11px] text-zinc-600">
+                    <Clock className="h-3 w-3 text-zinc-400" />
+                    <span className="font-medium text-zinc-800">{m.time}</span>
+                    <span className="text-zinc-400 font-normal">({m.duration})</span>
                   </div>
 
                   <button
                     type="button"
                     onClick={(e) => toggleMeetingBot(m.id, e)}
                     className={cn(
-                      "rounded border border-black px-1.5 py-0.2 font-mono text-[10px] font-black uppercase tracking-wider transition-all",
+                      "rounded-sm border px-1.5 py-0.5 font-mono text-[10px] font-medium uppercase tracking-wider transition-colors",
                       isBotConfirmed
-                        ? "bg-[#A7F3D0] text-black hover:bg-[#6ee7b7]"
-                        : "bg-neutral-200 text-neutral-600 hover:bg-neutral-300"
+                        ? "border-zinc-900 bg-zinc-900 text-white hover:bg-zinc-800"
+                        : "border-zinc-200 bg-white text-zinc-500 hover:bg-zinc-100"
                     )}
                     title={isBotConfirmed ? "Click to pause bot" : "Click to activate bot"}
                   >
-                    {isBotConfirmed ? "BOT ON" : "OFF"}
+                    {isBotConfirmed ? "Bot On" : "Off"}
                   </button>
                 </div>
 
                 {/* Title */}
-                <p className="mt-1.5 line-clamp-1 text-xs font-bold text-black group-hover:underline">
+                <p className="mt-2 line-clamp-1 text-xs font-semibold text-zinc-900 group-hover:text-zinc-950">
                   {m.title}
                 </p>
 
                 {/* Platform & Action */}
-                <div className="mt-2 flex items-center justify-between border-t border-black/15 pt-1.5 text-[10px] font-mono">
-                  <span className="rounded border border-black bg-white px-1.5 py-0.2 font-bold text-black">
+                <div className="mt-2.5 flex items-center justify-between border-t border-zinc-200/70 pt-2 text-[10px] font-mono">
+                  <span className="rounded-sm border border-zinc-200 bg-white px-1.5 py-0.5 text-zinc-600">
                     {m.platform}
                   </span>
-                  <div className="flex items-center gap-1 font-bold text-black group-hover:text-black">
-                    <span>SIMULATE</span>
+                  <div className="flex items-center gap-1 text-[11px] font-medium text-zinc-500 group-hover:text-zinc-950 transition-colors">
+                    <span>Simulate</span>
                     <PlayCircle className="h-3 w-3" />
                   </div>
                 </div>
