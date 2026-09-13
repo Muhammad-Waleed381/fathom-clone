@@ -4,14 +4,15 @@
 
 **Goal:** Build and deploy a production-grade rebuild of Fathom.video with synchronized media playback, 8-person speaker diarization and filtering, dynamic AI templates, interactive action items, hotkey highlight clipping, cross-meeting search, action items inbox, and live browser recording.
 
-**Architecture:** Next.js (App Router) + TypeScript + Tailwind CSS with dark-mode default, Zustand for reactive player state, LocalStorage for persistent user data, OpenRouter API for multi-template summarization and Q&A, and Deepgram Nova-2 for STT diarization.
+**Architecture:** Next.js (App Router) + TypeScript + Tailwind CSS with dark-mode default, official shadcn/ui components generated via `shadcn` MCP, Zustand for reactive player state, LocalStorage for persistent user data, OpenRouter API for multi-template summarization and Q&A, and Deepgram Nova-2 for STT diarization.
 
-**Tech Stack:** Next.js 14/15, React, TypeScript, Tailwind CSS, Radix UI / shadcn, Lucide React, Zustand, Canvas Confetti.
+**Tech Stack:** Next.js 14/15, React, TypeScript, Tailwind CSS, shadcn/ui (via shadcn MCP), Lucide React, Zustand, Canvas Confetti.
 
 **Spec:** `docs/superpowers/specs/2026-09-13-fathom-rebuild-design.md`
 
 ## Global Constraints
 - Target directory: `/home/waleed/Desktop/fathom-clone`
+- **MANDATORY UI RULE:** For all standard and rich UI components (Button, Dialog, Tabs, DropdownMenu, Tooltip, Popover, Slider, Badge, Command, Input, Checkbox, Avatar, ScrollArea, Card), **DO NOT create custom primitives from scratch**. Always use the `shadcn` MCP tools (`get_add_command_for_items`, `view_items_in_registries`, `get_audit_checklist`) and `npx shadcn@latest add` to add official components into `components/ui/`.
 - Dark-mode default with deep indigo/violet accents (`#6366F1`) and slate surfaces (`#0F172A`, `#1E293B`)
 - Zero login wall for reviewers opening the live deployment
 - Pre-cached fail-safe summaries for all seeded meetings to guarantee 0ms latency even without API keys
@@ -19,18 +20,18 @@
 
 ---
 
-### Task 1: Next.js Project Scaffolding & Design Foundation
+### Task 1: Next.js Project Scaffolding & shadcn/ui Integration via MCP
 
 **Files:**
-- Create: `package.json`, `tsconfig.json`, `tailwind.config.ts`, `postcss.config.mjs`, `next.config.mjs`
+- Create: `package.json`, `tsconfig.json`, `tailwind.config.ts`, `postcss.config.mjs`, `next.config.mjs`, `components.json`
 - Create: `app/layout.tsx`, `app/globals.css`
 - Create: `types/meeting.ts`
 - Create: `lib/utils.ts`
-- Test: `tests/types.test.ts`
+- Add via shadcn MCP: `components/ui/button.tsx`, `components/ui/dialog.tsx`, `components/ui/tabs.tsx`, `components/ui/dropdown-menu.tsx`, `components/ui/tooltip.tsx`, `components/ui/popover.tsx`, `components/ui/slider.tsx`, `components/ui/badge.tsx`, `components/ui/command.tsx`, `components/ui/checkbox.tsx`, `components/ui/avatar.tsx`, `components/ui/scroll-area.tsx`, `components/ui/card.tsx`, `components/ui/input.tsx`
 
 **Interfaces:**
 - Produces: `Meeting`, `Speaker`, `TranscriptSegment`, `TranscriptWord`, `ActionItem`, `MeetingHighlight`, `SummaryTemplateId` types.
-- Produces: Base Tailwind utility classes and CSS variables for the dark indigo theme.
+- Produces: Official shadcn/ui components installed into `components/ui/` using shadcn MCP.
 
 - [ ] **Step 1: Initialize Next.js project dependencies**
   Configure `package.json` with Next.js, React, Lucide-react, Zustand, clsx, tailwind-merge, canvas-confetti.
@@ -38,11 +39,12 @@
   Export all data model interfaces defined in the specification.
 - [ ] **Step 3: Configure Tailwind and CSS Theme Variables**
   Setup `tailwind.config.ts` and `app/globals.css` with dark theme variables, custom scrollbars, and accent colors.
-- [ ] **Step 4: Verify build and TypeScript compilation**
-  Run: `npm install && npm run build` (or `npx tsc --noEmit`)
-  Expected: Successful compilation with 0 type errors.
-- [ ] **Step 5: Commit**
-  `git add . && git commit -m "feat(scaffold): initialize Next.js app with Tailwind and core meeting types"`
+- [ ] **Step 4: Use shadcn MCP to add official UI components**
+  Use `get_add_command_for_items` MCP tool and install `@shadcn/button`, `@shadcn/dialog`, `@shadcn/tabs`, `@shadcn/dropdown-menu`, `@shadcn/tooltip`, `@shadcn/popover`, `@shadcn/slider`, `@shadcn/badge`, `@shadcn/command`, `@shadcn/checkbox`, `@shadcn/avatar`, `@shadcn/scroll-area`, `@shadcn/card`, `@shadcn/input`.
+- [ ] **Step 5: Run shadcn audit checklist and verify build**
+  Use `get_audit_checklist` MCP tool to verify imports, styles, and TypeScript definitions.
+- [ ] **Step 6: Commit**
+  `git add . && git commit -m "feat(scaffold): initialize Next.js app with Tailwind, core types, and shadcn components via MCP"`
 
 ---
 
@@ -51,7 +53,6 @@
 **Files:**
 - Create: `data/seed-meetings.ts`
 - Create: `lib/store/use-meeting-store.ts`
-- Test: `tests/store.test.ts`
 
 **Interfaces:**
 - Produces: `SEED_MEETINGS: Meeting[]` containing the 42-min 8-person benchmark call, sales call, 1-on-1, and design critique.
@@ -71,47 +72,47 @@
 ### Task 3: Video Player & Synchronized Interactive Transcript Engine
 
 **Files:**
-- Create: `components/player/video-player.tsx`
+- Create: `components/player/video-player.tsx` (using shadcn `Slider`, `Tooltip`, `DropdownMenu`)
 - Create: `components/player/video-scrubber.tsx`
-- Create: `components/player/speaker-presence-bar.tsx`
-- Create: `components/transcript/transcript-viewer.tsx`
+- Create: `components/player/speaker-presence-bar.tsx` (using shadcn `Avatar`, `Badge`)
+- Create: `components/transcript/transcript-viewer.tsx` (using shadcn `ScrollArea`, `Button`, `Badge`)
 - Create: `components/transcript/transcript-segment.tsx`
 
 **Interfaces:**
-- Consumes: `useMeetingStore`
+- Consumes: `useMeetingStore`, shadcn UI components
 - Produces: Sub-second word-level highlighting, click-to-seek, auto-scroll with pause/resume, and active speaker timeline badges.
 
 - [ ] **Step 1: Build `VideoPlayer` & `VideoScrubber`**
-  Support video stream / responsive canvas, playback speeds (1x-2x), timeline highlight markers, and 'H' hotkey trigger.
+  Integrate shadcn `Slider` for scrub/volume, `Tooltip` for keyboard shortcut hints, timeline highlight markers, and 'H' hotkey trigger.
 - [ ] **Step 2: Build `SpeakerPresenceBar`**
-  Display 8 participant avatars, talk-time percentages, and click-to-filter speaker toggle.
+  Display 8 participant avatars using shadcn `Avatar`, talk-time percentages, and click-to-filter speaker toggle.
 - [ ] **Step 3: Build `TranscriptViewer` with word-level sync**
-  Render segments with speaker badges, highlight currently spoken word, enable click-to-seek, and manage auto-scroll locking.
+  Render segments with speaker badges, highlight currently spoken word, enable click-to-seek, and manage auto-scroll locking with shadcn `ScrollArea`.
 - [ ] **Step 4: Add text selection popover for instant clipping**
-  Selecting text displays a floating tooltip with *"Highlight & Clip"* option.
+  Use shadcn `Popover` for the floating tooltip with *"Highlight & Clip"* option.
 - [ ] **Step 5: Commit**
-  `git add components/player/ components/transcript/ && git commit -m "feat(player): implement synchronized video player and interactive transcript"`
+  `git add components/player/ components/transcript/ && git commit -m "feat(player): implement synchronized video player and interactive transcript with shadcn components"`
 
 ---
 
 ### Task 4: Dynamic AI Template Switcher & Action Items Management
 
 **Files:**
-- Create: `components/notes/ai-notes-panel.tsx`
-- Create: `components/notes/template-selector.tsx`
-- Create: `components/notes/action-items-list.tsx`
-- Create: `components/notes/ask-fathom-chat.tsx`
+- Create: `components/notes/ai-notes-panel.tsx` (using shadcn `Tabs`, `Card`, `Button`, `Badge`)
+- Create: `components/notes/template-selector.tsx` (using shadcn `Tabs`)
+- Create: `components/notes/action-items-list.tsx` (using shadcn `Checkbox`, `Badge`, `Button`)
+- Create: `components/notes/ask-fathom-chat.tsx` (using shadcn `Input`, `Button`, `ScrollArea`)
 
 **Interfaces:**
-- Consumes: `Meeting["summaries"]`, `Meeting["actionItems"]`
+- Consumes: `Meeting["summaries"]`, `Meeting["actionItems"]`, shadcn UI components
 - Produces: Instant template switching (*Executive*, *Action Items*, *Sales*, *Engineering*), interactive todo checkboxes, timestamp jump, and "Ask AI" chat box.
 
 - [ ] **Step 1: Implement `TemplateSelector` & `AiNotesPanel`**
-  Render structured summary sections, bullet points, and clickable timestamp references with 0ms lag.
+  Use shadcn `Tabs` to render structured summary sections, bullet points, and clickable timestamp references with 0ms lag.
 - [ ] **Step 2: Implement `ActionItemsList`**
-  Add interactive checkboxes, assignee badges, click-to-seek timestamps, and "Copy to Slack/Markdown" action.
+  Use shadcn `Checkbox` and `Badge` for interactive todo items, assignee badges, click-to-seek timestamps, and "Copy to Slack/Markdown" action.
 - [ ] **Step 3: Implement `AskFathomChat`**
-  Add Q&A conversational interface with suggested prompt pills and citation jumps.
+  Add Q&A conversational interface using shadcn `Input` and `ScrollArea` with citation jumps.
 - [ ] **Step 4: Commit**
   `git add components/notes/ && git commit -m "feat(notes): implement dynamic template switcher and action items panel"`
 
@@ -125,7 +126,7 @@
 - Create: `app/api/transcribe/route.ts`
 - Create: `lib/openrouter.ts`
 - Create: `lib/deepgram.ts`
-- Create: `components/settings/api-keys-modal.tsx`
+- Create: `components/settings/api-keys-modal.tsx` (using shadcn `Dialog`, `Input`, `Button`)
 
 **Interfaces:**
 - Produces: Working streaming OpenRouter endpoints and Deepgram transcription with safe pre-computed fallbacks if keys are omitted.
@@ -137,7 +138,7 @@
 - [ ] **Step 3: Create API Route Handlers**
   `POST /api/ai/summarize`, `POST /api/ai/ask`, and `POST /api/transcribe` with graceful fallback handling.
 - [ ] **Step 4: Build `ApiKeysModal`**
-  Allow reviewer to configure custom Deepgram/OpenRouter keys directly from the UI header.
+  Use shadcn `Dialog` and `Input` to allow reviewer to configure custom Deepgram/OpenRouter keys directly from the UI header.
 - [ ] **Step 5: Commit**
   `git add app/api/ lib/ components/settings/ && git commit -m "feat(api): add OpenRouter summaries and Deepgram transcription endpoints"`
 
@@ -146,10 +147,10 @@
 ### Task 6: Highlights, Clip Sharing & Public Guest View
 
 **Files:**
-- Create: `components/highlights/highlight-modal.tsx`
-- Create: `components/highlights/clip-share-modal.tsx`
+- Create: `components/highlights/highlight-modal.tsx` (using shadcn `Dialog`, `Input`, `Button`, `Badge`)
+- Create: `components/highlights/clip-share-modal.tsx` (using shadcn `Dialog`, `Button`, `Input`)
 - Create: `app/share/[id]/page.tsx`
-- Create: `components/share/public-clip-viewer.tsx`
+- Create: `components/share/public-clip-viewer.tsx` (using shadcn `Card`, `Badge`, `Button`)
 
 **Interfaces:**
 - Produces: Modal to name and save clips; public unauthenticated page `/share/[id]?start=X&end=Y` with zero login barriers.
@@ -167,10 +168,10 @@
 
 **Files:**
 - Create: `app/page.tsx`
-- Create: `components/dashboard/dashboard-header.tsx`
-- Create: `components/dashboard/calendar-strip.tsx`
-- Create: `components/dashboard/meeting-card.tsx`
-- Create: `components/dashboard/command-search.tsx`
+- Create: `components/dashboard/dashboard-header.tsx` (using shadcn `Button`, `Avatar`, `Badge`)
+- Create: `components/dashboard/calendar-strip.tsx` (using shadcn `Badge`)
+- Create: `components/dashboard/meeting-card.tsx` (using shadcn `Card`, `Badge`, `Avatar`, `Button`)
+- Create: `components/dashboard/command-search.tsx` (using shadcn `Command`, `Dialog`)
 - Create: `app/meetings/[id]/page.tsx`
 
 **Interfaces:**
@@ -181,11 +182,11 @@
 - [ ] **Step 2: Implement `MeetingCard` & Directory List**
   Render cards with speaker avatar stacks, template badges, summary snippets, and quick actions.
 - [ ] **Step 3: Implement `CommandSearch` (`Cmd+K`)**
-  Global fuzzy search across all titles, speakers, transcript words, and action items.
+  Use shadcn `Command` for global fuzzy search across all titles, speakers, transcript words, and action items.
 - [ ] **Step 4: Wire Meeting Page (`/meetings/[id]`)**
   Assemble Player, Scrubber, Transcript, and Notes panel into a cohesive split view.
 - [ ] **Step 5: Commit**
-  `git add app/ components/dashboard/ && git commit -m "feat(dashboard): implement meetings dashboard and Cmd+K search omnibar"`
+  `git add app/ components/dashboard/ && git commit -m "feat(dashboard): implement meetings dashboard and Cmd+K search omnibar with shadcn components"`
 
 ---
 
@@ -193,8 +194,8 @@
 
 **Files:**
 - Create: `app/actions/page.tsx`
-- Create: `components/actions/actions-table.tsx`
-- Create: `components/actions/action-filters.tsx`
+- Create: `components/actions/actions-table.tsx` (using shadcn `Checkbox`, `Badge`, `Button`, `Input`)
+- Create: `components/actions/action-filters.tsx` (using shadcn `Tabs`, `DropdownMenu`, `Badge`)
 
 **Interfaces:**
 - Produces: `/actions` route aggregating all action items across all meetings, filterable by assignee, status, and meeting source, with confetti completion.
@@ -211,7 +212,7 @@
 ### Task 9: In-Browser Meeting Simulator & Live Recording Studio
 
 **Files:**
-- Create: `components/record/meeting-recorder-modal.tsx`
+- Create: `components/record/meeting-recorder-modal.tsx` (using shadcn `Dialog`, `Button`, `Badge`)
 - Create: `lib/audio/use-speech-recognition.ts`
 - Create: `components/record/waveform-visualizer.tsx`
 
@@ -239,9 +240,11 @@
 - [ ] **Step 1: Run comprehensive TypeScript and Next.js build check**
   Run: `npm run build`
   Expected: Clean build with 0 warnings or type errors.
-- [ ] **Step 2: Write documentation (`README.md`)**
+- [ ] **Step 2: Run shadcn component audit**
+  Use `get_audit_checklist` MCP tool and confirm all components follow best practices.
+- [ ] **Step 3: Write documentation (`README.md`)**
   Detail architecture, key features, walkthrough video guide, and API configuration instructions.
-- [ ] **Step 3: Update `.agent-logs/` and perform final commit**
+- [ ] **Step 4: Update `.agent-logs/` and perform final commit & push**
   Ensure all prompt logs are synchronized and pushed to GitHub.
-- [ ] **Step 4: Final Commit & Push**
+- [ ] **Step 5: Final Commit & Push**
   `git add . && git commit -m "chore: complete fathom rebuild with end-to-end verification and documentation"`
