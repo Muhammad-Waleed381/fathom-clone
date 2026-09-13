@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ApiKeysModal } from "@/components/settings/api-keys-modal";
+import { MeetingRecorderModal } from "@/components/record/meeting-recorder-modal";
 import {
   Search,
   Video,
@@ -29,6 +30,7 @@ export function DashboardHeader({
 }: DashboardHeaderProps) {
   const meetings = useMeetingStore((s) => s.meetings);
   const [apiKeysModalOpen, setApiKeysModalOpen] = useState(false);
+  const [recorderModalOpen, setRecorderModalOpen] = useState(false);
 
   // Compute total pending action items across all meetings
   const totalPendingActionItems = meetings.reduce((acc, m) => {
@@ -39,10 +41,7 @@ export function DashboardHeader({
     if (onRecordClick) {
       onRecordClick();
     } else {
-      // Default notification when clicked
-      alert(
-        "Fathom Meeting Recorder: Launching live capture studio with audio diarization & AI notetaker."
-      );
+      setRecorderModalOpen(true);
     }
   };
 
@@ -181,6 +180,12 @@ export function DashboardHeader({
       <ApiKeysModal
         open={apiKeysModalOpen}
         onOpenChange={setApiKeysModalOpen}
+      />
+
+      {/* In-Browser Meeting Recorder Modal */}
+      <MeetingRecorderModal
+        open={recorderModalOpen}
+        onOpenChange={setRecorderModalOpen}
       />
     </>
   );

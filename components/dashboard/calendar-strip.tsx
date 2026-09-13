@@ -14,7 +14,9 @@ import {
   Sparkles,
   Zap,
   PlayCircle,
+  Radio,
 } from "lucide-react";
+import { MeetingRecorderModal } from "@/components/record/meeting-recorder-modal";
 import { cn } from "@/lib/utils";
 
 export interface UpcomingMeeting {
@@ -58,14 +60,24 @@ const UPCOMING_MEETINGS: UpcomingMeeting[] = [
 ];
 
 export interface CalendarStripProps {
-  onSimulateCall?: () => void;
+  onSimulateCall?: (meeting?: UpcomingMeeting) => void;
+  onRecordNow?: () => void;
   className?: string;
 }
 
-export function CalendarStrip({ onSimulateCall, className }: CalendarStripProps) {
+export function CalendarStrip({
+  onSimulateCall,
+  onRecordNow,
+  className,
+}: CalendarStripProps) {
   const [meetings, setMeetings] = useState<UpcomingMeeting[]>(UPCOMING_MEETINGS);
   const [botActive, setBotActive] = useState<boolean>(true);
   const [simulatedId, setSimulatedId] = useState<string | null>(null);
+
+  // In-Browser Recorder Modal state
+  const [recorderOpen, setRecorderOpen] = useState<boolean>(false);
+  const [recorderTitle, setRecorderTitle] = useState<string>("");
+  const [autoSimulate, setAutoSimulate] = useState<boolean>(false);
 
   const toggleMeetingBot = (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
@@ -81,11 +93,22 @@ export function CalendarStrip({ onSimulateCall, className }: CalendarStripProps)
   const handleSimulate = (m: UpcomingMeeting) => {
     setSimulatedId(m.id);
     if (onSimulateCall) {
-      onSimulateCall();
+      onSimulateCall(m);
     } else {
-      setTimeout(() => {
-        setSimulatedId(null);
-      }, 2000);
+      setRecorderTitle(m.title);
+      setAutoSimulate(true);
+      setRecorderOpen(true);
+    }
+  };
+
+  const handleRecordNow = (e?: React.MouseEvent) => {
+    e?.stopPropagation();
+    if (onRecordNow) {
+      onRecordNow();
+    } else {
+      setRecorderTitle("");
+      setAutoSimulate(false);
+      setRecorderOpen(true);
     }
   };
 
@@ -146,6 +169,17 @@ export function CalendarStrip({ onSimulateCall, className }: CalendarStripProps)
               </p>
             </div>
           </div>
+
+          {/* Direct Record Now Studio Trigger */}
+          <Button
+            type="button"
+            size="sm"
+            onClick={handleRecordNow}
+            className="h-10 gap-2 rounded-xl bg-rose-600 px-3.5 text-xs font-semibold text-white shadow-md shadow-rose-600/20 transition-all hover:bg-rose-500 active:scale-95 shrink-0"
+          >
+            <Radio className="h-3.5 w-3.5 animate-pulse" />
+            <span>Record Now</span>
+          </Button>
         </div>
 
         {/* Center/Right: Quick Interactive Schedule Strip */}
@@ -206,6 +240,14 @@ export function CalendarStrip({ onSimulateCall, className }: CalendarStripProps)
           })}
         </div>
       </div>
+
+      {/* In-Browser Meeting Recorder Modal */}
+      <MeetingRecorderModal
+        open={recorderOpen}
+        onOpenChange={setRecorderOpen}
+        initialTitle={recorderTitle}
+        autoStartSimulation={autoSimulate}
+      />
     </div>
   );
 }
