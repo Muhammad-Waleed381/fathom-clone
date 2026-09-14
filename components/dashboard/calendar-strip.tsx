@@ -121,24 +121,13 @@ export function CalendarStrip({
   return (
     <div
       className={cn(
-        "rounded-xl border border-zinc-200 bg-white p-5 shadow-sm",
+        "rounded-xl border border-zinc-200 bg-white p-4 shadow-sm",
         className
       )}
     >
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-        {/* Left: Desk Planner Controls */}
-        <div className="flex flex-wrap items-center gap-2.5 sm:gap-3 shrink-0">
-          {/* Google Calendar Connected Badge */}
-          <div className="flex items-center gap-2 rounded-md border border-zinc-200 bg-zinc-50 px-2.5 py-1.5">
-            <span className="relative flex h-2 w-2">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
-              <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
-            </span>
-            <span className="font-mono text-[11px] font-medium uppercase tracking-wider text-zinc-700">
-              Calendar Connected
-            </span>
-          </div>
-
+        {/* Left: Desk Planner Controls (Removed fake live calendar connected badge) */}
+        <div className="flex flex-wrap items-center gap-2.5 shrink-0">
           {/* 1-Click Global Bot Switch */}
           <button
             type="button"
@@ -152,7 +141,7 @@ export function CalendarStrip({
             title="1-Click Bot Switch"
           >
             <Bot className="h-3.5 w-3.5" />
-            <span>Bot: {botActive ? "Auto-Join On" : "Paused"}</span>
+            <span>Bot: {botActive ? "Auto-Join" : "Paused"}</span>
             {botActive ? (
               <Check className="h-3 w-3 stroke-[2.5]" />
             ) : (
@@ -166,7 +155,7 @@ export function CalendarStrip({
             onClick={handleRecordNow}
             className="flex items-center gap-2 rounded-md border border-zinc-200 bg-white px-3 py-1.5 font-mono text-[11px] font-medium uppercase tracking-wider text-zinc-900 hover:bg-zinc-50 hover:border-zinc-300 transition-colors shadow-xs"
           >
-            <Radio className="h-3 w-3 text-red-500 animate-pulse" />
+            <Radio className="h-3 w-3 text-zinc-950" />
             <span>Record Now</span>
           </button>
         </div>
