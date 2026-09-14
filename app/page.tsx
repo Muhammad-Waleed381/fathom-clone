@@ -11,6 +11,14 @@ import { ClipShareModal } from "@/components/highlights/clip-share-modal";
 import { SparklesCore } from "@/components/ui/sparkles";
 import { Meeting } from "@/types/meeting";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+} from "@/components/ui/card";
 import {
   Tooltip,
   TooltipContent,
@@ -23,6 +31,11 @@ import {
   ListTodo,
   Share2,
   Video,
+  Layers,
+  Sparkles,
+  ShieldCheck,
+  Zap,
+  ArrowRight,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -149,7 +162,7 @@ export default function DashboardPage() {
                 initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.08 }}
-                className="mt-5 rounded-xl border border-zinc-200 bg-white/95 p-4 sm:p-5 shadow-lg shadow-black/[0.03] backdrop-blur-sm"
+                className="mt-5 rounded-xl border border-zinc-200/90 bg-white/95 p-4 sm:p-5 shadow-lg shadow-black/[0.03] backdrop-blur-sm"
               >
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                   <div className="space-y-1.5">
@@ -225,13 +238,13 @@ export default function DashboardPage() {
         </section>
 
         {/* Main Content Area */}
-        <main className="flex-1 w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
-          {/* Scroll-triggered Section: Calendar Strip */}
+        <main className="flex-1 w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-10">
+          {/* Section 1: Calendar Schedule Strip */}
           <motion.section
             aria-label="Schedule"
             initial={{ opacity: 0, y: 16 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-50px" }}
+            viewport={{ once: true, margin: "-40px" }}
             transition={{ duration: 0.4 }}
           >
             <CalendarStrip
@@ -241,13 +254,13 @@ export default function DashboardPage() {
             />
           </motion.section>
 
-          {/* Directory Filter Tabs & Search */}
+          {/* Section 2: Meeting Directory & Filter Grid */}
           <motion.section
             aria-label="Meeting Directory"
             className="space-y-4"
             initial={{ opacity: 0, y: 16 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-50px" }}
+            viewport={{ once: true, margin: "-40px" }}
             transition={{ duration: 0.4 }}
           >
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-zinc-200 pb-3">
@@ -340,6 +353,125 @@ export default function DashboardPage() {
                 </button>
               </div>
             )}
+          </motion.section>
+
+          {/* Section 3: Architecture & Workflow Highlights (Extends page naturally without text bloat) */}
+          <motion.section
+            aria-label="Platform Highlights"
+            className="space-y-4 pt-2 border-t border-zinc-200/80"
+            initial={{ opacity: 0, y: 18 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-40px" }}
+            transition={{ duration: 0.4 }}
+          >
+            <div className="flex items-center justify-between">
+              <span className="font-mono text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                Core Capabilities
+              </span>
+              <span className="font-mono text-[11px] text-zinc-400">Zero Configuration</span>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {/* Feature Card 1 */}
+              <Card className="border border-zinc-200/80 bg-white/95 p-5 shadow-sm hover:shadow-md hover:border-zinc-300 transition-all">
+                <CardHeader className="p-0 pb-2.5">
+                  <div className="flex items-center justify-between">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-md bg-zinc-100 text-zinc-900">
+                      <Zap className="h-4 w-4" />
+                    </div>
+                    <Badge variant="outline" className="font-mono text-[10px] text-zinc-500">
+                      Sub-second
+                    </Badge>
+                  </div>
+                  <CardTitle className="text-sm font-semibold text-zinc-950 mt-3">
+                    Word-Level Karaoke Seek
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="p-0">
+                  <CardDescription className="text-xs text-zinc-600 leading-relaxed">
+                    Click any spoken word across 92 diarized segments to jump audio playback instantly.
+                  </CardDescription>
+                </CardContent>
+              </Card>
+
+              {/* Feature Card 2 */}
+              <Card className="border border-zinc-200/80 bg-white/95 p-5 shadow-sm hover:shadow-md hover:border-zinc-300 transition-all">
+                <CardHeader className="p-0 pb-2.5">
+                  <div className="flex items-center justify-between">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-md bg-zinc-100 text-zinc-900">
+                      <Layers className="h-4 w-4" />
+                    </div>
+                    <Badge variant="outline" className="font-mono text-[10px] text-zinc-500">
+                      4 Lenses
+                    </Badge>
+                  </div>
+                  <CardTitle className="text-sm font-semibold text-zinc-950 mt-3">
+                    Multi-Template Summaries
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="p-0">
+                  <CardDescription className="text-xs text-zinc-600 leading-relaxed">
+                    Switch between Executive, Engineering, Sales MEDDPICC, and 1-on-1 briefs dynamically.
+                  </CardDescription>
+                </CardContent>
+              </Card>
+
+              {/* Feature Card 3 */}
+              <Card className="border border-zinc-200/80 bg-white/95 p-5 shadow-sm hover:shadow-md hover:border-zinc-300 transition-all">
+                <CardHeader className="p-0 pb-2.5">
+                  <div className="flex items-center justify-between">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-md bg-zinc-100 text-zinc-900">
+                      <ShieldCheck className="h-4 w-4" />
+                    </div>
+                    <Badge variant="outline" className="font-mono text-[10px] text-zinc-500">
+                      Zero Login
+                    </Badge>
+                  </div>
+                  <CardTitle className="text-sm font-semibold text-zinc-950 mt-3">
+                    Public Clip Sharing
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="p-0">
+                  <CardDescription className="text-xs text-zinc-600 leading-relaxed">
+                    Share bounded 30s clips with external stakeholders without requiring account signup.
+                  </CardDescription>
+                </CardContent>
+              </Card>
+            </div>
+          </motion.section>
+
+          {/* Section 4: Action Items Matrix Quick Access Strip */}
+          <motion.section
+            aria-label="Tasks Matrix Strip"
+            className="rounded-xl border border-zinc-200/80 bg-zinc-50/70 p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3"
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-40px" }}
+            transition={{ duration: 0.4 }}
+          >
+            <div className="flex items-center gap-3">
+              <div className="flex h-8 w-8 items-center justify-center rounded-md bg-zinc-950 text-white shrink-0">
+                <ListTodo className="h-4 w-4" />
+              </div>
+              <div>
+                <p className="text-xs font-semibold text-zinc-950">
+                  Centralized Action Items Matrix
+                </p>
+                <p className="text-[11px] text-zinc-500">
+                  Track owners, deadlines, and direct timestamp citations across all calls.
+                </p>
+              </div>
+            </div>
+
+            <Link href="/actions" className="shrink-0">
+              <button
+                type="button"
+                className="h-8 flex items-center gap-1.5 rounded-md bg-zinc-950 px-3 font-mono text-xs font-medium uppercase text-white hover:bg-zinc-800 transition-colors shadow-xs"
+              >
+                <span>Open Matrix</span>
+                <ArrowRight className="h-3 w-3" />
+              </button>
+            </Link>
           </motion.section>
         </main>
 
