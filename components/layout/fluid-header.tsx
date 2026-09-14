@@ -27,7 +27,6 @@ import {
   Settings,
   ChevronDown,
   Video,
-  ListTodo,
   FileText,
   Check,
   Plus,
@@ -61,17 +60,17 @@ export function FluidHeader() {
 
   return (
     <>
-      {/* Floating Island Header */}
+      {/* Floating Island Header - Ultra-clean transparent glass */}
       <header className="sticky top-3 z-50 w-full px-4 sm:px-6 lg:px-8 pointer-events-none mb-2">
-        <div className="mx-auto max-w-6xl pointer-events-auto rounded-xl border border-zinc-200/80 bg-white/90 backdrop-blur-md shadow-lg shadow-black/[0.04] transition-all">
-          <div className="flex h-13 items-center justify-between px-3 sm:px-4 gap-2 sm:gap-3">
+        <div className="mx-auto max-w-6xl pointer-events-auto rounded-xl border border-zinc-200/50 bg-white/40 backdrop-blur-xl shadow-xs transition-all hover:bg-white/60">
+          <div className="flex h-12 items-center justify-between px-3 sm:px-4 gap-2 sm:gap-3">
             {/* Left: Minimal geometric Fathom icon + workspace dropdown */}
             <div className="flex items-center gap-2.5 shrink-0">
               <Link
                 href="/"
                 className="flex items-center gap-2 transition-opacity hover:opacity-85"
               >
-                <div className="flex h-7 w-7 items-center justify-center rounded-md bg-zinc-950 text-white font-mono text-xs font-bold shadow-xs">
+                <div className="flex h-6.5 w-6.5 items-center justify-center rounded-md bg-zinc-950 text-white font-mono text-xs font-bold shadow-xs">
                   F
                 </div>
                 <span className="font-semibold text-sm tracking-tight text-zinc-950 hidden xs:inline">
@@ -84,7 +83,7 @@ export function FluidHeader() {
                 <DropdownMenuTrigger asChild>
                   <button
                     type="button"
-                    className="hidden sm:flex items-center gap-1.5 rounded-md border border-zinc-200 bg-zinc-50/80 px-2 py-1 text-xs font-medium text-zinc-700 hover:bg-zinc-100 hover:text-zinc-950 transition-colors focus:outline-none"
+                    className="hidden sm:flex items-center gap-1.5 rounded-md border border-zinc-200/50 bg-white/40 px-2 py-0.5 text-xs font-medium text-zinc-700 hover:bg-white/80 hover:text-zinc-950 transition-colors focus:outline-none"
                   >
                     <span className="max-w-[120px] truncate">{currentWorkspace}</span>
                     <ChevronDown className="h-3 w-3 text-zinc-400" />
@@ -118,14 +117,14 @@ export function FluidHeader() {
             {/* Center: shadcn NavigationMenu */}
             <div className="hidden md:flex items-center justify-center">
               <NavigationMenu>
-                <NavigationMenuList className="gap-1">
+                <NavigationMenuList className="gap-0.5">
                   {/* Meetings */}
                   <NavigationMenuItem>
-                    <NavigationMenuTrigger className="h-8 px-2.5 text-xs font-medium text-zinc-700 hover:text-zinc-950">
+                    <NavigationMenuTrigger className="h-7 px-2.5 text-xs font-medium text-zinc-700 hover:text-zinc-950 bg-transparent hover:bg-white/50 data-[state=open]:bg-white/60">
                       Meetings
                     </NavigationMenuTrigger>
                     <NavigationMenuContent>
-                      <ul className="grid w-[380px] gap-1.5 p-3">
+                      <ul className="grid w-[360px] gap-1 p-2">
                         <li>
                           <NavigationMenuLink asChild>
                             <Link
@@ -162,7 +161,7 @@ export function FluidHeader() {
                     <NavigationMenuLink asChild>
                       <Link
                         href="/actions"
-                        className="h-8 px-2.5 inline-flex items-center text-xs font-medium text-zinc-700 hover:text-zinc-950 transition-colors"
+                        className="h-7 px-2.5 inline-flex items-center rounded-md text-xs font-medium text-zinc-700 hover:text-zinc-950 hover:bg-white/50 transition-colors"
                       >
                         Actions
                       </Link>
@@ -171,7 +170,7 @@ export function FluidHeader() {
 
                   {/* Templates */}
                   <NavigationMenuItem>
-                    <NavigationMenuTrigger className="h-8 px-2.5 text-xs font-medium text-zinc-700 hover:text-zinc-950">
+                    <NavigationMenuTrigger className="h-7 px-2.5 text-xs font-medium text-zinc-700 hover:text-zinc-950 bg-transparent hover:bg-white/50 data-[state=open]:bg-white/60">
                       Templates
                     </NavigationMenuTrigger>
                     <NavigationMenuContent>
@@ -222,12 +221,12 @@ export function FluidHeader() {
               <button
                 type="button"
                 onClick={handleOpenSearch}
-                className="rounded-md border border-zinc-200 bg-zinc-50/80 px-2.5 py-1 text-xs text-zinc-500 hover:bg-zinc-100 hover:text-zinc-800 transition-colors flex items-center gap-1.5"
+                className="rounded-md border border-zinc-200/50 bg-white/40 px-2 py-0.5 text-xs text-zinc-500 hover:bg-white/80 hover:text-zinc-800 transition-colors flex items-center gap-1.5"
                 aria-label="Open search dialog"
               >
-                <Search className="h-3.5 w-3.5 text-zinc-400" />
+                <Search className="h-3 w-3 text-zinc-400" />
                 <span className="hidden sm:inline text-xs">Search...</span>
-                <kbd className="hidden sm:inline-flex items-center gap-0.5 rounded border border-zinc-200 bg-white px-1 py-0.2 font-mono text-[9px] text-zinc-400">
+                <kbd className="hidden sm:inline-flex items-center gap-0.5 rounded border border-zinc-200/60 bg-white/60 px-1 py-0.2 font-mono text-[9px] text-zinc-400">
                   ⌘K
                 </kbd>
               </button>
@@ -236,7 +235,7 @@ export function FluidHeader() {
               <button
                 type="button"
                 onClick={() => setRecorderOpen(true)}
-                className="rounded-md bg-zinc-950 text-white hover:bg-zinc-800 text-xs font-medium px-3 py-1 flex items-center gap-1.5 shadow-xs transition-colors"
+                className="rounded-md bg-zinc-950 text-white hover:bg-zinc-800 text-xs font-medium px-2.5 py-0.5 flex items-center gap-1.5 shadow-xs transition-colors"
               >
                 <span>Record</span>
               </button>
@@ -245,7 +244,7 @@ export function FluidHeader() {
               <button
                 type="button"
                 onClick={() => setSettingsOpen(true)}
-                className="rounded-md border border-zinc-200 p-1 text-zinc-600 hover:text-zinc-950 hover:bg-zinc-100 transition-colors focus:outline-none"
+                className="rounded-md border border-zinc-200/50 bg-white/40 p-1 text-zinc-600 hover:text-zinc-950 hover:bg-white/80 transition-colors focus:outline-none"
                 title="API Keys & Settings"
                 aria-label="API Keys & Settings"
               >
@@ -253,7 +252,7 @@ export function FluidHeader() {
               </button>
 
               {/* User Profile Avatar */}
-              <Avatar className="h-6 w-6 rounded-md border border-zinc-200">
+              <Avatar className="h-6 w-6 rounded-md border border-zinc-200/60">
                 <AvatarImage
                   src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&h=150&fit=crop&crop=face"
                   alt="Workspace User"
