@@ -5,3 +5,7 @@ node_modules/
 .env*.local
 .env
 !.env.example
+
+# local dev/verification artifacts
+screenshot*.png
+.agents/__pycache__/
