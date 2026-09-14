@@ -155,31 +155,31 @@ export function ApiKeysModal({
         <DialogTrigger asChild>
           <button
             type="button"
-            className="h-8 flex items-center gap-1.5 rounded-md border-2 border-black bg-white px-2.5 font-mono text-xs font-bold uppercase text-black shadow-neo-sm hover:-translate-x-0.5 hover:-translate-y-0.5 hover:bg-[#FAF8F5] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all"
+            className="h-8 flex items-center gap-1.5 rounded-md border border-zinc-200 bg-white px-2.5 font-mono text-xs font-medium uppercase text-zinc-700 hover:bg-zinc-50 hover:text-zinc-950 transition-colors"
           >
-            <KeyRound className="h-3.5 w-3.5 stroke-[2.5]" />
+            <KeyRound className="h-3.5 w-3.5" />
             <span>API KEYS</span>
             {hasCustomKeys ? (
-              <span className="h-2 w-2 rounded-full bg-[#A7F3D0] border border-black animate-pulse" />
+              <span className="h-2 w-2 rounded-sm bg-zinc-950 animate-pulse" />
             ) : (
-              <span className="h-2 w-2 rounded-full bg-[#FEF08A] border border-black" />
+              <span className="h-2 w-2 rounded-sm bg-zinc-300" />
             )}
           </button>
         </DialogTrigger>
       )}
 
-      <DialogContent className="sm:max-w-[500px] border-2 border-black bg-[#FAF8F5] text-black shadow-[6px_6px_0px_0px_#000] p-6 sm:rounded-xl">
-        <DialogHeader className="border-b-2 border-black pb-4">
+      <DialogContent className="sm:max-w-[500px] border border-zinc-200 bg-white text-zinc-950 shadow-2xl shadow-black/[0.08] p-6 sm:rounded-xl">
+        <DialogHeader className="border-b border-zinc-200 pb-4">
           <div className="flex items-center justify-between pr-4">
             <div className="flex items-center gap-2.5">
-              <div className="flex h-9 w-9 items-center justify-center rounded-md border-2 border-black bg-[#FEF08A] shadow-neo-sm">
-                <KeyRound className="h-5 w-5 stroke-[2.5] text-black" />
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-zinc-200 bg-zinc-50 shadow-sm">
+                <KeyRound className="h-5 w-5 text-zinc-950" />
               </div>
               <div>
-                <DialogTitle className="font-mono text-base font-black uppercase text-black">
+                <DialogTitle className="font-mono text-base font-semibold uppercase text-zinc-950">
                   API & INTELLIGENCE CONFIG
                 </DialogTitle>
-                <DialogDescription className="font-mono text-[11px] font-bold uppercase text-neutral-600">
+                <DialogDescription className="font-mono text-[11px] font-medium uppercase text-zinc-500">
                   LIVE AI PROVIDERS VS DETERMINISTIC SEED MODE
                 </DialogDescription>
               </div>
@@ -187,18 +187,18 @@ export function ApiKeysModal({
           </div>
 
           {/* Status Badge Indicator */}
-          <div className="mt-3 flex items-center justify-between rounded-md border-2 border-black bg-white p-2.5 shadow-neo-sm">
-            <span className="font-mono text-xs font-black uppercase text-black">
+          <div className="mt-3 flex items-center justify-between rounded-md border border-zinc-200 bg-zinc-50 p-2.5">
+            <span className="font-mono text-xs font-semibold uppercase text-zinc-700">
               ACTIVE ENGINE:
             </span>
             {hasCustomKeys ? (
-              <span className="flex items-center gap-1.5 rounded border-2 border-black bg-[#A7F3D0] px-2 py-0.5 font-mono text-[11px] font-black uppercase text-black shadow-neo-sm">
-                <ShieldCheck className="h-3.5 w-3.5 stroke-[2.5]" />
+              <span className="flex items-center gap-1.5 rounded-md border border-zinc-200 bg-zinc-950 px-2 py-0.5 font-mono text-[11px] font-semibold uppercase text-white">
+                <ShieldCheck className="h-3.5 w-3.5" />
                 CUSTOM LIVE APIS
               </span>
             ) : (
-              <span className="flex items-center gap-1.5 rounded border-2 border-black bg-[#FEF08A] px-2 py-0.5 font-mono text-[11px] font-black uppercase text-black shadow-neo-sm">
-                <Zap className="h-3.5 w-3.5 stroke-[2.5]" />
+              <span className="flex items-center gap-1.5 rounded-md border border-zinc-200 bg-white px-2 py-0.5 font-mono text-[11px] font-semibold uppercase text-zinc-700 shadow-sm">
+                <Zap className="h-3.5 w-3.5" />
                 SEED MODE ACTIVE
               </span>
             )}
@@ -207,11 +207,11 @@ export function ApiKeysModal({
 
         <div className="space-y-4 py-2">
           {/* OpenRouter Configuration */}
-          <div className="space-y-2 rounded-lg border-2 border-black bg-white p-3.5 shadow-neo-sm">
+          <div className="space-y-2 rounded-xl border border-zinc-200 bg-zinc-50 p-3.5">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Cpu className="h-4 w-4 stroke-[2.5] text-black" />
-                <label className="font-mono text-xs font-black uppercase text-black">
+                <Cpu className="h-4 w-4 text-zinc-950" />
+                <label className="font-mono text-xs font-semibold uppercase text-zinc-950">
                   OPENROUTER API KEY
                 </label>
               </div>
@@ -219,13 +219,13 @@ export function ApiKeysModal({
                 href="https://openrouter.ai/keys"
                 target="_blank"
                 rel="noreferrer"
-                className="flex items-center gap-1 font-mono text-[10px] font-black uppercase text-black hover:underline"
+                className="flex items-center gap-1 font-mono text-[10px] font-medium uppercase text-zinc-500 hover:text-zinc-950 hover:underline transition-colors"
               >
-                GET FREE KEY <ExternalLink className="h-3 w-3 stroke-[2.5]" />
+                GET FREE KEY <ExternalLink className="h-3 w-3" />
               </a>
             </div>
 
-            <p className="font-mono text-[10px] text-neutral-600 uppercase font-semibold leading-relaxed">
+            <p className="font-mono text-[10px] text-zinc-500 uppercase font-medium leading-relaxed">
               Powers live executive summaries via free tier models. If empty, local seed intelligence is used.
             </p>
 
@@ -235,28 +235,28 @@ export function ApiKeysModal({
                 placeholder="sk-or-v1-..."
                 value={openRouterKey}
                 onChange={(e) => setOpenRouterKey(e.target.value)}
-                className="h-9 w-full rounded border-2 border-black bg-[#FAF8F5] px-3 pr-9 font-mono text-xs text-black shadow-neo-sm focus:bg-[#FEF08A]/20 focus:outline-none"
+                className="h-9 w-full rounded-md border border-zinc-200 bg-white px-3 pr-9 font-mono text-xs text-zinc-950 placeholder:text-zinc-400 focus:bg-white focus:border-zinc-300 focus:outline-none transition-colors"
               />
               <button
                 type="button"
                 onClick={() => setShowOpenRouter(!showOpenRouter)}
-                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-black hover:scale-110 transition-transform"
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-950 transition-colors"
               >
                 {showOpenRouter ? (
-                  <EyeOff className="h-4 w-4 stroke-[2]" />
+                  <EyeOff className="h-4 w-4" />
                 ) : (
-                  <Eye className="h-4 w-4 stroke-[2]" />
+                  <Eye className="h-4 w-4" />
                 )}
               </button>
             </div>
           </div>
 
           {/* Deepgram Configuration */}
-          <div className="space-y-2 rounded-lg border-2 border-black bg-white p-3.5 shadow-neo-sm">
+          <div className="space-y-2 rounded-xl border border-zinc-200 bg-zinc-50 p-3.5">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Mic className="h-4 w-4 stroke-[2.5] text-black" />
-                <label className="font-mono text-xs font-black uppercase text-black">
+                <Mic className="h-4 w-4 text-zinc-950" />
+                <label className="font-mono text-xs font-semibold uppercase text-zinc-950">
                   DEEPGRAM NOVA-2 API KEY
                 </label>
               </div>
@@ -264,13 +264,13 @@ export function ApiKeysModal({
                 href="https://console.deepgram.com"
                 target="_blank"
                 rel="noreferrer"
-                className="flex items-center gap-1 font-mono text-[10px] font-black uppercase text-black hover:underline"
+                className="flex items-center gap-1 font-mono text-[10px] font-medium uppercase text-zinc-500 hover:text-zinc-950 hover:underline transition-colors"
               >
-                GET KEY ($200 CREDIT) <ExternalLink className="h-3 w-3 stroke-[2.5]" />
+                GET KEY ($200 CREDIT) <ExternalLink className="h-3 w-3" />
               </a>
             </div>
 
-            <p className="font-mono text-[10px] text-neutral-600 uppercase font-semibold leading-relaxed">
+            <p className="font-mono text-[10px] text-zinc-500 uppercase font-medium leading-relaxed">
               Enables live browser transcription with multi-speaker diarization. If omitted, mock diarized speech is used.
             </p>
 
@@ -280,30 +280,30 @@ export function ApiKeysModal({
                 placeholder="Token or API key..."
                 value={deepgramKey}
                 onChange={(e) => setDeepgramKey(e.target.value)}
-                className="h-9 w-full rounded border-2 border-black bg-[#FAF8F5] px-3 pr-9 font-mono text-xs text-black shadow-neo-sm focus:bg-[#FEF08A]/20 focus:outline-none"
+                className="h-9 w-full rounded-md border border-zinc-200 bg-white px-3 pr-9 font-mono text-xs text-zinc-950 placeholder:text-zinc-400 focus:bg-white focus:border-zinc-300 focus:outline-none transition-colors"
               />
               <button
                 type="button"
                 onClick={() => setShowDeepgram(!showDeepgram)}
-                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-black hover:scale-110 transition-transform"
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-950 transition-colors"
               >
                 {showDeepgram ? (
-                  <EyeOff className="h-4 w-4 stroke-[2]" />
+                  <EyeOff className="h-4 w-4" />
                 ) : (
-                  <Eye className="h-4 w-4 stroke-[2]" />
+                  <Eye className="h-4 w-4" />
                 )}
               </button>
             </div>
           </div>
         </div>
 
-        <DialogFooter className="flex flex-row items-center justify-between border-t-2 border-black pt-3">
+        <DialogFooter className="flex flex-row items-center justify-between border-t border-zinc-200 pt-3">
           <button
             type="button"
             onClick={handleClear}
-            className="h-9 flex items-center gap-1.5 rounded-md border-2 border-black bg-white px-3 font-mono text-xs font-black uppercase text-black shadow-neo-sm hover:bg-[#FECDD3] hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all"
+            className="h-9 flex items-center gap-1.5 rounded-md border border-zinc-200 bg-white px-3 font-mono text-xs font-semibold uppercase text-zinc-600 hover:bg-zinc-50 hover:text-zinc-950 transition-colors"
           >
-            <Trash2 className="h-3.5 w-3.5 stroke-[2.5]" />
+            <Trash2 className="h-3.5 w-3.5" />
             <span>SEED MODE</span>
           </button>
 
@@ -311,7 +311,7 @@ export function ApiKeysModal({
             <button
               type="button"
               onClick={() => setIsOpen(false)}
-              className="h-9 rounded-md border-2 border-black bg-white px-3 font-mono text-xs font-black uppercase text-black shadow-neo-sm hover:bg-neutral-100 active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all"
+              className="h-9 rounded-md border border-zinc-200 bg-white px-3 font-mono text-xs font-semibold uppercase text-zinc-600 hover:bg-zinc-50 hover:text-zinc-950 transition-colors"
             >
               CANCEL
             </button>
@@ -319,15 +319,15 @@ export function ApiKeysModal({
               type="button"
               onClick={handleSave}
               className={cn(
-                "h-9 flex items-center gap-1.5 rounded-md border-2 border-black px-4 font-mono text-xs font-black uppercase tracking-wider transition-all shadow-neo hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 active:shadow-none",
+                "h-9 flex items-center gap-1.5 rounded-md border px-4 font-mono text-xs font-semibold uppercase tracking-wider transition-colors",
                 savedSuccess
-                  ? "bg-[#A7F3D0] text-black"
-                  : "bg-[#FEF08A] text-black"
+                  ? "border-zinc-200 bg-zinc-100 text-zinc-700"
+                  : "border-zinc-950 bg-zinc-950 text-white hover:bg-zinc-800"
               )}
             >
               {savedSuccess ? (
                 <>
-                  <CheckCircle2 className="h-4 w-4 stroke-[3]" />
+                  <CheckCircle2 className="h-4 w-4" />
                   <span>SAVED!</span>
                 </>
               ) : (

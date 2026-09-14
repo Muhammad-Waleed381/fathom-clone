@@ -100,10 +100,10 @@ export default function SharePage() {
   return (
     <Suspense
       fallback={
-        <div className="flex min-h-screen items-center justify-center bg-[#FAF8F5] text-black">
-          <div className="flex flex-col items-center gap-3 rounded-xl border-2 border-black bg-white p-8 shadow-neo">
-            <div className="h-8 w-8 animate-spin rounded-full border-4 border-black border-t-transparent" />
-            <p className="font-mono text-xs font-black uppercase text-black tracking-wider">
+        <div className="flex min-h-screen items-center justify-center bg-zinc-50 text-zinc-950">
+          <div className="flex flex-col items-center gap-3 rounded-xl border border-zinc-200 bg-white p-8 shadow-xl shadow-black/[0.06]">
+            <div className="h-8 w-8 animate-spin rounded-sm border-4 border-zinc-200 border-t-zinc-950" />
+            <p className="font-mono text-xs font-semibold uppercase text-zinc-500 tracking-wider">
               LOADING GUEST CLIP VIEWER...
             </p>
           </div>

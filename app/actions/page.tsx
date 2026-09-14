@@ -28,7 +28,6 @@ import {
   Download,
   Copy,
   Check,
-  Percent,
 } from "lucide-react";
 
 export default function ActionsHubPage() {
@@ -248,7 +247,7 @@ export default function ActionsHubPage() {
   };
 
   return (
-    <div className="flex min-h-screen flex-col bg-[#FAF8F5] text-black font-sans selection:bg-[#FEF08A] selection:text-black">
+    <div className="flex min-h-screen flex-col bg-zinc-50 text-zinc-950 font-sans">
       {/* Top Application Header */}
       <DashboardHeader
         onOpenSearch={() => setSearchOpen(true)}
@@ -258,152 +257,152 @@ export default function ActionsHubPage() {
       {/* Main Page Content */}
       <main className="mx-auto flex-1 w-full max-w-7xl px-4 sm:px-6 lg:px-8 py-8 space-y-6">
         {/* Workspace Breadcrumbs & Editorial Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b-2 border-black pb-5">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-zinc-200 pb-5">
           <div className="space-y-1.5">
-            {/* Editorial Breadcrumbs */}
-            <div className="flex items-center gap-2 font-mono text-xs font-black uppercase tracking-wider text-neutral-600">
+            {/* Breadcrumbs */}
+            <div className="flex items-center gap-2 font-mono text-xs font-semibold uppercase tracking-wider text-zinc-500">
               <Link
                 href="/"
-                className="flex items-center gap-1 hover:text-black transition-colors"
+                className="flex items-center gap-1 hover:text-zinc-950 transition-colors"
               >
-                <Home className="h-3.5 w-3.5 stroke-[2.5]" />
+                <Home className="h-3.5 w-3.5" />
                 <span>WORKSPACE</span>
               </Link>
-              <ChevronRight className="h-3 w-3 stroke-[3]" />
-              <span className="text-black">ACTION ITEMS</span>
+              <ChevronRight className="h-3 w-3" />
+              <span className="text-zinc-950">ACTION ITEMS</span>
             </div>
 
             {/* Page Title & Subtitle */}
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-md border-2 border-black bg-[#FEF08A] shadow-neo-sm">
-                <ListTodo className="h-5 w-5 stroke-[2.5] text-black" />
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-zinc-200 bg-white shadow-sm">
+                <ListTodo className="h-5 w-5 text-zinc-950" />
               </div>
               <div>
-                <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-black">
+                <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-zinc-950">
                   ACTION ITEMS HUB
                 </h1>
-                <p className="font-mono text-xs font-bold uppercase text-neutral-600">
+                <p className="font-mono text-xs font-medium uppercase text-zinc-500">
                   TOTAL TASKS: {totalCount} • CROSS-MEETING EXECUTION MATRIX
                 </p>
               </div>
             </div>
           </div>
 
-          {/* Export Actions with Tactile Physics */}
+          {/* Export Actions */}
           <div className="flex items-center gap-2.5 self-start sm:self-auto">
             <button
               type="button"
               onClick={handleExportCsv}
-              className="h-10 flex items-center gap-2 rounded-md border-2 border-black bg-white px-3.5 font-mono text-xs font-black uppercase tracking-wider text-black shadow-neo-sm hover:-translate-x-0.5 hover:-translate-y-0.5 hover:bg-[#FAF8F5] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all"
+              className="h-9 flex items-center gap-2 rounded-md border border-zinc-200 bg-white px-3.5 font-mono text-xs font-semibold uppercase tracking-wider text-zinc-700 shadow-sm hover:bg-zinc-50 hover:border-zinc-300 transition-colors"
             >
-              <Download className="h-4 w-4 stroke-[2.5]" />
+              <Download className="h-4 w-4" />
               <span>EXPORT CSV</span>
             </button>
 
             <button
               type="button"
               onClick={handleCopySlack}
-              className={`h-10 flex items-center gap-2 rounded-md border-2 border-black px-3.5 font-mono text-xs font-black uppercase tracking-wider text-black shadow-neo-sm hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all ${
+              className={`h-9 flex items-center gap-2 rounded-md border px-3.5 font-mono text-xs font-semibold uppercase tracking-wider shadow-sm transition-colors ${
                 copiedSlack
-                  ? "bg-[#A7F3D0]"
-                  : "bg-[#FEF08A] hover:bg-[#FEF08A]/90"
+                  ? "border-zinc-200 bg-zinc-950 text-white"
+                  : "border-zinc-200 bg-white text-zinc-700 hover:bg-zinc-50 hover:border-zinc-300"
               }`}
             >
               {copiedSlack ? (
                 <>
-                  <Check className="h-4 w-4 stroke-[3]" />
+                  <Check className="h-4 w-4" />
                   <span>COPIED!</span>
                 </>
               ) : (
                 <>
-                  <Copy className="h-4 w-4 stroke-[2.5]" />
-                  <span>COPY SLACK / MARKDOWN</span>
+                  <Copy className="h-4 w-4" />
+                  <span>COPY MARKDOWN</span>
                 </>
               )}
             </button>
           </div>
         </div>
 
-        {/* 4 High-Contrast KPI Cards with hard shadows */}
+        {/* 4 Monochrome KPI Cards */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {/* Card 1: Total */}
-          <div className="flex flex-col justify-between rounded-xl border-2 border-black bg-white p-5 shadow-[4px_4px_0px_0px_#000]">
+          <div className="flex flex-col justify-between rounded-xl border border-zinc-200 bg-white p-5 shadow-sm">
             <div className="flex items-center justify-between">
-              <span className="font-mono text-xs font-black uppercase text-neutral-600">
+              <span className="font-mono text-xs font-semibold uppercase tracking-wider text-zinc-500">
                 TOTAL ACTIONS
               </span>
-              <div className="flex h-7 w-7 items-center justify-center rounded border-2 border-black bg-[#FAF8F5]">
-                <ListTodo className="h-3.5 w-3.5 stroke-[2.5]" />
+              <div className="flex h-7 w-7 items-center justify-center rounded-md border border-zinc-100 bg-zinc-50">
+                <ListTodo className="h-3.5 w-3.5 text-zinc-950" />
               </div>
             </div>
             <div className="mt-3">
-              <div className="font-mono text-3xl font-black text-black">
+              <div className="font-mono text-3xl font-bold text-zinc-950">
                 {totalCount}
               </div>
-              <p className="font-mono text-[11px] font-bold uppercase text-neutral-500 mt-0.5">
+              <p className="font-mono text-[11px] font-medium uppercase text-zinc-400 mt-0.5">
                 across {meetings.length} meetings
               </p>
             </div>
           </div>
 
           {/* Card 2: Completed */}
-          <div className="flex flex-col justify-between rounded-xl border-2 border-black bg-[#A7F3D0] p-5 shadow-[4px_4px_0px_0px_#000]">
+          <div className="flex flex-col justify-between rounded-xl border border-zinc-200 bg-white p-5 shadow-sm">
             <div className="flex items-center justify-between">
-              <span className="font-mono text-xs font-black uppercase text-black">
+              <span className="font-mono text-xs font-semibold uppercase tracking-wider text-zinc-500">
                 COMPLETED
               </span>
-              <div className="flex h-7 w-7 items-center justify-center rounded border-2 border-black bg-white">
-                <CheckCircle2 className="h-3.5 w-3.5 stroke-[2.5] text-black" />
+              <div className="flex h-7 w-7 items-center justify-center rounded-md border border-zinc-100 bg-zinc-50">
+                <CheckCircle2 className="h-3.5 w-3.5 text-zinc-950" />
               </div>
             </div>
             <div className="mt-3">
-              <div className="font-mono text-3xl font-black text-black">
+              <div className="font-mono text-3xl font-bold text-zinc-950">
                 {completedCount}
               </div>
-              <p className="font-mono text-[11px] font-black uppercase text-neutral-800 mt-0.5">
+              <p className="font-mono text-[11px] font-medium uppercase text-zinc-400 mt-0.5">
                 resolved items
               </p>
             </div>
           </div>
 
           {/* Card 3: Pending */}
-          <div className="flex flex-col justify-between rounded-xl border-2 border-black bg-[#FEF08A] p-5 shadow-[4px_4px_0px_0px_#000]">
+          <div className="flex flex-col justify-between rounded-xl border border-zinc-200 bg-white p-5 shadow-sm">
             <div className="flex items-center justify-between">
-              <span className="font-mono text-xs font-black uppercase text-black">
+              <span className="font-mono text-xs font-semibold uppercase tracking-wider text-zinc-500">
                 PENDING
               </span>
-              <div className="flex h-7 w-7 items-center justify-center rounded border-2 border-black bg-white">
-                <Clock className="h-3.5 w-3.5 stroke-[2.5] text-black" />
+              <div className="flex h-7 w-7 items-center justify-center rounded-md border border-zinc-100 bg-zinc-50">
+                <Clock className="h-3.5 w-3.5 text-zinc-950" />
               </div>
             </div>
             <div className="mt-3">
-              <div className="font-mono text-3xl font-black text-black">
+              <div className="font-mono text-3xl font-bold text-zinc-950">
                 {pendingCount}
               </div>
-              <p className="font-mono text-[11px] font-black uppercase text-neutral-800 mt-0.5">
+              <p className="font-mono text-[11px] font-medium uppercase text-zinc-400 mt-0.5">
                 open execution
               </p>
             </div>
           </div>
 
           {/* Card 4: Completion Rate */}
-          <div className="flex flex-col justify-between rounded-xl border-2 border-black bg-[#DDD6FE] p-5 shadow-[4px_4px_0px_0px_#000]">
+          <div className="flex flex-col justify-between rounded-xl border border-zinc-200 bg-white p-5 shadow-sm">
             <div className="flex items-center justify-between">
-              <span className="font-mono text-xs font-black uppercase text-black">
+              <span className="font-mono text-xs font-semibold uppercase tracking-wider text-zinc-500">
                 COMPLETION RATE
               </span>
-              <div className="flex h-7 w-7 items-center justify-center rounded border-2 border-black bg-white">
-                <Sparkles className="h-3.5 w-3.5 stroke-[2.5] text-black" />
+              <div className="flex h-7 w-7 items-center justify-center rounded-md border border-zinc-100 bg-zinc-50">
+                <Sparkles className="h-3.5 w-3.5 text-zinc-950" />
               </div>
             </div>
             <div className="mt-3">
-              <div className="font-mono text-3xl font-black text-black">
+              <div className="font-mono text-3xl font-bold text-zinc-950">
                 {percentComplete}%
               </div>
-              {/* Neobrutalist Progress Bar */}
-              <div className="mt-2 h-3 w-full overflow-hidden rounded-full border-2 border-black bg-white">
+              {/* Progress Bar */}
+              <div className="mt-2 h-1.5 w-full overflow-hidden rounded-sm bg-zinc-100">
                 <div
-                  className="h-full bg-black transition-all duration-500"
+                  className="h-full bg-zinc-950 transition-all duration-500"
                   style={{ width: `${percentComplete}%` }}
                 />
               </div>

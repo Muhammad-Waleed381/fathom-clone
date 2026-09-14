@@ -56,7 +56,7 @@ export function WaveformVisualizer({
   return (
     <div
       className={cn(
-        "relative flex w-full flex-col items-center justify-center rounded-xl border-2 border-black bg-white px-4 py-3 shadow-neo-sm",
+        "relative flex w-full flex-col items-center justify-center rounded-xl border border-zinc-200 bg-white px-4 py-3 shadow-sm",
         className
       )}
     >
@@ -75,7 +75,7 @@ export function WaveformVisualizer({
             ? 12
             : Math.max(12, Math.min(100, Math.round(val * 100)));
 
-          // High vs medium energy color accents with black border
+          // Energy levels for shading
           const isHighEnergy = val > 0.65;
           const isMedEnergy = val > 0.35;
 
@@ -90,16 +90,16 @@ export function WaveformVisualizer({
                   transition: "height 60ms ease-out",
                 }}
                 className={cn(
-                  "w-full rounded-xs border-2 border-black transition-all",
+                  "w-full rounded-sm transition-all",
                   isPaused
-                    ? "bg-neutral-300"
+                    ? "bg-zinc-200"
                     : !isListening
-                    ? "bg-neutral-200"
+                    ? "bg-zinc-100"
                     : isHighEnergy
-                    ? "bg-[#FEF08A]"
+                    ? "bg-zinc-950"
                     : isMedEnergy
-                    ? "bg-[#A7F3D0]"
-                    : "bg-black"
+                    ? "bg-zinc-600"
+                    : "bg-zinc-300"
                 )}
               />
             </div>
@@ -109,16 +109,16 @@ export function WaveformVisualizer({
 
       {/* Audio State & Gain Readout */}
       {showLevelBadge && (
-        <div className="mt-2.5 flex items-center justify-between w-full pt-2 border-t border-black/20 font-mono text-[11px]">
-          <div className="flex items-center gap-2 font-black uppercase text-black">
+        <div className="mt-2.5 flex items-center justify-between w-full pt-2 border-t border-zinc-100 font-mono text-[11px]">
+          <div className="flex items-center gap-2 font-semibold uppercase text-zinc-950">
             <span
               className={cn(
-                "inline-block h-2.5 w-2.5 rounded-full border border-black",
+                "inline-block h-2 w-2 rounded-sm",
                 isPaused
-                  ? "bg-amber-400"
+                  ? "bg-zinc-300"
                   : isListening
-                  ? "bg-[#A7F3D0] animate-ping"
-                  : "bg-neutral-300"
+                  ? "bg-zinc-950 animate-pulse"
+                  : "bg-zinc-200"
               )}
             />
             <span>
@@ -132,9 +132,9 @@ export function WaveformVisualizer({
             </span>
           </div>
 
-          <div className="flex items-center gap-1.5 font-bold uppercase text-neutral-600">
+          <div className="flex items-center gap-1.5 font-medium uppercase text-zinc-400">
             <span>INPUT GAIN:</span>
-            <span className="font-black text-black">
+            <span className="font-semibold text-zinc-950">
               {displayLevel}%
             </span>
           </div>

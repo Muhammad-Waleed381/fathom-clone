@@ -413,42 +413,42 @@ export function MeetingRecorderModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl border-2 border-black bg-[#FAF8F5] p-0 text-black shadow-[6px_6px_0px_0px_#000] overflow-hidden">
-        {/* Retro Production Console Header */}
-        <div className="flex items-center justify-between border-b-2 border-black bg-white px-6 py-4">
+      <DialogContent className="max-w-2xl border border-zinc-200 bg-white p-0 text-zinc-950 shadow-2xl shadow-black/[0.08] overflow-hidden rounded-xl">
+        {/* Header */}
+        <div className="flex items-center justify-between border-b border-zinc-200 bg-zinc-50 px-6 py-4">
           <div className="flex items-center gap-3">
-            <div className="relative flex h-10 w-10 items-center justify-center rounded-md border-2 border-black bg-[#FEF08A] shadow-neo-sm">
-              <Radio className="h-5 w-5 stroke-[2.5] text-black" />
+            <div className="relative flex h-10 w-10 items-center justify-center rounded-xl border border-zinc-200 bg-white shadow-sm">
+              <Radio className="h-5 w-5 text-zinc-950" />
               {isListening && !isPaused && (
                 <span className="absolute -top-1 -right-1 flex h-3 w-3">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75" />
-                  <span className="relative inline-flex rounded-full h-3 w-3 bg-red-600 border border-black" />
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-sm bg-red-500 opacity-75" />
+                  <span className="relative inline-flex rounded-sm h-3 w-3 bg-red-600" />
                 </span>
               )}
             </div>
 
             <div>
-              <DialogTitle className="font-mono text-base font-black uppercase text-black tracking-tight flex items-center gap-2">
-                <span>LIVE RECORDING STUDIO // WORKSTATION</span>
+              <DialogTitle className="font-mono text-base font-semibold uppercase text-zinc-950 tracking-tight flex items-center gap-2">
+                <span>LIVE RECORDING STUDIO</span>
               </DialogTitle>
-              <DialogDescription className="font-mono text-[11px] font-bold uppercase text-neutral-600">
+              <DialogDescription className="font-mono text-[11px] font-medium uppercase text-zinc-500">
                 REAL-TIME DIARIZATION & AI SYNTHESIS
               </DialogDescription>
             </div>
           </div>
 
-          {/* Bot Status Pill */}
+          {/* Status Badge */}
           <div className="flex items-center gap-2">
             <span
               className={cn(
-                "rounded-md border-2 border-black px-2.5 py-1 font-mono text-xs font-black uppercase shadow-neo-sm transition-all",
+                "rounded-md border px-2.5 py-1 font-mono text-xs font-semibold uppercase transition-all",
                 isListening && !isPaused
                   ? isSimulating
-                    ? "bg-[#DDD6FE] text-black animate-pulse"
-                    : "bg-[#A7F3D0] text-black"
+                    ? "border-zinc-200 bg-zinc-100 text-zinc-950 animate-pulse"
+                    : "border-zinc-200 bg-zinc-950 text-white"
                   : isPaused
-                  ? "bg-[#FEF08A] text-black"
-                  : "bg-white text-black"
+                  ? "border-zinc-200 bg-zinc-100 text-zinc-600"
+                  : "border-zinc-200 bg-white text-zinc-500"
               )}
             >
               {isListening && !isPaused
@@ -457,7 +457,7 @@ export function MeetingRecorderModal({
                   : "RECORDING"
                 : isPaused
                 ? "PAUSED"
-                : "LISTENING / STANDBY"}
+                : "STANDBY"}
             </span>
           </div>
         </div>
@@ -472,7 +472,7 @@ export function MeetingRecorderModal({
                 value={meetingTitle}
                 onChange={(e) => setMeetingTitle(e.target.value)}
                 placeholder="Enter meeting title..."
-                className="h-10 w-full rounded-md border-2 border-black bg-white px-3 font-mono text-xs font-bold text-black shadow-neo-sm focus:bg-[#FEF08A]/20 focus:outline-none"
+                className="h-10 w-full rounded-md border border-zinc-200 bg-zinc-50 px-3 font-mono text-xs font-medium text-zinc-950 placeholder:text-zinc-400 focus:bg-white focus:border-zinc-300 focus:outline-none transition-colors"
               />
             </div>
 
@@ -482,13 +482,13 @@ export function MeetingRecorderModal({
                 type="button"
                 onClick={() => handleSwitchMode("mic")}
                 className={cn(
-                  "h-9 flex items-center gap-1.5 rounded-md border-2 border-black px-3 font-mono text-xs font-black uppercase transition-all shadow-neo-sm hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 active:shadow-none",
+                  "h-9 flex items-center gap-1.5 rounded-md border px-3 font-mono text-xs font-semibold uppercase transition-colors",
                   recordMode === "mic"
-                    ? "bg-black text-white"
-                    : "bg-white text-black hover:bg-[#FEF08A]"
+                    ? "border-zinc-950 bg-zinc-950 text-white"
+                    : "border-zinc-200 bg-white text-zinc-600 hover:bg-zinc-50 hover:text-zinc-950"
                 )}
               >
-                <Mic className="h-3.5 w-3.5 stroke-[2.5]" />
+                <Mic className="h-3.5 w-3.5" />
                 <span>MIC</span>
               </button>
 
@@ -496,13 +496,13 @@ export function MeetingRecorderModal({
                 type="button"
                 onClick={() => handleSwitchMode("simulate")}
                 className={cn(
-                  "h-9 flex items-center gap-1.5 rounded-md border-2 border-black px-3 font-mono text-xs font-black uppercase transition-all shadow-neo-sm hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 active:shadow-none",
+                  "h-9 flex items-center gap-1.5 rounded-md border px-3 font-mono text-xs font-semibold uppercase transition-colors",
                   recordMode === "simulate"
-                    ? "bg-black text-white"
-                    : "bg-white text-black hover:bg-[#FEF08A]"
+                    ? "border-zinc-950 bg-zinc-950 text-white"
+                    : "border-zinc-200 bg-white text-zinc-600 hover:bg-zinc-50 hover:text-zinc-950"
                 )}
               >
-                <Sparkles className="h-3.5 w-3.5 stroke-[2.5]" />
+                <Sparkles className="h-3.5 w-3.5" />
                 <span>SIMULATOR</span>
               </button>
 
@@ -510,7 +510,7 @@ export function MeetingRecorderModal({
               <button
                 type="button"
                 onClick={handleSimulateSampleAudio}
-                className="h-9 flex items-center gap-1.5 rounded-md border-2 border-black bg-[#FEF08A] px-3 font-mono text-xs font-black uppercase text-black shadow-neo-sm hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all"
+                className="h-9 flex items-center gap-1.5 rounded-md border border-zinc-200 bg-white px-3 font-mono text-xs font-semibold uppercase text-zinc-700 hover:bg-zinc-50 hover:text-zinc-950 transition-colors"
                 title="Inject sample audio dialogue for quick testing"
               >
                 <span>SAMPLE AUDIO</span>
@@ -520,15 +520,15 @@ export function MeetingRecorderModal({
 
           {/* Browser Mic Notice if unsupported or errored */}
           {error && (
-            <div className="flex items-center justify-between gap-3 rounded-lg border-2 border-black bg-[#FECDD3] px-4 py-2.5 font-mono text-xs text-black shadow-neo-sm">
+            <div className="flex items-center justify-between gap-3 rounded-md border border-red-200 bg-red-50 px-4 py-2.5 font-mono text-xs text-red-800">
               <div className="flex items-center gap-2">
-                <AlertCircle className="h-4 w-4 shrink-0 stroke-[2.5]" />
+                <AlertCircle className="h-4 w-4 shrink-0" />
                 <span>{error}</span>
               </div>
               <button
                 type="button"
                 onClick={() => handleSwitchMode("simulate")}
-                className="rounded border border-black bg-white px-2 py-1 font-mono text-[10px] font-black uppercase shadow-neo-sm hover:bg-[#FEF08A]"
+                className="rounded-md border border-red-200 bg-white px-2 py-1 font-mono text-[10px] font-semibold uppercase hover:bg-red-50 transition-colors"
               >
                 USE SIMULATOR
               </button>
@@ -538,12 +538,12 @@ export function MeetingRecorderModal({
           {/* Digital Timer & Audio Waveform Banner */}
           <div className="flex flex-col sm:flex-row items-center gap-4">
             {/* Live Digital Timer Display */}
-            <div className="flex sm:flex-col items-center justify-center gap-1 rounded-xl border-2 border-black bg-black px-5 py-3 shrink-0 shadow-neo-sm">
-              <div className="flex items-center gap-1 font-mono text-[10px] font-black uppercase text-neutral-400">
-                <Clock className="h-3 w-3 stroke-[2.5]" />
+            <div className="flex sm:flex-col items-center justify-center gap-1 rounded-xl border border-zinc-200 bg-zinc-950 px-5 py-3 shrink-0 shadow-sm">
+              <div className="flex items-center gap-1 font-mono text-[10px] font-semibold uppercase text-zinc-400">
+                <Clock className="h-3 w-3" />
                 <span>REC TIME</span>
               </div>
-              <span className="font-mono text-3xl font-black tracking-widest text-[#A7F3D0]">
+              <span className="font-mono text-3xl font-bold tracking-widest text-white">
                 {formatTimer(elapsedSeconds)}
               </span>
             </div>
@@ -561,20 +561,20 @@ export function MeetingRecorderModal({
           </div>
 
           {/* Streaming Live Transcript Box */}
-          <div className="rounded-xl border-2 border-black bg-white p-4 shadow-neo-sm">
-            <div className="flex items-center justify-between mb-2.5 pb-2 border-b-2 border-black font-mono text-xs text-black">
+          <div className="rounded-xl border border-zinc-200 bg-zinc-50 p-4">
+            <div className="flex items-center justify-between mb-2.5 pb-2 border-b border-zinc-200 font-mono text-xs text-zinc-950">
               <div className="flex items-center gap-2">
-                <span className="font-black uppercase">
+                <span className="font-semibold uppercase">
                   STREAMING DIARIZATION LOG
                 </span>
                 {isListening && !isPaused && (
                   <span className="relative flex h-2 w-2">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-black opacity-75" />
-                    <span className="relative inline-flex rounded-full h-2 w-2 bg-black" />
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-sm bg-zinc-950 opacity-75" />
+                    <span className="relative inline-flex rounded-sm h-2 w-2 bg-zinc-950" />
                   </span>
                 )}
               </div>
-              <span className="font-bold text-neutral-600">
+              <span className="font-medium text-zinc-500">
                 {segments.length} SEGMENTS CAPTURED
               </span>
             </div>
@@ -584,9 +584,9 @@ export function MeetingRecorderModal({
               className="h-44 overflow-y-auto space-y-2.5 pr-2 font-mono text-xs"
             >
               {segments.length === 0 && !interimTranscript && (
-                <div className="flex flex-col items-center justify-center h-full text-center py-6 text-neutral-500">
-                  <Mic className="h-8 w-8 stroke-[1.5] text-neutral-400 mb-2" />
-                  <p className="font-bold uppercase text-[11px]">
+                <div className="flex flex-col items-center justify-center h-full text-center py-6 text-zinc-400">
+                  <Mic className="h-8 w-8 mb-2 text-zinc-300" />
+                  <p className="font-medium uppercase text-[11px]">
                     {isListening
                       ? "Listening for audio speech... Speak into mic or click 'SAMPLE AUDIO'."
                       : "Workstation Standby. Click 'Start Recording' or 'Sample Audio' to initiate."}
@@ -598,21 +598,21 @@ export function MeetingRecorderModal({
               {segments.map((seg, idx) => (
                 <div
                   key={seg.id || idx}
-                  className="flex flex-col gap-1 rounded-md border-2 border-black bg-[#FAF8F5] p-2.5 shadow-neo-sm"
+                  className="flex flex-col gap-1 rounded-md border border-zinc-200 bg-white p-2.5"
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <span className="rounded border border-black bg-[#DDD6FE] px-1.5 py-0.2 font-mono text-[9px] font-black uppercase">
+                      <span className="rounded-sm border border-zinc-200 bg-zinc-100 px-1.5 py-0.5 font-mono text-[9px] font-semibold uppercase text-zinc-600">
                         {seg.speakerId === "spk-user"
                           ? "YOU"
                           : seg.speakerId.replace("spk-sim-", "SPEAKER ")}
                       </span>
                     </div>
-                    <span className="font-mono text-[10px] font-black text-neutral-600">
+                    <span className="font-mono text-[10px] font-medium text-zinc-400">
                       {formatTimer(seg.start)} - {formatTimer(seg.end)}
                     </span>
                   </div>
-                  <p className="font-sans text-xs font-medium text-black pl-1 mt-0.5">
+                  <p className="font-sans text-xs font-medium text-zinc-950 pl-1 mt-0.5">
                     {seg.text}
                   </p>
                 </div>
@@ -620,11 +620,11 @@ export function MeetingRecorderModal({
 
               {/* Streaming Interim Transcript */}
               {interimTranscript && (
-                <div className="rounded-md border-2 border-dashed border-black bg-[#FEF08A]/40 p-2.5 shadow-neo-sm">
-                  <span className="font-mono text-[9px] font-black uppercase text-neutral-600 block mb-0.5">
+                <div className="rounded-md border border-dashed border-zinc-300 bg-zinc-50 p-2.5">
+                  <span className="font-mono text-[9px] font-semibold uppercase text-zinc-400 block mb-0.5">
                     LIVE STREAMING...
                   </span>
-                  <p className="font-sans text-xs font-bold text-black italic animate-pulse">
+                  <p className="font-sans text-xs font-medium text-zinc-700 italic animate-pulse">
                     {interimTranscript}
                   </p>
                 </div>
@@ -633,8 +633,8 @@ export function MeetingRecorderModal({
           </div>
         </div>
 
-        {/* Modal Footer Controls with Tactile Physics */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 border-t-2 border-black bg-white px-6 py-4">
+        {/* Modal Footer Controls */}
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 border-t border-zinc-200 bg-zinc-50 px-6 py-4">
           {/* Left: Recording Controls */}
           <div className="flex items-center gap-2 w-full sm:w-auto">
             <button
@@ -642,17 +642,17 @@ export function MeetingRecorderModal({
               onClick={handleToggleRecord}
               disabled={isGenerating}
               className={cn(
-                "h-10 flex items-center gap-2 rounded-md border-2 border-black px-4 font-mono text-xs font-black uppercase tracking-wider transition-all shadow-neo-sm hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 active:shadow-none disabled:opacity-50",
+                "h-10 flex items-center gap-2 rounded-md border px-4 font-mono text-xs font-semibold uppercase tracking-wider transition-colors disabled:opacity-50",
                 !isListening
-                  ? "bg-[#FEF08A] text-black"
+                  ? "border-zinc-200 bg-white text-zinc-700 hover:bg-zinc-50 hover:text-zinc-950"
                   : isPaused
-                  ? "bg-[#A7F3D0] text-black"
-                  : "bg-black text-white"
+                  ? "border-zinc-200 bg-zinc-100 text-zinc-700"
+                  : "border-zinc-950 bg-zinc-950 text-white"
               )}
             >
               {!isListening ? (
                 <>
-                  <Mic className="h-4 w-4 stroke-[2.5]" />
+                  <Mic className="h-4 w-4" />
                   <span>START RECORDING</span>
                 </>
               ) : isPaused ? (
@@ -662,7 +662,7 @@ export function MeetingRecorderModal({
                 </>
               ) : (
                 <>
-                  <Pause className="h-4 w-4 stroke-[2.5]" />
+                  <Pause className="h-4 w-4" />
                   <span>PAUSE</span>
                 </>
               )}
@@ -672,9 +672,9 @@ export function MeetingRecorderModal({
               type="button"
               onClick={resetRecording}
               disabled={isGenerating || (!isListening && segments.length === 0)}
-              className="h-10 flex items-center gap-1.5 rounded-md border-2 border-black bg-white px-3 font-mono text-xs font-black uppercase text-black shadow-neo-sm hover:bg-[#FECDD3] hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 active:shadow-none disabled:opacity-50 transition-all"
+              className="h-10 flex items-center gap-1.5 rounded-md border border-zinc-200 bg-white px-3 font-mono text-xs font-semibold uppercase text-zinc-600 hover:bg-zinc-50 hover:text-zinc-950 disabled:opacity-50 transition-colors"
             >
-              <RotateCcw className="h-3.5 w-3.5 stroke-[2.5]" />
+              <RotateCcw className="h-3.5 w-3.5" />
               <span>RESET</span>
             </button>
           </div>
@@ -685,7 +685,7 @@ export function MeetingRecorderModal({
               type="button"
               onClick={handleStopAndGenerate}
               disabled={isGenerating}
-              className="h-10 w-full sm:w-auto flex items-center justify-center gap-2 rounded-md border-2 border-black bg-[#A7F3D0] px-5 font-mono text-xs font-black uppercase tracking-wider text-black shadow-neo hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 active:shadow-none disabled:opacity-50 transition-all"
+              className="h-10 w-full sm:w-auto flex items-center justify-center gap-2 rounded-md border border-zinc-950 bg-zinc-950 px-5 font-mono text-xs font-semibold uppercase tracking-wider text-white hover:bg-zinc-800 disabled:opacity-50 transition-colors"
             >
               {isGenerating ? (
                 <>
@@ -694,7 +694,7 @@ export function MeetingRecorderModal({
                 </>
               ) : (
                 <>
-                  <Sparkles className="h-4 w-4 stroke-[2.5]" />
+                  <Sparkles className="h-4 w-4" />
                   <span>STOP & GENERATE AI NOTES</span>
                 </>
               )}
