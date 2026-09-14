@@ -1,6 +1,6 @@
 import { SummarySection, SummaryTemplateContent, SummaryTemplateId } from "@/types/meeting";
 
-export const DEFAULT_OPENROUTER_MODEL = "nex-agi/nex-n2.5-pro:free";
+export const DEFAULT_OPENROUTER_MODEL = "nvidia/nemotron-3-super-120b-a12b:free";
 
 /**
  * Free-tier models can queue for many minutes; without a deadline the recorder
@@ -12,6 +12,18 @@ export function resolveOpenRouterModel(): string {
 }
 
 export const OPENROUTER_TIMEOUT_MS = Number(process.env.OPENROUTER_TIMEOUT_MS || 45000);
+
+/**
+ * Pull the JSON object out of a model reply. Reasoning models sometimes prefix
+ * their thinking, and many wrap the answer in a ```json fence; take the
+ * outermost {...} so either still parses.
+ */
+function extractJsonObject(content: string): string {
+  const unfenced = content.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/i, "").trim();
+  const start = unfenced.indexOf("{");
+  const end = unfenced.lastIndexOf("}");
+  return start >= 0 && end > start ? unfenced.slice(start, end + 1) : unfenced;
+}
 
 function withTimeout(ms: number) {
   const controller = new AbortController();
@@ -778,6 +790,8 @@ export async function generateMeetingSummary({
           },
         ],
         temperature: 0.2,
+        // Keep reasoning-model "thinking" out of the reply body.
+        reasoning: { exclude: true },
       }),
       signal: deadline.signal,
     });
@@ -800,12 +814,7 @@ export async function generateMeetingSummary({
     }
 
     // Strip markdown code fences if model returned ```json ... ```
-    const cleanedJson = content
-      .replace(/^```(?:json)?\s*/i, "")
-      .replace(/\s*```$/i, "")
-      .trim();
-
-    const parsed = JSON.parse(cleanedJson);
+    const parsed = JSON.parse(extractJsonObject(content));
 
     // Map template metadata
     const templateMeta: Record<SummaryTemplateId, { name: string; icon: string }> = {
@@ -902,6 +911,8 @@ export async function askMeetingQuestion({
           },
         ],
         temperature: 0.2,
+        // Keep reasoning-model "thinking" out of the reply body.
+        reasoning: { exclude: true },
       }),
       signal: deadline.signal,
     });
