@@ -20,6 +20,12 @@ PROJECT = "fathom-clone"
 DEFAULT_MODEL = "gemini-3.8-flash"
 BRAIN_DIR = os.path.expanduser("~/.gemini/antigravity-cli/brain")
 
+# Claude Code stores one JSONL transcript per session under a directory named
+# after the cwd with every "/" replaced by "-".
+CLAUDE_PROJECTS_DIR = os.path.expanduser("~/.claude/projects")
+CLAUDE_TOOL = "claude-code"
+CLAUDE_DEFAULT_MODEL = "claude-opus-5"
+
 
 def get_repo_root(workspace_paths=None):
     if workspace_paths and len(workspace_paths) > 0:
@@ -123,7 +129,7 @@ def parse_session_transcript(transcript_path, session_id, model_name=DEFAULT_MOD
     return turns
 
 
-def format_log_markdown(session_id, turns, repo_root, model_name=DEFAULT_MODEL):
+def format_log_markdown(session_id, turns, repo_root, model_name=DEFAULT_MODEL, tool=TOOL):
     if not turns:
         return None
 
@@ -150,7 +156,7 @@ def format_log_markdown(session_id, turns, repo_root, model_name=DEFAULT_MODEL):
     lines.append(f"date: {date_str}")
     lines.append(f"author: {AUTHOR}")
     lines.append(f"model: {model_name}")
-    lines.append(f"tool: {TOOL}")
+    lines.append(f"tool: {tool}")
     lines.append(f"project: {PROJECT}")
     lines.append(f"total_exchanges: {total_exchanges}")
     lines.append(f"first_prompt_time: {first_prompt_time}")
@@ -216,6 +222,180 @@ def process_session(session_id, transcript_path=None, repo_root=None, model_name
         f.write(md_content)
 
     return target_file
+
+
+# --------------------------------------------------------------------------
+# Claude Code (~/.claude/projects/<encoded-cwd>/<session-id>.jsonl)
+# --------------------------------------------------------------------------
+
+def encode_claude_project_dir(path):
+    return path.replace(os.sep, "-")
+
+
+def strip_reminders(text):
+    """Drop harness-injected noise that is not part of what the user typed."""
+    if not text:
+        return ""
+    text = re.sub(r"<system-reminder>[\s\S]*?</system-reminder>", "", text)
+    text = re.sub(r"<local-command-stdout>[\s\S]*?</local-command-stdout>", "", text)
+    text = re.sub(r"<command-message>[\s\S]*?</command-message>", "", text)
+    return text.strip()
+
+
+def claude_text(content):
+    """Flatten a Claude message content field (str or block list) to text."""
+    if isinstance(content, str):
+        return content
+    if isinstance(content, list):
+        parts = []
+        for block in content:
+            if isinstance(block, dict) and block.get("type") == "text":
+                parts.append(block.get("text", ""))
+        return "\n".join(parts)
+    return ""
+
+
+def claude_prompt_text(msg_content):
+    """Render a user turn, expanding slash commands to `/name args`."""
+    raw = claude_text(msg_content)
+    name = re.search(r"<command-name>\s*([\s\S]*?)\s*</command-name>", raw)
+    if name:
+        args = re.search(r"<command-args>\s*([\s\S]*?)\s*</command-args>", raw)
+        cmd = name.group(1).strip()
+        if args and args.group(1).strip():
+            cmd = f"{cmd} {args.group(1).strip()}"
+        return cmd
+    return strip_reminders(raw)
+
+
+# Markers the CLI writes as user turns that the human never typed.
+SYNTHETIC_PROMPTS = (
+    "[Request interrupted by user]",
+    "[Request interrupted by user for tool use]",
+    "API Error",
+    "No response requested.",
+)
+
+
+def is_claude_user_prompt(step):
+    """True only for turns the human actually typed, not tool results."""
+    if step.get("type") != "user" or step.get("isSidechain") or step.get("isMeta"):
+        return False
+
+    content = (step.get("message") or {}).get("content")
+    text = claude_text(content).strip()
+    if any(text.startswith(m) for m in SYNTHETIC_PROMPTS):
+        return False
+
+    origin = step.get("origin")
+    if isinstance(origin, dict):
+        # Authoritative signal on CLI >= 2.1; tool results carry no origin.
+        return origin.get("kind") == "human"
+    # Fallback for transcripts written before `origin` existed.
+    if isinstance(content, list):
+        return not any(
+            isinstance(b, dict) and b.get("type") == "tool_result" for b in content
+        )
+    return isinstance(content, str)
+
+
+def parse_claude_transcript(transcript_path, session_id):
+    steps = []
+    try:
+        with open(transcript_path, "r", encoding="utf-8", errors="replace") as f:
+            for line in f:
+                line = line.strip()
+                if line:
+                    try:
+                        steps.append(json.loads(line))
+                    except Exception:
+                        pass
+    except Exception:
+        return None
+
+    user_step_indices = [i for i, s in enumerate(steps) if is_claude_user_prompt(s)]
+    if not user_step_indices:
+        return None
+
+    turns = []
+    for turn_num, u_idx in enumerate(user_step_indices, 1):
+        u_step = steps[u_idx]
+        p_text = claude_prompt_text((u_step.get("message") or {}).get("content"))
+        if not p_text:
+            continue
+        p_time = u_step.get("timestamp") or datetime.now(timezone.utc).strftime(
+            "%Y-%m-%dT%H:%M:%S.%fZ"
+        )
+
+        next_u_idx = (
+            user_step_indices[turn_num]
+            if turn_num < len(user_step_indices)
+            else len(steps)
+        )
+
+        # Final response = last assistant text of the turn. Thinking blocks and
+        # subagent (sidechain) output are excluded by claude_text/isSidechain.
+        r_text = None
+        r_time = None
+        model = CLAUDE_DEFAULT_MODEL
+        for s in steps[u_idx + 1 : next_u_idx]:
+            if s.get("type") != "assistant" or s.get("isSidechain"):
+                continue
+            msg = s.get("message") or {}
+            model = msg.get("model") or model
+            text = claude_text(msg.get("content")).strip()
+            if text:
+                r_text = text
+                r_time = s.get("timestamp") or r_time
+
+        turns.append({
+            "num": len(turns) + 1,
+            "prompt": p_text,
+            "prompt_time": p_time,
+            "response": r_text,
+            "response_time": r_time,
+            "model": model,
+        })
+
+    return turns or None
+
+
+def process_claude_session(session_id, transcript_path, repo_root=None):
+    if not repo_root:
+        repo_root = get_repo_root()
+    if not os.path.exists(transcript_path):
+        return None
+
+    turns = parse_claude_transcript(transcript_path, session_id)
+    if not turns:
+        return None
+
+    model_name = turns[-1]["model"]
+    formatted = format_log_markdown(
+        session_id, turns, repo_root, model_name, tool=CLAUDE_TOOL
+    )
+    if not formatted:
+        return None
+    filename, md_content = formatted
+
+    logs_dir = os.path.join(repo_root, ".agent-logs")
+    os.makedirs(logs_dir, exist_ok=True)
+    target_file = os.path.join(logs_dir, filename)
+    with open(target_file, "w", encoding="utf-8") as f:
+        f.write(md_content)
+
+    return target_file
+
+
+def claude_transcripts_for_repo(repo_root):
+    """Transcripts for the repo itself and any session started in a subdir."""
+    encoded = encode_claude_project_dir(os.path.abspath(repo_root))
+    found = []
+    for pattern in (encoded, encoded + "-*"):
+        found.extend(
+            glob.glob(os.path.join(CLAUDE_PROJECTS_DIR, pattern, "*.jsonl"))
+        )
+    return found
 
 
 def process_hook_payload():
@@ -293,6 +473,20 @@ def watch_daemon(repo_root=None, interval=1.0):
                     pass
         except Exception:
             pass
+
+        try:
+            for tp in claude_transcripts_for_repo(repo_root):
+                try:
+                    mt = os.path.getmtime(tp)
+                    if tp not in mtimes or mtimes[tp] < mt:
+                        mtimes[tp] = mt
+                        session_id = os.path.splitext(os.path.basename(tp))[0]
+                        process_claude_session(session_id, tp, repo_root)
+                except Exception:
+                    pass
+        except Exception:
+            pass
+
         time.sleep(interval)
 
 
@@ -307,6 +501,11 @@ if __name__ == "__main__":
         for tp in transcripts:
             session_id = tp.split(os.sep)[-4]
             out = process_session(session_id, tp)
+            if out:
+                print(f"Processed {session_id} -> {out}")
+        for tp in claude_transcripts_for_repo(get_repo_root()):
+            session_id = os.path.splitext(os.path.basename(tp))[0]
+            out = process_claude_session(session_id, tp)
             if out:
                 print(f"Processed {session_id} -> {out}")
     elif "--session" in sys.argv:
