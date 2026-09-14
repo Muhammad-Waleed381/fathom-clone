@@ -3,10 +3,6 @@
 import React, { useState, useMemo } from "react";
 import Link from "next/link";
 import { useMeetingStore } from "@/lib/store/use-meeting-store";
-import { DashboardHeader } from "@/components/dashboard/dashboard-header";
-import { CommandSearch } from "@/components/dashboard/command-search";
-import { ApiKeysModal } from "@/components/settings/api-keys-modal";
-import { MeetingRecorderModal } from "@/components/record/meeting-recorder-modal";
 import {
   ActionFilters,
   ActionStatusFilter,
@@ -19,8 +15,7 @@ import {
 import { Speaker } from "@/types/meeting";
 import { formatTime } from "@/components/player/video-scrubber";
 import {
-  Home,
-  ChevronRight,
+  ArrowLeft,
   ListTodo,
   CheckCircle2,
   Clock,
@@ -33,11 +28,6 @@ import {
 export default function ActionsHubPage() {
   const meetings = useMeetingStore((s) => s.meetings);
   const toggleActionItem = useMeetingStore((s) => s.toggleActionItem);
-
-  // Search, settings, and recorder modals
-  const [searchOpen, setSearchOpen] = useState(false);
-  const [settingsOpen, setSettingsOpen] = useState(false);
-  const [recorderOpen, setRecorderOpen] = useState(false);
 
   // Filters state
   const [statusFilter, setStatusFilter] = useState<ActionStatusFilter>("all");
@@ -56,7 +46,7 @@ export default function ActionsHubPage() {
     meetings.forEach((meeting) => {
       (meeting.actionItems || []).forEach((item) => {
         const assignee = meeting.participants?.find(
-          (p) => p.id === item.assigneeId
+          (p) => p.id === item.assigneeId,
         );
         items.push({
           ...item,
@@ -201,7 +191,7 @@ export default function ActionsHubPage() {
     link.setAttribute("href", url);
     link.setAttribute(
       "download",
-      `fathom-action-items-${new Date().toISOString().slice(0, 10)}.csv`
+      `fathom-action-items-${new Date().toISOString().slice(0, 10)}.csv`,
     );
     document.body.appendChild(link);
     link.click();
@@ -227,13 +217,11 @@ export default function ActionsHubPage() {
         : "";
       const dueStr = item.dueDate ? ` • Due: ${item.dueDate}` : "";
       const timeStr =
-        item.timestamp !== undefined
-          ? ` • ${formatTime(item.timestamp)}`
-          : "";
+        item.timestamp !== undefined ? ` • ${formatTime(item.timestamp)}` : "";
       const meetingStr = ` (${item.meetingTitle})`;
 
       lines.push(
-        `${statusBox} *${item.text}*${assigneeStr}${priorityStr}${dueStr}${timeStr}${meetingStr}`
+        `${statusBox} *${item.text}*${assigneeStr}${priorityStr}${dueStr}${timeStr}${meetingStr}`,
       );
     });
 
@@ -247,78 +235,48 @@ export default function ActionsHubPage() {
   };
 
   return (
-    <div className="flex min-h-screen flex-col bg-zinc-50 text-zinc-950 font-sans">
-      {/* Top Application Header */}
-      <DashboardHeader
-        onOpenSearch={() => setSearchOpen(true)}
-        onRecordClick={() => setRecorderOpen(true)}
-      />
-
-      {/* Main Page Content */}
-      <main className="mx-auto flex-1 w-full max-w-7xl px-4 sm:px-6 lg:px-8 py-8 space-y-6">
-        {/* Workspace Breadcrumbs & Editorial Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-zinc-200 pb-5">
-          <div className="space-y-1.5">
-            {/* Breadcrumbs */}
-            <div className="flex items-center gap-2 font-mono text-xs font-semibold uppercase tracking-wider text-zinc-500">
-              <Link
-                href="/"
-                className="flex items-center gap-1 hover:text-zinc-950 transition-colors"
-              >
-                <Home className="h-3.5 w-3.5" />
-                <span>WORKSPACE</span>
-              </Link>
-              <ChevronRight className="h-3 w-3" />
-              <span className="text-zinc-950">ACTION ITEMS</span>
-            </div>
-
-            {/* Page Title & Subtitle */}
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-zinc-200 bg-white shadow-sm">
-                <ListTodo className="h-5 w-5 text-zinc-950" />
-              </div>
-              <div>
-                <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-zinc-950">
-                  ACTION ITEMS HUB
-                </h1>
-                <p className="font-mono text-xs font-medium uppercase text-zinc-500">
-                  TOTAL TASKS: {totalCount} • CROSS-MEETING EXECUTION MATRIX
-                </p>
-              </div>
-            </div>
+    <div className="section flex min-h-screen flex-col pt-28 text-white sm:pt-32 md:pt-36">
+      <main className="w-full flex-1 space-y-6">
+        <div className="flex flex-col gap-6 border-b border-white/15 pb-8 lg:flex-row lg:items-end lg:justify-between">
+          <div>
+            <Link
+              href="/dashboard"
+              className="inline-flex items-center gap-1.5 text-[13px] text-white/60 transition-colors hover:text-white"
+            >
+              <ArrowLeft className="h-3.5 w-3.5" />
+              Dashboard
+            </Link>
+            <p className="eyebrow mt-6">
+              {totalCount} tasks across every meeting
+            </p>
+            <h1 className="display-h2 mt-3 text-white">Action items</h1>
           </div>
 
-          {/* Export Actions */}
-          <div className="flex items-center gap-2.5 self-start sm:self-auto">
+          <div className="flex items-center gap-2">
             <button
               type="button"
               onClick={handleExportCsv}
-              className="h-9 flex items-center gap-2 rounded-md border border-zinc-200 bg-white px-3.5 font-mono text-xs font-semibold uppercase tracking-wider text-zinc-700 shadow-sm hover:bg-zinc-50 hover:border-zinc-300 transition-colors"
+              className="inline-flex h-9 items-center gap-2 rounded-full border border-white/20 px-4 text-[13px] font-medium text-white transition-colors hover:bg-white hover:text-black"
             >
-              <Download className="h-4 w-4" />
-              <span>EXPORT CSV</span>
+              <Download className="h-3.5 w-3.5" />
+              Export CSV
             </button>
 
             <button
               type="button"
               onClick={handleCopySlack}
-              className={`h-9 flex items-center gap-2 rounded-md border px-3.5 font-mono text-xs font-semibold uppercase tracking-wider shadow-sm transition-colors ${
+              className={`inline-flex h-9 items-center gap-2 rounded-full border px-4 text-[13px] font-medium transition-colors ${
                 copiedSlack
-                  ? "border-zinc-200 bg-zinc-950 text-white"
-                  : "border-zinc-200 bg-white text-zinc-700 hover:bg-zinc-50 hover:border-zinc-300"
+                  ? "border-white bg-white text-black"
+                  : "border-white/20 text-white hover:bg-white hover:text-black"
               }`}
             >
               {copiedSlack ? (
-                <>
-                  <Check className="h-4 w-4" />
-                  <span>COPIED!</span>
-                </>
+                <Check className="h-3.5 w-3.5" />
               ) : (
-                <>
-                  <Copy className="h-4 w-4" />
-                  <span>COPY MARKDOWN</span>
-                </>
+                <Copy className="h-3.5 w-3.5" />
               )}
+              {copiedSlack ? "Copied" : "Copy Markdown"}
             </button>
           </div>
         </div>
@@ -326,83 +284,79 @@ export default function ActionsHubPage() {
         {/* 4 Monochrome KPI Cards */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {/* Card 1: Total */}
-          <div className="flex flex-col justify-between rounded-xl border border-zinc-200 bg-white p-5 shadow-sm">
+          <div className="flex flex-col justify-between rounded-xl border border-white/15 bg-surface-raised p-5 ">
             <div className="flex items-center justify-between">
-              <span className="font-mono text-xs font-semibold uppercase tracking-wider text-zinc-500">
-                TOTAL ACTIONS
+              <span className="text-[13px] font-medium text-white/60">
+                Total actions
               </span>
-              <div className="flex h-7 w-7 items-center justify-center rounded-md border border-zinc-100 bg-zinc-50">
-                <ListTodo className="h-3.5 w-3.5 text-zinc-950" />
+              <div className="flex h-7 w-7 items-center justify-center rounded-full border border-white/10 bg-surface-raised">
+                <ListTodo className="h-3.5 w-3.5 text-white" />
               </div>
             </div>
             <div className="mt-3">
-              <div className="font-mono text-3xl font-bold text-zinc-950">
+              <div className="font-display text-4xl font-medium tracking-tight text-white">
                 {totalCount}
               </div>
-              <p className="font-mono text-[11px] font-medium uppercase text-zinc-400 mt-0.5">
+              <p className="text-xs text-white/45 mt-0.5">
                 across {meetings.length} meetings
               </p>
             </div>
           </div>
 
           {/* Card 2: Completed */}
-          <div className="flex flex-col justify-between rounded-xl border border-zinc-200 bg-white p-5 shadow-sm">
+          <div className="flex flex-col justify-between rounded-xl border border-white/15 bg-surface-raised p-5 ">
             <div className="flex items-center justify-between">
-              <span className="font-mono text-xs font-semibold uppercase tracking-wider text-zinc-500">
-                COMPLETED
+              <span className="text-[13px] font-medium text-white/60">
+                Completed
               </span>
-              <div className="flex h-7 w-7 items-center justify-center rounded-md border border-zinc-100 bg-zinc-50">
-                <CheckCircle2 className="h-3.5 w-3.5 text-zinc-950" />
+              <div className="flex h-7 w-7 items-center justify-center rounded-full border border-white/10 bg-surface-raised">
+                <CheckCircle2 className="h-3.5 w-3.5 text-white" />
               </div>
             </div>
             <div className="mt-3">
-              <div className="font-mono text-3xl font-bold text-zinc-950">
+              <div className="font-display text-4xl font-medium tracking-tight text-white">
                 {completedCount}
               </div>
-              <p className="font-mono text-[11px] font-medium uppercase text-zinc-400 mt-0.5">
-                resolved items
-              </p>
+              <p className="text-xs text-white/45 mt-0.5">resolved items</p>
             </div>
           </div>
 
           {/* Card 3: Pending */}
-          <div className="flex flex-col justify-between rounded-xl border border-zinc-200 bg-white p-5 shadow-sm">
+          <div className="flex flex-col justify-between rounded-xl border border-white/15 bg-surface-raised p-5 ">
             <div className="flex items-center justify-between">
-              <span className="font-mono text-xs font-semibold uppercase tracking-wider text-zinc-500">
-                PENDING
+              <span className="text-[13px] font-medium text-white/60">
+                Pending
               </span>
-              <div className="flex h-7 w-7 items-center justify-center rounded-md border border-zinc-100 bg-zinc-50">
-                <Clock className="h-3.5 w-3.5 text-zinc-950" />
+              <div className="flex h-7 w-7 items-center justify-center rounded-full border border-white/10 bg-surface-raised">
+                <Clock className="h-3.5 w-3.5 text-white" />
               </div>
             </div>
             <div className="mt-3">
-              <div className="font-mono text-3xl font-bold text-zinc-950">
+              <div className="font-display text-4xl font-medium tracking-tight text-white">
                 {pendingCount}
               </div>
-              <p className="font-mono text-[11px] font-medium uppercase text-zinc-400 mt-0.5">
-                open execution
-              </p>
+              <p className="text-xs text-white/45 mt-0.5">open execution</p>
             </div>
           </div>
 
           {/* Card 4: Completion Rate */}
-          <div className="flex flex-col justify-between rounded-xl border border-zinc-200 bg-white p-5 shadow-sm">
+          <div className="flex flex-col justify-between rounded-xl border border-white/15 bg-surface-raised p-5 ">
             <div className="flex items-center justify-between">
-              <span className="font-mono text-xs font-semibold uppercase tracking-wider text-zinc-500">
-                COMPLETION RATE
+              <span className="text-[13px] font-medium text-white/60">
+                Completion rate
               </span>
-              <div className="flex h-7 w-7 items-center justify-center rounded-md border border-zinc-100 bg-zinc-50">
-                <Sparkles className="h-3.5 w-3.5 text-zinc-950" />
+              <div className="flex h-7 w-7 items-center justify-center rounded-full border border-white/10 bg-surface-raised">
+                <Sparkles className="h-3.5 w-3.5 text-white" />
               </div>
             </div>
             <div className="mt-3">
-              <div className="font-mono text-3xl font-bold text-zinc-950">
+              <div className="font-display text-4xl font-medium tracking-tight text-white">
                 {percentComplete}%
               </div>
               {/* Progress Bar */}
-              <div className="mt-2 h-1.5 w-full overflow-hidden rounded-sm bg-zinc-100">
+              <div className="mt-2 h-1.5 w-full overflow-hidden rounded-sm bg-white/10">
                 <div
-                  className="h-full bg-zinc-950 transition-all duration-500"
+                  className="h-full bg-white transition-all duration-500"
                   style={{ width: `${percentComplete}%` }}
                 />
               </div>
@@ -437,18 +391,6 @@ export default function ActionsHubPage() {
           hasActiveFilters={hasActiveFilters}
         />
       </main>
-
-      {/* Global Cmd+K Search Modal */}
-      <CommandSearch open={searchOpen} onOpenChange={setSearchOpen} />
-
-      {/* Global AI Settings Modal */}
-      <ApiKeysModal open={settingsOpen} onOpenChange={setSettingsOpen} />
-
-      {/* Meeting Recorder Modal */}
-      <MeetingRecorderModal
-        open={recorderOpen}
-        onOpenChange={setRecorderOpen}
-      />
     </div>
   );
 }

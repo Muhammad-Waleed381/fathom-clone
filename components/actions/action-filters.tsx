@@ -78,14 +78,15 @@ export function ActionFilters({
   const selectedAssignee = availableAssignees.find((a) => a.id === assigneeId);
   const selectedMeeting = availableMeetings.find((m) => m.id === meetingId);
 
-  const statusTabs: { id: ActionStatusFilter; label: string; count: number }[] = [
-    { id: "all", label: "ALL", count: counts.all },
-    { id: "pending", label: "PENDING", count: counts.pending },
-    { id: "completed", label: "COMPLETED", count: counts.completed },
-  ];
+  const statusTabs: { id: ActionStatusFilter; label: string; count: number }[] =
+    [
+      { id: "all", label: "All", count: counts.all },
+      { id: "pending", label: "Pending", count: counts.pending },
+      { id: "completed", label: "Completed", count: counts.completed },
+    ];
 
   return (
-    <div className="flex flex-col gap-4 rounded-xl border border-zinc-200 bg-white p-4 shadow-sm">
+    <div className="flex flex-col gap-4 rounded-xl border border-white/15 bg-surface-raised p-4 ">
       {/* Top Row: Status Tabs + Search Input */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         {/* Status Tabs */}
@@ -98,19 +99,19 @@ export function ActionFilters({
                 type="button"
                 onClick={() => onStatusChange(tab.id)}
                 className={cn(
-                  "flex items-center gap-2 rounded-md px-3.5 py-1.5 font-mono text-xs font-semibold uppercase tracking-wider transition-all whitespace-nowrap",
+                  "flex items-center gap-2 rounded-full px-3.5 py-1.5 text-[13px] font-medium transition-all whitespace-nowrap",
                   isActive
-                    ? "bg-zinc-950 text-white"
-                    : "bg-zinc-50 text-zinc-600 border border-zinc-200 hover:bg-zinc-100 hover:text-zinc-950"
+                    ? "bg-white text-black"
+                    : "bg-surface-raised text-white/70 border border-white/15 hover:bg-white/10 hover:text-white",
                 )}
               >
                 <span>{tab.label}</span>
                 <span
                   className={cn(
-                    "rounded-sm px-1 font-mono text-[10px] font-semibold",
+                    "rounded-sm px-1 text-[10px] font-semibold",
                     isActive
                       ? "bg-white/20 text-white"
-                      : "bg-zinc-200 text-zinc-600"
+                      : "bg-white/15 text-white/70",
                   )}
                 >
                   {tab.count}
@@ -122,19 +123,19 @@ export function ActionFilters({
 
         {/* Search Input */}
         <div className="relative flex-1 sm:max-w-md">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-zinc-400 pointer-events-none" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-white/45 pointer-events-none" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
             placeholder="Search action items, assignees, or meetings..."
-            className="h-9 w-full rounded-md border border-zinc-200 bg-zinc-50 pl-8 pr-8 font-mono text-xs text-zinc-950 placeholder:text-zinc-400 shadow-sm focus:bg-white focus:border-zinc-300 focus:outline-none transition-colors"
+            className="h-9 w-full rounded-full border border-white/15 bg-surface-raised pl-8 pr-8 text-xs text-white placeholder:text-white/45  focus:bg-white/5 focus:border-white/25 focus:outline-none transition-colors"
           />
           {searchQuery && (
             <button
               type="button"
               onClick={() => onSearchChange("")}
-              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-950 transition-colors"
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-white/45 hover:text-white transition-colors"
               aria-label="Clear search"
             >
               <X className="h-3.5 w-3.5" />
@@ -144,10 +145,10 @@ export function ActionFilters({
       </div>
 
       {/* Bottom Row: Assignee, Priority, Meeting Dropdowns & Reset */}
-      <div className="flex flex-wrap items-center gap-2 pt-3 border-t border-zinc-200">
-        <div className="flex items-center gap-1.5 text-xs font-mono font-semibold uppercase text-zinc-500 mr-1">
+      <div className="flex flex-wrap items-center gap-2 pt-3 border-t border-white/15">
+        <div className="flex items-center gap-1.5 text-xs font-semibold uppercase text-white/60 mr-1">
           <Filter className="h-3.5 w-3.5" />
-          <span>FILTER:</span>
+          <span>Filter</span>
         </div>
 
         {/* Filter by Assignee */}
@@ -156,10 +157,10 @@ export function ActionFilters({
             <button
               type="button"
               className={cn(
-                "h-8 flex items-center gap-1.5 rounded-md border px-2.5 font-mono text-xs font-medium uppercase transition-colors",
+                "h-8 flex items-center gap-1.5 rounded-full border px-2.5 text-xs transition-colors",
                 assigneeId
-                  ? "border-zinc-300 bg-zinc-100 text-zinc-950"
-                  : "border-zinc-200 bg-white text-zinc-600 hover:bg-zinc-50 hover:text-zinc-950"
+                  ? "border-white/25 bg-white/10 text-white"
+                  : "border-white/15 bg-surface-raised text-white/70 hover:bg-white/5 hover:text-white",
               )}
             >
               <User className="h-3.5 w-3.5" />
@@ -171,41 +172,46 @@ export function ActionFilters({
           </DropdownMenuTrigger>
           <DropdownMenuContent
             align="start"
-            className="w-56 border border-zinc-200 bg-white p-1 text-zinc-950 shadow-lg rounded-xl"
+            className="w-56 border border-white/15 bg-surface-raised p-1 text-white shadow-lg rounded-xl"
           >
-            <DropdownMenuLabel className="font-mono text-[10px] font-semibold uppercase tracking-wider text-zinc-500 px-2 py-1">
+            <DropdownMenuLabel className="text-[10px] font-semibold text-white/60 px-2 py-1">
               Select Assignee
             </DropdownMenuLabel>
             <DropdownMenuItem
               onClick={() => onAssigneeChange(null)}
-              className="flex items-center justify-between font-mono text-xs font-medium cursor-pointer rounded-md hover:bg-zinc-100 focus:bg-zinc-100 px-2 py-1.5"
+              className="flex items-center justify-between text-xs font-medium cursor-pointer rounded-full hover:bg-white/10 focus:bg-white/10 px-2 py-1.5"
             >
               <span>All Assignees</span>
               {assigneeId === null && <Check className="h-3.5 w-3.5" />}
             </DropdownMenuItem>
-            <DropdownMenuSeparator className="bg-zinc-200 my-1" />
+            <DropdownMenuSeparator className="bg-white/15 my-1" />
             {availableAssignees.map((assignee) => (
               <DropdownMenuItem
                 key={assignee.id}
                 onClick={() => onAssigneeChange(assignee.id)}
-                className="flex items-center justify-between gap-2 font-mono text-xs font-medium cursor-pointer rounded-md hover:bg-zinc-100 focus:bg-zinc-100 px-2 py-1.5"
+                className="flex items-center justify-between gap-2 text-xs font-medium cursor-pointer rounded-full hover:bg-white/10 focus:bg-white/10 px-2 py-1.5"
               >
                 <div className="flex items-center gap-2 min-w-0">
-                  <Avatar className="h-5 w-5 border border-zinc-200 shrink-0">
+                  <Avatar className="h-5 w-5 border border-white/15 shrink-0">
                     {assignee.avatarUrl && (
-                      <AvatarImage src={assignee.avatarUrl} alt={assignee.name} />
+                      <AvatarImage
+                        src={assignee.avatarUrl}
+                        alt={assignee.name}
+                      />
                     )}
                     <AvatarFallback
                       style={{ backgroundColor: assignee.color || "#e4e4e7" }}
-                      className="font-mono text-[9px] font-semibold text-zinc-950"
+                      className="text-[9px] font-semibold text-white"
                     >
                       {getInitials(assignee.name)}
                     </AvatarFallback>
                   </Avatar>
                   <div className="flex flex-col min-w-0">
-                    <span className="truncate font-sans font-semibold text-zinc-950">{assignee.name}</span>
+                    <span className="truncate font-sans font-semibold text-white">
+                      {assignee.name}
+                    </span>
                     {assignee.role && (
-                      <span className="truncate font-mono text-[9px] text-zinc-500 uppercase">
+                      <span className="truncate text-[9px] text-white/60 uppercase">
                         {assignee.role}
                       </span>
                     )}
@@ -225,63 +231,61 @@ export function ActionFilters({
             <button
               type="button"
               className={cn(
-                "h-8 flex items-center gap-1.5 rounded-md border px-2.5 font-mono text-xs font-medium uppercase transition-colors",
+                "h-8 flex items-center gap-1.5 rounded-full border px-2.5 text-xs transition-colors",
                 priority !== "all"
-                  ? "border-zinc-300 bg-zinc-100 text-zinc-950"
-                  : "border-zinc-200 bg-white text-zinc-600 hover:bg-zinc-50 hover:text-zinc-950"
+                  ? "border-white/25 bg-white/10 text-white"
+                  : "border-white/15 bg-surface-raised text-white/70 hover:bg-white/5 hover:text-white",
               )}
             >
               <AlertCircle className="h-3.5 w-3.5" />
               <span>
-                {priority === "all"
-                  ? "Priority"
-                  : `${priority.toUpperCase()}`}
+                {priority === "all" ? "Priority" : `${priority.toUpperCase()}`}
               </span>
               <ChevronDown className="h-3 w-3 ml-0.5" />
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent
             align="start"
-            className="w-44 border border-zinc-200 bg-white p-1 text-zinc-950 shadow-lg rounded-xl"
+            className="w-44 border border-white/15 bg-surface-raised p-1 text-white shadow-lg rounded-xl"
           >
-            <DropdownMenuLabel className="font-mono text-[10px] font-semibold uppercase tracking-wider text-zinc-500 px-2 py-1">
+            <DropdownMenuLabel className="text-[10px] font-semibold text-white/60 px-2 py-1">
               Select Priority
             </DropdownMenuLabel>
             <DropdownMenuItem
               onClick={() => onPriorityChange("all")}
-              className="flex items-center justify-between font-mono text-xs font-medium cursor-pointer rounded-md hover:bg-zinc-100 focus:bg-zinc-100 px-2 py-1.5"
+              className="flex items-center justify-between text-xs font-medium cursor-pointer rounded-full hover:bg-white/10 focus:bg-white/10 px-2 py-1.5"
             >
-              <span>ALL PRIORITIES</span>
+              <span>All priorities</span>
               {priority === "all" && <Check className="h-3.5 w-3.5" />}
             </DropdownMenuItem>
-            <DropdownMenuSeparator className="bg-zinc-200 my-1" />
+            <DropdownMenuSeparator className="bg-white/15 my-1" />
             <DropdownMenuItem
               onClick={() => onPriorityChange("high")}
-              className="flex items-center justify-between font-mono text-xs font-medium cursor-pointer rounded-md hover:bg-zinc-100 focus:bg-zinc-100 px-2 py-1.5"
+              className="flex items-center justify-between text-xs font-medium cursor-pointer rounded-full hover:bg-white/10 focus:bg-white/10 px-2 py-1.5"
             >
               <div className="flex items-center gap-2">
                 <span className="h-2 w-2 rounded-sm bg-rose-500" />
-                <span className="text-zinc-950 font-semibold">HIGH</span>
+                <span className="text-white font-semibold">High</span>
               </div>
               {priority === "high" && <Check className="h-3.5 w-3.5" />}
             </DropdownMenuItem>
             <DropdownMenuItem
               onClick={() => onPriorityChange("medium")}
-              className="flex items-center justify-between font-mono text-xs font-medium cursor-pointer rounded-md hover:bg-zinc-100 focus:bg-zinc-100 px-2 py-1.5"
+              className="flex items-center justify-between text-xs font-medium cursor-pointer rounded-full hover:bg-white/10 focus:bg-white/10 px-2 py-1.5"
             >
               <div className="flex items-center gap-2">
                 <span className="h-2 w-2 rounded-sm bg-amber-400" />
-                <span className="text-zinc-950 font-semibold">MEDIUM</span>
+                <span className="text-white font-semibold">Medium</span>
               </div>
               {priority === "medium" && <Check className="h-3.5 w-3.5" />}
             </DropdownMenuItem>
             <DropdownMenuItem
               onClick={() => onPriorityChange("low")}
-              className="flex items-center justify-between font-mono text-xs font-medium cursor-pointer rounded-md hover:bg-zinc-100 focus:bg-zinc-100 px-2 py-1.5"
+              className="flex items-center justify-between text-xs font-medium cursor-pointer rounded-full hover:bg-white/10 focus:bg-white/10 px-2 py-1.5"
             >
               <div className="flex items-center gap-2">
                 <span className="h-2 w-2 rounded-sm bg-sky-400" />
-                <span className="text-zinc-950 font-semibold">LOW</span>
+                <span className="text-white font-semibold">Low</span>
               </div>
               {priority === "low" && <Check className="h-3.5 w-3.5" />}
             </DropdownMenuItem>
@@ -294,10 +298,10 @@ export function ActionFilters({
             <button
               type="button"
               className={cn(
-                "h-8 flex items-center gap-1.5 rounded-md border px-2.5 font-mono text-xs font-medium uppercase transition-colors",
+                "h-8 flex items-center gap-1.5 rounded-full border px-2.5 text-xs transition-colors",
                 meetingId
-                  ? "border-zinc-300 bg-zinc-100 text-zinc-950"
-                  : "border-zinc-200 bg-white text-zinc-600 hover:bg-zinc-50 hover:text-zinc-950"
+                  ? "border-white/25 bg-white/10 text-white"
+                  : "border-white/15 bg-surface-raised text-white/70 hover:bg-white/5 hover:text-white",
               )}
             >
               <Video className="h-3.5 w-3.5" />
@@ -309,24 +313,24 @@ export function ActionFilters({
           </DropdownMenuTrigger>
           <DropdownMenuContent
             align="start"
-            className="w-64 border border-zinc-200 bg-white p-1 text-zinc-950 shadow-lg rounded-xl"
+            className="w-64 border border-white/15 bg-surface-raised p-1 text-white shadow-lg rounded-xl"
           >
-            <DropdownMenuLabel className="font-mono text-[10px] font-semibold uppercase tracking-wider text-zinc-500 px-2 py-1">
+            <DropdownMenuLabel className="text-[10px] font-semibold text-white/60 px-2 py-1">
               Select Meeting Source
             </DropdownMenuLabel>
             <DropdownMenuItem
               onClick={() => onMeetingChange(null)}
-              className="flex items-center justify-between font-mono text-xs font-medium cursor-pointer rounded-md hover:bg-zinc-100 focus:bg-zinc-100 px-2 py-1.5"
+              className="flex items-center justify-between text-xs font-medium cursor-pointer rounded-full hover:bg-white/10 focus:bg-white/10 px-2 py-1.5"
             >
-              <span>ALL MEETINGS</span>
+              <span>All meetings</span>
               {meetingId === null && <Check className="h-3.5 w-3.5" />}
             </DropdownMenuItem>
-            <DropdownMenuSeparator className="bg-zinc-200 my-1" />
+            <DropdownMenuSeparator className="bg-white/15 my-1" />
             {availableMeetings.map((m) => (
               <DropdownMenuItem
                 key={m.id}
                 onClick={() => onMeetingChange(m.id)}
-                className="flex items-center justify-between gap-2 font-mono text-xs font-medium cursor-pointer rounded-md hover:bg-zinc-100 focus:bg-zinc-100 px-2 py-1.5"
+                className="flex items-center justify-between gap-2 text-xs font-medium cursor-pointer rounded-full hover:bg-white/10 focus:bg-white/10 px-2 py-1.5"
               >
                 <span className="truncate">{m.title}</span>
                 {meetingId === m.id && (
@@ -342,10 +346,10 @@ export function ActionFilters({
           <button
             type="button"
             onClick={onResetFilters}
-            className="h-8 ml-auto flex items-center gap-1.5 rounded-md border border-zinc-200 bg-white px-2.5 font-mono text-xs font-medium uppercase text-zinc-600 hover:bg-zinc-50 hover:text-zinc-950 transition-colors"
+            className="h-8 ml-auto flex items-center gap-1.5 rounded-full border border-white/15 bg-surface-raised px-2.5 text-xs text-white/70 hover:bg-white/5 hover:text-white transition-colors"
           >
             <RotateCcw className="h-3 w-3" />
-            <span>RESET</span>
+            <span>Reset</span>
           </button>
         )}
       </div>

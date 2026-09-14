@@ -2,119 +2,93 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { usePathname } from "next/navigation";
 import { ApiKeysModal } from "@/components/settings/api-keys-modal";
-import { Terminal, Layers, Mail, FileText, MapPin } from "lucide-react";
+
+const COLUMNS = [
+  {
+    label: "Product",
+    links: [
+      { label: "Dashboard", href: "/dashboard" },
+      { label: "Benchmark call", href: "/meetings/meeting-1" },
+      { label: "Action items", href: "/actions" },
+    ],
+  },
+  {
+    label: "Learn",
+    links: [
+      { label: "How it works", href: "/#how-it-works" },
+      { label: "FAQ", href: "/#faq" },
+    ],
+  },
+] as const;
+
+const linkClass =
+  "text-[15px] font-semibold leading-[1.1] text-white/[0.88] transition-[color,transform] duration-[180ms] ease-out hover:translate-x-0.5 hover:text-white";
 
 export function FluidFooter() {
-  const [apiModalOpen, setApiModalOpen] = useState(false);
-  const [copiedFeedback, setCopiedFeedback] = useState(false);
+  const pathname = usePathname();
+  const [settingsOpen, setSettingsOpen] = useState(false);
 
-  const handleCopyFeedbackEmail = () => {
-    if (typeof navigator !== "undefined" && navigator.clipboard) {
-      navigator.clipboard.writeText("support@fathom.internal");
-      setCopiedFeedback(true);
-      setTimeout(() => setCopiedFeedback(false), 2000);
-    }
-  };
+  if (pathname.startsWith("/share")) return null;
 
   return (
-    <TooltipProvider delayDuration={150}>
-      <footer className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 pointer-events-auto">
-        {/* Floating Product Dock matching user reference image uploaded_media_1789361326782.png */}
-        <div className="rounded-2xl border border-white/20 bg-[#0C0C0C]/85 backdrop-blur-2xl px-6 py-2.5 shadow-[0_12px_40px_rgba(0,0,0,0.8)] flex items-center justify-center gap-6 sm:gap-8 text-white transition-all hover:border-white/40">
-          {/* 1. Core Engine Placeholder */}
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <div
-                className="text-white/70 hover:text-white transition-all hover:scale-110 cursor-default p-1"
-                aria-label="Engine Core"
-              >
-                <Terminal className="h-4 w-4 sm:h-[18px] sm:w-[18px]" />
-              </div>
-            </TooltipTrigger>
-            <TooltipContent side="top" className="font-mono text-[10px] uppercase tracking-wider rounded-xl border border-white/20 bg-[#121212] text-white shadow-xl">
-              Engine: Nova-2 · v2.4.0
-            </TooltipContent>
-          </Tooltip>
+    <footer className="relative z-10 overflow-hidden bg-black text-white">
+      <div className="section pb-10 md:pb-12">
+        <div className="grid grid-cols-2 gap-10 border-t border-white/15 pt-12 md:grid-cols-4">
+          {COLUMNS.map((col) => (
+            <div key={col.label}>
+              <span className="eyebrow">{col.label}</span>
+              <ul className="mt-5 flex flex-col gap-3">
+                {col.links.map((link) => (
+                  <li key={link.href}>
+                    <Link href={link.href} className={linkClass}>
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
 
-          {/* 2. Workspace Matrix / Action Hub */}
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Link
-                href="/actions"
-                className="text-white/70 hover:text-white transition-all hover:scale-110 cursor-pointer focus:outline-none p-1"
-                aria-label="Workspace Actions Matrix"
-              >
-                <Layers className="h-4 w-4 sm:h-[18px] sm:w-[18px]" />
-              </Link>
-            </TooltipTrigger>
-            <TooltipContent side="top" className="font-mono text-[10px] uppercase tracking-wider rounded-xl border border-white/20 bg-[#121212] text-white shadow-xl">
-              Action Items Matrix
-            </TooltipContent>
-          </Tooltip>
+          <div>
+            <span className="eyebrow">Settings</span>
+            <ul className="mt-5 flex flex-col gap-3">
+              <li>
+                <button type="button" onClick={() => setSettingsOpen(true)} className={linkClass}>
+                  API keys
+                </button>
+              </li>
+            </ul>
+          </div>
 
-          {/* 3. Internal Feedback Placeholder */}
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <button
-                type="button"
-                onClick={handleCopyFeedbackEmail}
-                className="text-white/70 hover:text-white transition-all hover:scale-110 cursor-pointer focus:outline-none p-1"
-                aria-label="Workspace Inquiries"
-              >
-                <Mail className="h-4 w-4 sm:h-[18px] sm:w-[18px]" />
-              </button>
-            </TooltipTrigger>
-            <TooltipContent side="top" className="font-mono text-[10px] uppercase tracking-wider rounded-xl border border-white/20 bg-[#121212] text-white shadow-xl">
-              {copiedFeedback ? "Email Copied!" : "Inquiries: support@fathom.internal"}
-            </TooltipContent>
-          </Tooltip>
-
-          {/* 4. Document / API Keys Modal */}
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <button
-                type="button"
-                onClick={() => setApiModalOpen(true)}
-                className="text-white/70 hover:text-white transition-all hover:scale-110 cursor-pointer focus:outline-none p-1"
-                aria-label="API Keys & Documentation"
-              >
-                <FileText className="h-4 w-4 sm:h-[18px] sm:w-[18px]" />
-              </button>
-            </TooltipTrigger>
-            <TooltipContent side="top" className="font-mono text-[10px] uppercase tracking-wider rounded-xl border border-white/20 bg-[#121212] text-white shadow-xl">
-              API Keys & Documentation
-            </TooltipContent>
-          </Tooltip>
-
-          {/* 5. Location / Platform Region Placeholder */}
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <div
-                className="text-white/70 hover:text-white transition-all hover:scale-110 cursor-default p-1"
-                aria-label="Platform Region"
-              >
-                <MapPin className="h-4 w-4 sm:h-[18px] sm:w-[18px]" />
-              </div>
-            </TooltipTrigger>
-            <TooltipContent side="top" className="font-mono text-[10px] uppercase tracking-wider rounded-xl border border-white/20 bg-[#121212] text-white shadow-xl">
-              Cluster Region: us-east-1
-            </TooltipContent>
-          </Tooltip>
+          <div>
+            <span className="eyebrow">Contact</span>
+            <ul className="mt-5 flex flex-col gap-3">
+              <li>
+                <a href="mailto:support@fathom.internal" className={linkClass}>
+                  support@fathom.internal
+                </a>
+              </li>
+            </ul>
+          </div>
         </div>
 
-        {/* Api Keys Modal */}
-        <ApiKeysModal
-          open={apiModalOpen}
-          onOpenChange={setApiModalOpen}
-        />
-      </footer>
-    </TooltipProvider>
+        <div className="mt-16 flex items-end justify-between gap-6 border-t border-white/15 pt-6">
+          <p className="text-xs text-white/45">
+            © {new Date().getFullYear()} Fathom. Meeting intelligence that shows its work.
+          </p>
+        </div>
+      </div>
+
+      {/* Reference wordmark: oversized, clipped at the bottom edge. */}
+      <div aria-hidden className="pointer-events-none select-none px-5 sm:px-8 md:px-12">
+        <span className="block -mb-[0.22em] whitespace-nowrap font-display text-[24vw] font-medium leading-none tracking-tight text-white/[0.06] md:text-[18vw]">
+          FATHOM
+        </span>
+      </div>
+
+      <ApiKeysModal open={settingsOpen} onOpenChange={setSettingsOpen} />
+    </footer>
   );
 }

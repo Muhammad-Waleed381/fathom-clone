@@ -37,7 +37,7 @@ export const TEMPLATES: TemplateDefinition[] = [
     description: "Accountability matrix with owners, deadlines, and direct playback links",
     badge: (pendingCount: number) =>
       pendingCount > 0 ? (
-        <span className="ml-1.5 inline-flex h-4 min-w-4 items-center justify-center rounded-md bg-white px-1.5 text-[9px] font-mono font-bold text-black">
+        <span className="ml-1.5 inline-flex h-4 min-w-4 items-center justify-center rounded-md bg-white px-1.5 text-[9px] font-bold text-black">
           {pendingCount}
         </span>
       ) : null,
@@ -97,7 +97,7 @@ export function TemplateSelector({
       >
         <TabsList
           className={cn(
-            "grid w-full grid-cols-2 md:grid-cols-4 h-auto p-1 bg-black/50 border border-white/15 rounded-2xl gap-1 shadow-xl backdrop-blur-xl",
+ "grid w-full grid-cols-2 md:grid-cols-4 h-auto p-1 bg-surface-raised border border-white/15 rounded-2xl gap-1 ",
             compact ? "h-9 p-0.5" : "min-h-[44px]"
           )}
         >
@@ -109,9 +109,9 @@ export function TemplateSelector({
                 key={tmpl.id}
                 value={tmpl.id}
                 className={cn(
-                  "relative flex items-center justify-center gap-1.5 rounded-xl px-2 py-1.5 font-mono text-xs font-medium uppercase tracking-wider transition-all cursor-pointer select-none border border-transparent",
-                  "text-white/60 hover:text-white hover:bg-white/5",
-                  "data-[state=active]:bg-white data-[state=active]:text-black data-[state=active]:font-semibold data-[state=active]:shadow-sm",
+ "relative flex items-center justify-center gap-1.5 rounded-full px-2 py-1.5 text-xs font-medium  transition-all cursor-pointer select-none border border-transparent",
+ "text-white/60 hover:text-white hover:bg-white/5",
+ "data-[state=active]:bg-white data-[state=active]:text-black data-[state=active]:font-semibold data-[state=active]:shadow-sm",
                   compact && "py-1 text-[11px]"
                 )}
                 title={tmpl.description}

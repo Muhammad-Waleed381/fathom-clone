@@ -79,7 +79,7 @@ export function ActionItemsList({
     const lines: string[] = [
       `*Action Items: ${currentMeeting.title}*`,
       `_Status: ${completedCount} of ${totalCount} completed (${progressPercent}%)_`,
-      "",
+ "",
     ];
 
     actionItems.forEach((item) => {
@@ -123,19 +123,19 @@ export function ActionItemsList({
     switch (priority) {
       case "high":
         return (
-          <span className="border border-red-200 bg-red-50 text-red-700 font-mono text-[10px] font-medium px-1.5 py-0.5 rounded-sm uppercase">
+          <span className="rounded-full border border-red-500/30 bg-red-500/100/10 px-2 py-0.5 text-[11px] font-medium text-red-300">
             High
           </span>
         );
       case "medium":
         return (
-          <span className="border border-amber-200 bg-amber-50 text-amber-700 font-mono text-[10px] font-medium px-1.5 py-0.5 rounded-sm uppercase">
+          <span className="rounded-full border border-amber-500/30 bg-amber-500/10 px-2 py-0.5 text-[11px] font-medium text-amber-300">
             Med
           </span>
         );
       case "low":
         return (
-          <span className="border border-blue-200 bg-blue-50 text-blue-700 font-mono text-[10px] font-medium px-1.5 py-0.5 rounded-sm uppercase">
+          <span className="rounded-full border border-sky-500/30 bg-sky-500/10 px-2 py-0.5 text-[11px] font-medium text-sky-300">
             Low
           </span>
         );
@@ -147,14 +147,14 @@ export function ActionItemsList({
   return (
     <div className={cn("flex flex-col space-y-4 font-sans", className)}>
       {showHeader && (
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-zinc-200">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-white/15">
           <div>
             <div className="flex items-center gap-2">
-              <h3 className="font-mono text-xs font-semibold uppercase tracking-wider text-zinc-950 flex items-center gap-1.5">
-                <ListTodo className="h-4 w-4 text-zinc-600" />
+              <h3 className="text-[13px] font-medium text-white flex items-center gap-1.5">
+                <ListTodo className="h-4 w-4 text-white/70" />
                 Action Items
               </h3>
-              <span className="font-mono text-xs font-medium bg-zinc-50 text-zinc-600 border border-zinc-200 px-1.5 py-0.5 rounded-sm">
+              <span className="text-xs font-medium bg-surface-raised text-white/70 border border-white/15 px-1.5 py-0.5 rounded-sm">
                 {completedCount}/{totalCount} done
               </span>
             </div>
@@ -162,15 +162,15 @@ export function ActionItemsList({
 
           <div className="flex items-center gap-2">
             {/* Filter tabs */}
-            <div className="inline-flex rounded-md bg-zinc-50 p-0.5 border border-zinc-200 text-xs">
+            <div className="inline-flex rounded-xl bg-surface-raised p-0.5 border border-white/15 text-xs">
               <button
                 type="button"
                 onClick={() => setFilter("all")}
                 className={cn(
-                  "px-2.5 py-0.5 rounded-sm font-mono text-xs font-medium transition-all cursor-pointer",
+ "px-2.5 py-0.5 rounded-sm text-xs font-medium transition-all cursor-pointer",
                   filter === "all"
-                    ? "bg-white text-zinc-950 border border-zinc-200 shadow-sm"
-                    : "text-zinc-500 hover:text-zinc-700"
+                    ? "bg-white text-white border border-white/15 shadow-sm"
+                    : "text-white/60 hover:text-white/80"
                 )}
               >
                 All
@@ -179,10 +179,10 @@ export function ActionItemsList({
                 type="button"
                 onClick={() => setFilter("pending")}
                 className={cn(
-                  "px-2.5 py-0.5 rounded-sm font-mono text-xs font-medium transition-all cursor-pointer",
+ "px-2.5 py-0.5 rounded-sm text-xs font-medium transition-all cursor-pointer",
                   filter === "pending"
-                    ? "bg-white text-zinc-950 border border-zinc-200 shadow-sm"
-                    : "text-zinc-500 hover:text-zinc-700"
+                    ? "bg-white text-white border border-white/15 shadow-sm"
+                    : "text-white/60 hover:text-white/80"
                 )}
               >
                 Pending
@@ -191,10 +191,10 @@ export function ActionItemsList({
                 type="button"
                 onClick={() => setFilter("completed")}
                 className={cn(
-                  "px-2.5 py-0.5 rounded-sm font-mono text-xs font-medium transition-all cursor-pointer",
+ "px-2.5 py-0.5 rounded-sm text-xs font-medium transition-all cursor-pointer",
                   filter === "completed"
-                    ? "bg-white text-zinc-950 border border-zinc-200 shadow-sm"
-                    : "text-zinc-500 hover:text-zinc-700"
+                    ? "bg-white text-white border border-white/15 shadow-sm"
+                    : "text-white/60 hover:text-white/80"
                 )}
               >
                 Done
@@ -205,13 +205,13 @@ export function ActionItemsList({
             <button
               type="button"
               onClick={copyToSlackOrMarkdown}
-              className="flex h-8 items-center gap-1.5 rounded-md border border-zinc-200 bg-white px-2.5 font-mono text-xs font-medium text-zinc-700 hover:bg-zinc-50 hover:text-zinc-950 transition-colors cursor-pointer"
+              className="flex h-8 items-center gap-1.5 rounded-xl border border-white/15 bg-surface-raised px-2.5 text-xs font-medium text-white/80 hover:bg-white/5 hover:text-white transition-colors cursor-pointer"
               title="Copy checklist formatted for Slack or Markdown"
             >
               {copied ? (
                 <>
                   <Check className="h-3.5 w-3.5 text-emerald-600" />
-                  <span className="text-emerald-700">Copied!</span>
+                  <span className="text-emerald-300">Copied!</span>
                 </>
               ) : (
                 <>
@@ -227,13 +227,13 @@ export function ActionItemsList({
       {/* Progress Bar */}
       {totalCount > 0 && (
         <div className="space-y-1">
-          <div className="flex justify-between font-mono text-xs font-medium text-zinc-500">
+          <div className="flex justify-between text-xs font-medium text-white/60">
             <span>Completion</span>
             <span>{progressPercent}%</span>
           </div>
-          <div className="h-1.5 w-full bg-zinc-100 rounded-sm overflow-hidden">
+          <div className="h-1.5 w-full bg-white/10 rounded-sm overflow-hidden">
             <div
-              className="h-full bg-zinc-950 rounded-sm transition-all duration-300"
+              className="h-full bg-white rounded-sm transition-all duration-300"
               style={{ width: `${progressPercent}%` }}
             />
           </div>
@@ -243,7 +243,7 @@ export function ActionItemsList({
       {/* Items list */}
       <div className="space-y-2.5">
         {filteredItems.length === 0 ? (
-          <div className="py-8 text-center font-mono text-xs font-medium text-zinc-500 border border-dashed border-zinc-200 rounded-xl bg-zinc-50">
+          <div className="py-8 text-center text-xs font-medium text-white/60 border border-dashed border-white/15 rounded-full bg-surface-raised">
             {filter === "completed"
               ? "No completed action items yet."
               : filter === "pending"
@@ -263,11 +263,11 @@ export function ActionItemsList({
               <Card
                 key={item.id}
                 className={cn(
-                  "p-3 rounded-xl border border-zinc-200 transition-all group",
+ "p-3 rounded-full border border-white/15 transition-all group",
                   item.completed
-                    ? "bg-zinc-50 opacity-75 shadow-none"
+                    ? "bg-surface-raised opacity-75 shadow-none"
                     : "bg-white shadow-sm hover:shadow-md hover:shadow-black/[0.04]",
-                  isCurrentMoment && "border-amber-200 bg-amber-50/40"
+                  isCurrentMoment && "border-amber-500/30 bg-amber-500/10/40"
                 )}
               >
                 <div className="flex items-start gap-3">
@@ -280,10 +280,10 @@ export function ActionItemsList({
                         handleToggle(item.id, item.completed)
                       }
                       className={cn(
-                        "h-4 w-4 rounded-sm border border-zinc-300 transition-all cursor-pointer",
+ "h-4 w-4 rounded-sm border border-white/25 transition-all cursor-pointer",
                         item.completed
-                          ? "bg-zinc-950 border-zinc-950 text-white"
-                          : "bg-white hover:border-zinc-500"
+                          ? "bg-white border-white text-black"
+                          : "bg-white hover:border-white/40"
                       )}
                     />
                   </div>
@@ -294,10 +294,10 @@ export function ActionItemsList({
                       <label
                         htmlFor={`chk-${item.id}`}
                         className={cn(
-                          "text-xs leading-snug cursor-pointer select-none transition-colors",
+ "text-xs leading-snug cursor-pointer select-none transition-colors",
                           item.completed
-                            ? "line-through decoration-zinc-400 text-zinc-400 font-normal font-sans"
-                            : "text-zinc-950 font-medium font-sans"
+                            ? "line-through decoration-zinc-400 text-white/45 font-normal font-sans"
+                            : "text-white font-medium font-sans"
                         )}
                       >
                         {item.text}
@@ -311,12 +311,12 @@ export function ActionItemsList({
                       {/* Assignee badge */}
                       {assignee ? (
                         <div
-                          className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md border border-zinc-200 bg-white font-mono text-[11px] font-medium text-zinc-700"
+                          className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-xl border border-white/15 bg-surface-raised text-[11px] font-medium text-white/80"
                           title={`${assignee.name}${
                             assignee.role ? ` — ${assignee.role}` : ""
                           }`}
                         >
-                          <Avatar className="h-4 w-4 border border-zinc-200 shrink-0 rounded-sm">
+                          <Avatar className="h-4 w-4 border border-white/15 shrink-0 rounded-sm">
                             {assignee.avatarUrl && (
                               <AvatarImage
                                 src={assignee.avatarUrl}
@@ -324,7 +324,7 @@ export function ActionItemsList({
                               />
                             )}
                             <AvatarFallback
-                              className="font-mono text-[8px] font-medium text-zinc-700 rounded-sm"
+                              className="text-[8px] font-medium text-white/80 rounded-sm"
                               style={{
                                 backgroundColor: assignee.color || "#E4E4E7",
                               }}
@@ -337,7 +337,7 @@ export function ActionItemsList({
                           </span>
                         </div>
                       ) : (
-                        <div className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md border border-zinc-200 font-mono text-[10px] text-zinc-500">
+                        <div className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-xl border border-white/15 text-[10px] text-white/60">
                           <User className="h-3 w-3" />
                           <span>Unassigned</span>
                         </div>
@@ -345,7 +345,7 @@ export function ActionItemsList({
 
                       {/* Due date */}
                       {item.dueDate && (
-                        <div className="inline-flex items-center gap-1 border border-zinc-200 bg-zinc-50 px-1.5 py-0.5 rounded-md font-mono text-[10px] font-medium text-zinc-600">
+                        <div className="inline-flex items-center gap-1 border border-white/15 bg-surface-raised px-1.5 py-0.5 rounded-xl text-[10px] font-medium text-white/70">
                           <Calendar className="h-3 w-3" />
                           <span>{item.dueDate}</span>
                         </div>
@@ -357,17 +357,17 @@ export function ActionItemsList({
                           type="button"
                           onClick={() => seekTo(item.timestamp!)}
                           className={cn(
-                            "inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md font-mono text-xs font-medium border transition-colors cursor-pointer",
+ "inline-flex items-center gap-1 px-1.5 py-0.5 rounded-xl text-xs font-medium border transition-colors cursor-pointer",
                             isCurrentMoment
-                              ? "bg-zinc-950 text-white border-zinc-950"
-                              : "bg-zinc-50 hover:bg-zinc-100 text-zinc-600 border-zinc-200"
+                              ? "bg-white text-black border-white"
+                              : "bg-surface-raised hover:bg-white/10 text-white/70 border-white/15"
                           )}
                           title={`Seek video directly to ${formatTime(item.timestamp)}`}
                         >
                           <Play
-                            className={cn(
-                              "h-2.5 w-2.5 fill-current",
-                              isCurrentMoment ? "text-white" : "text-zinc-500"
+                            className={cn("tabular-nums",
+ "h-2.5 w-2.5 fill-current",
+                              isCurrentMoment ? "text-white" : "text-white/60"
                             )}
                           />
                           <span>{formatTime(item.timestamp)}</span>

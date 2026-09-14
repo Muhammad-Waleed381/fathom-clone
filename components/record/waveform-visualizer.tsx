@@ -56,7 +56,7 @@ export function WaveformVisualizer({
   return (
     <div
       className={cn(
-        "relative flex w-full flex-col items-center justify-center rounded-xl border border-zinc-200 bg-white px-4 py-3 shadow-sm",
+        "relative flex w-full flex-col items-center justify-center rounded-xl border border-white/15 bg-surface-raised px-4 py-3 shadow-sm",
         className
       )}
     >
@@ -92,11 +92,11 @@ export function WaveformVisualizer({
                 className={cn(
                   "w-full rounded-sm transition-all",
                   isPaused
-                    ? "bg-zinc-200"
+                    ? "bg-white/15"
                     : !isListening
-                    ? "bg-zinc-100"
+                    ? "bg-white/10"
                     : isHighEnergy
-                    ? "bg-zinc-950"
+                    ? "bg-white"
                     : isMedEnergy
                     ? "bg-zinc-600"
                     : "bg-zinc-300"
@@ -109,16 +109,16 @@ export function WaveformVisualizer({
 
       {/* Audio State & Gain Readout */}
       {showLevelBadge && (
-        <div className="mt-2.5 flex items-center justify-between w-full pt-2 border-t border-zinc-100 font-mono text-[11px]">
-          <div className="flex items-center gap-2 font-semibold uppercase text-zinc-950">
+        <div className="mt-2.5 flex items-center justify-between w-full pt-2 border-t border-white/10 text-[11px]">
+          <div className="flex items-center gap-2 font-semibold text-white">
             <span
               className={cn(
                 "inline-block h-2 w-2 rounded-sm",
                 isPaused
                   ? "bg-zinc-300"
                   : isListening
-                  ? "bg-zinc-950 animate-pulse"
-                  : "bg-zinc-200"
+                  ? "bg-white animate-pulse"
+                  : "bg-white/15"
               )}
             />
             <span>
@@ -126,15 +126,15 @@ export function WaveformVisualizer({
                 ? "MIC PAUSED"
                 : isListening
                 ? audioLevel > 0.15
-                  ? "SPEECH DETECTED"
+                  ? "Speech detected"
                   : "LISTENING..."
-                : "STANDBY"}
+                : "Standby"}
             </span>
           </div>
 
-          <div className="flex items-center gap-1.5 font-medium uppercase text-zinc-400">
-            <span>INPUT GAIN:</span>
-            <span className="font-semibold text-zinc-950">
+          <div className="flex items-center gap-1.5 font-medium text-white/45">
+            <span>Input gain:</span>
+            <span className="font-semibold text-white">
               {displayLevel}%
             </span>
           </div>

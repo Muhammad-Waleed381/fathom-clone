@@ -177,7 +177,7 @@ export function VideoScrubber({
           {/* Hover Time Tooltip */}
           {hoverPosition && (
             <div
-              className="pointer-events-none absolute -top-8 z-40 -translate-x-1/2 rounded-xl border border-white/20 bg-black/95 px-2.5 py-0.5 font-mono text-[11px] font-medium text-white shadow-xl backdrop-blur-xl"
+              className="pointer-events-none absolute -top-8 z-40 -translate-x-1/2 rounded-full border border-white/20 bg-black/95 px-2.5 py-0.5 text-[11px] font-medium text-white"
               style={{ left: `${hoverPosition.x}px` }}
             >
               {formatTime(hoverPosition.time)}
@@ -185,7 +185,7 @@ export function VideoScrubber({
           )}
 
           {/* Sleek dark glass track */}
-          <div className="relative h-2 w-full rounded-md border border-white/15 bg-white/10 overflow-hidden">
+          <div className="relative h-2 w-full rounded-xl border border-white/15 bg-white/10 overflow-hidden">
             {/* Underlay: Speaker colored segments tick bar */}
             {showSpeakerSegments && speakerSegments.length > 0 && duration > 0 && (
               <div className="pointer-events-none absolute inset-0 flex opacity-25">
@@ -240,7 +240,7 @@ export function VideoScrubber({
                         handleSeek(hl.start);
                       }}
                       className={cn(
-                        "absolute z-20 h-3 -translate-y-1/2 top-1/2 rounded-xs border transition-all hover:h-4 hover:z-30",
+ "absolute z-20 h-3 -translate-y-1/2 top-1/2 rounded-xs border transition-all hover:h-4 hover:z-30",
                         styleConfig.bg,
                         styleConfig.border
                       )}
@@ -254,25 +254,25 @@ export function VideoScrubber({
                   </TooltipTrigger>
                   <TooltipContent
                     side="top"
-                    className="max-w-xs rounded-2xl border border-white/15 bg-black/95 p-3 text-white shadow-2xl backdrop-blur-xl"
+                    className="max-w-xs rounded-2xl border border-white/15 bg-black/95 p-3 text-white"
                   >
                     <div className="flex items-center gap-2 mb-1">
                       <span
                         className={cn(
-                          "rounded-md border px-1.5 py-0.5 font-mono text-[10px] font-semibold uppercase",
+ "rounded-full border px-1.5 py-0.5 text-[10px] font-medium",
                           styleConfig.badge
                         )}
                       >
                         {styleConfig.label}
                       </span>
-                      <span className="font-mono text-[11px] text-white/60">
+                      <span className="text-[11px] text-white/60">
                         {formatTime(hl.start)} – {formatTime(hl.end)}
                       </span>
                     </div>
-                    <p className="text-xs font-mono font-medium text-white/90 line-clamp-2">
+                    <p className="text-xs font-medium text-white/90 line-clamp-2">
                       {hl.title}
                     </p>
-                    <p className="text-[10px] font-mono text-white/40 mt-1">
+                    <p className="text-[10px] text-white/40 mt-1">
                       Click to jump
                     </p>
                   </TooltipContent>
@@ -283,7 +283,7 @@ export function VideoScrubber({
           {/* Rectangular scrubber thumb with soft shadow */}
           <div
             className={cn(
-              "pointer-events-none absolute top-1/2 z-30 -translate-y-1/2 -translate-x-1/2 h-4 w-4 rounded-md border border-white/50 bg-white shadow-lg transition-transform",
+ "pointer-events-none absolute top-1/2 z-30 -translate-y-1/2 -translate-x-1/2 h-4 w-4 rounded-xl border border-white/50 bg-white shadow-lg transition-transform",
               isDragging ? "scale-125 border-white bg-white" : "group-hover:scale-110"
             )}
             style={{ left: `${progressPercent}%` }}
@@ -294,7 +294,7 @@ export function VideoScrubber({
         </div>
 
         {/* Timestamps and Progress Indicators */}
-        <div className="flex items-center justify-between font-mono text-xs text-white/50 px-0.5">
+        <div className="flex items-center justify-between text-xs text-white/50 px-0.5">
           <div className="flex items-center gap-1.5">
             <span className="text-white font-semibold">
               {formatTime(currentTime)}
@@ -305,7 +305,7 @@ export function VideoScrubber({
 
           {highlights.length > 0 && (
             <div className="flex items-center gap-1.5">
-              <span className="inline-flex items-center rounded-xl border border-white/15 bg-white/5 px-2 py-0.5 font-mono text-[10px] font-medium text-white/70">
+              <span className="inline-flex items-center rounded-full border border-white/15 bg-white/5 px-2 py-0.5 text-[10px] font-medium text-white/70">
                 {highlights.length} highlight{highlights.length === 1 ? "" : "s"}
               </span>
             </div>

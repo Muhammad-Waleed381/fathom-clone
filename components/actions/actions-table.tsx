@@ -53,16 +53,16 @@ const PRIORITY_BADGES: Record<
   { bg: string; label: string }
 > = {
   high: {
-    bg: "bg-rose-50 text-rose-700 border border-rose-200",
-    label: "HIGH",
+    bg: "border border-red-500/30 bg-red-500/100/10 text-red-300",
+    label: "High",
   },
   medium: {
-    bg: "bg-amber-50 text-amber-700 border border-amber-200",
-    label: "MED",
+    bg: "border border-amber-500/30 bg-amber-500/10 text-amber-300",
+    label: "Medium",
   },
   low: {
-    bg: "bg-sky-50 text-sky-700 border border-sky-200",
-    label: "LOW",
+    bg: "border border-sky-500/30 bg-sky-500/10 text-sky-300",
+    label: "Low",
   },
 };
 
@@ -93,20 +93,20 @@ export function ActionsTable({
 
   if (items.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center rounded-xl border border-zinc-200 bg-white py-16 px-4 text-center shadow-sm">
-        <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-zinc-200 bg-zinc-50 mb-4">
+      <div className="flex flex-col items-center justify-center rounded-xl border border-white/15 bg-surface-raised py-16 px-4 text-center ">
+        <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-white/15 bg-surface-raised mb-4">
           {hasActiveFilters ? (
-            <Inbox className="h-6 w-6 text-zinc-400" />
+            <Inbox className="h-6 w-6 text-white/45" />
           ) : (
-            <CheckCircle2 className="h-6 w-6 text-zinc-400" />
+            <CheckCircle2 className="h-6 w-6 text-white/45" />
           )}
         </div>
-        <h3 className="font-mono text-base font-semibold uppercase text-zinc-950">
+        <h3 className="text-base font-medium text-white">
           {hasActiveFilters
             ? "No matching action items"
             : "All action items completed"}
         </h3>
-        <p className="mt-1.5 max-w-sm text-xs font-sans text-zinc-500 font-medium">
+        <p className="mt-1.5 max-w-sm text-xs font-sans text-white/60 font-medium">
           {hasActiveFilters
             ? "No tasks match your current filter parameters. Adjust or clear filters to view items."
             : "Zero pending action items across workspace meetings. High team velocity achieved."}
@@ -115,10 +115,10 @@ export function ActionsTable({
           <button
             type="button"
             onClick={onResetFilters}
-            className="mt-4 flex items-center gap-1.5 rounded-md border border-zinc-200 bg-white px-3 py-1.5 font-mono text-xs font-medium uppercase text-zinc-600 hover:bg-zinc-50 hover:text-zinc-950 transition-colors"
+            className="mt-4 flex items-center gap-1.5 rounded-full border border-white/15 bg-surface-raised px-3 py-1.5 text-xs text-white/70 hover:bg-white/5 hover:text-white transition-colors"
           >
             <RotateCcw className="h-3.5 w-3.5" />
-            <span>RESET ALL FILTERS</span>
+            <span>Reset all filters</span>
           </button>
         )}
       </div>
@@ -127,20 +127,20 @@ export function ActionsTable({
 
   return (
     <TooltipProvider delayDuration={150}>
-      <div className="rounded-xl border border-zinc-200 bg-white shadow-sm overflow-hidden">
+      <div className="rounded-xl border border-white/15 bg-surface-raised  overflow-hidden">
         {/* Table / List Header */}
-        <div className="hidden lg:grid grid-cols-12 gap-4 items-center px-4 py-3 border-b border-zinc-100 bg-zinc-50 font-mono text-xs font-semibold text-zinc-500 uppercase tracking-wider">
+        <div className="hidden lg:grid grid-cols-12 gap-4 items-center px-4 py-3 border-b border-white/10 bg-surface-raised text-xs font-semibold text-white/60">
           <div className="col-span-5 flex items-center gap-2">
-            <span>ACTION ITEM</span>
+            <span>Action item</span>
           </div>
-          <div className="col-span-3">MEETING SOURCE</div>
-          <div className="col-span-2">ASSIGNEE</div>
-          <div className="col-span-1">PRIORITY</div>
-          <div className="col-span-1 text-right">DUE DATE</div>
+          <div className="col-span-3">Meeting</div>
+          <div className="col-span-2">Assignee</div>
+          <div className="col-span-1">Priority</div>
+          <div className="col-span-1 text-right">Due date</div>
         </div>
 
         {/* Rows */}
-        <div className="divide-y divide-zinc-100">
+        <div className="divide-y divide-white/10">
           {items.map((item) => {
             const priorityConfig = item.priority
               ? PRIORITY_BADGES[item.priority]
@@ -150,8 +150,8 @@ export function ActionsTable({
               <div
                 key={`${item.meetingId}-${item.id}`}
                 className={cn(
-                  "group flex flex-col lg:grid lg:grid-cols-12 gap-3 lg:gap-4 lg:items-center px-4 py-3.5 transition-colors hover:bg-zinc-50/80",
-                  item.completed && "bg-zinc-50/50"
+                  "group flex flex-col lg:grid lg:grid-cols-12 gap-3 lg:gap-4 lg:items-center px-4 py-3.5 transition-colors hover:bg-white/5/80",
+                  item.completed && "bg-surface-raised/50",
                 )}
               >
                 {/* Checkbox & Action Item Text */}
@@ -162,8 +162,8 @@ export function ActionsTable({
                       checked={item.completed}
                       onCheckedChange={() => handleToggle(item)}
                       className={cn(
-                        "h-4 w-4 rounded-sm border border-zinc-300 data-[state=checked]:bg-zinc-950 data-[state=checked]:border-zinc-950 data-[state=checked]:text-white transition-all cursor-pointer",
-                        item.completed && "bg-zinc-950 border-zinc-950 text-white"
+                        "h-4 w-4 rounded-sm border border-white/25 data-[state=checked]:bg-white data-[state=checked]:border-white data-[state=checked]:text-white transition-all cursor-pointer",
+                        item.completed && "bg-white border-white text-black",
                       )}
                       aria-label={`Mark task as ${item.completed ? "pending" : "completed"}`}
                     />
@@ -174,8 +174,8 @@ export function ActionsTable({
                       className={cn(
                         "font-sans text-xs sm:text-sm font-medium leading-snug cursor-pointer select-none transition-colors",
                         item.completed
-                          ? "line-through text-zinc-400 decoration-zinc-300"
-                          : "text-zinc-950"
+                          ? "line-through text-white/45 decoration-zinc-300"
+                          : "text-white",
                       )}
                     >
                       {item.text}
@@ -186,8 +186,8 @@ export function ActionsTable({
                       {priorityConfig && (
                         <span
                           className={cn(
-                            "px-1.5 py-0.5 font-mono text-[10px] font-semibold uppercase rounded-sm",
-                            priorityConfig.bg
+                            "rounded-full px-2 py-0.5 text-[11px] font-medium",
+                            priorityConfig.bg,
                           )}
                         >
                           {priorityConfig.label}
@@ -196,7 +196,7 @@ export function ActionsTable({
                       {item.timestamp !== undefined && (
                         <Link
                           href={`/meetings/${item.meetingId}?t=${item.timestamp}`}
-                          className="inline-flex items-center gap-1 rounded-sm border border-zinc-200 bg-zinc-50 px-1.5 py-0.5 font-mono text-[10px] font-medium text-zinc-600 hover:bg-zinc-100 transition-colors"
+                          className="inline-flex items-center gap-1 rounded-sm border border-white/15 bg-surface-raised px-1.5 py-0.5 text-[10px] font-medium text-white/70 hover:bg-white/10 transition-colors"
                         >
                           <Play className="h-2 w-2 fill-current" />
                           <span>{formatTime(item.timestamp)}</span>
@@ -212,11 +212,13 @@ export function ActionsTable({
                     href={`/meetings/${item.meetingId}${
                       item.timestamp !== undefined ? `?t=${item.timestamp}` : ""
                     }`}
-                    className="group/link inline-flex items-center gap-1.5 max-w-full rounded-md border border-zinc-200 bg-white px-2.5 py-1 font-mono text-xs font-medium text-zinc-700 hover:bg-zinc-50 hover:border-zinc-300 transition-colors"
+                    className="group/link inline-flex items-center gap-1.5 max-w-full rounded-full border border-white/15 bg-surface-raised px-2.5 py-1 text-xs font-medium text-white/80 hover:bg-white/5 hover:border-white/25 transition-colors"
                     title={`Open meeting: ${item.meetingTitle}`}
                   >
-                    <Video className="h-3 w-3 text-zinc-400 shrink-0" />
-                    <span className="truncate font-sans font-medium">{item.meetingTitle}</span>
+                    <Video className="h-3 w-3 text-white/45 shrink-0" />
+                    <span className="truncate font-sans font-medium">
+                      {item.meetingTitle}
+                    </span>
                     <ExternalLink className="h-2.5 w-2.5 opacity-40 shrink-0 group-hover/link:opacity-70" />
                   </Link>
 
@@ -224,7 +226,7 @@ export function ActionsTable({
                   {item.timestamp !== undefined && (
                     <Link
                       href={`/meetings/${item.meetingId}?t=${item.timestamp}`}
-                      className="hidden sm:inline-flex items-center gap-1 rounded-sm border border-zinc-200 bg-zinc-50 px-2 py-0.5 font-mono text-xs font-medium text-zinc-600 hover:bg-zinc-100 transition-colors"
+                      className="hidden sm:inline-flex items-center gap-1 rounded-sm border border-white/15 bg-surface-raised px-2 py-0.5 text-xs font-medium text-white/70 hover:bg-white/10 transition-colors"
                       title={`Jump directly to ${formatTime(item.timestamp)} in call`}
                     >
                       <Play className="h-2.5 w-2.5 fill-current" />
@@ -239,7 +241,7 @@ export function ActionsTable({
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <div className="flex items-center gap-2 cursor-pointer group/user max-w-full">
-                          <Avatar className="h-6 w-6 border border-zinc-200 shrink-0 transition-transform group-hover/user:scale-105">
+                          <Avatar className="h-6 w-6 border border-white/15 shrink-0 transition-transform group-hover/user:scale-105">
                             {item.assignee.avatarUrl && (
                               <AvatarImage
                                 src={item.assignee.avatarUrl}
@@ -248,19 +250,20 @@ export function ActionsTable({
                             )}
                             <AvatarFallback
                               style={{
-                                backgroundColor: item.assignee.color || "#e4e4e7",
+                                backgroundColor:
+                                  item.assignee.color || "#e4e4e7",
                               }}
-                              className="font-mono text-[9px] font-semibold text-zinc-950"
+                              className="text-[9px] font-semibold text-white"
                             >
                               {getInitials(item.assignee.name)}
                             </AvatarFallback>
                           </Avatar>
                           <div className="flex flex-col min-w-0">
-                            <span className="truncate font-sans text-xs font-medium text-zinc-950 group-hover/user:underline">
+                            <span className="truncate font-sans text-xs font-medium text-white group-hover/user:underline">
                               {item.assignee.name}
                             </span>
                             {item.assignee.role && (
-                              <span className="truncate font-mono text-[9px] font-medium uppercase text-zinc-400">
+                              <span className="truncate text-[11px] text-white/45">
                                 {item.assignee.role}
                               </span>
                             )}
@@ -269,19 +272,19 @@ export function ActionsTable({
                       </TooltipTrigger>
                       <TooltipContent
                         side="top"
-                        className="border border-zinc-200 bg-white p-2.5 text-zinc-950 shadow-lg rounded-xl max-w-xs"
+                        className="border border-white/15 bg-surface-raised p-2.5 text-white shadow-lg rounded-xl max-w-xs"
                       >
                         <div className="flex flex-col gap-1">
-                          <p className="font-sans font-semibold text-xs text-zinc-950">
+                          <p className="font-sans font-semibold text-xs text-white">
                             {item.assignee.name}
                           </p>
                           {item.assignee.role && (
-                            <p className="font-mono text-[10px] font-medium text-zinc-500 uppercase">
+                            <p className="text-[10px] font-medium text-white/60 uppercase">
                               {item.assignee.role}
                             </p>
                           )}
                           {item.assignee.company && (
-                            <p className="font-sans text-[10px] text-zinc-400">
+                            <p className="font-sans text-[10px] text-white/45">
                               {item.assignee.company}
                             </p>
                           )}
@@ -289,11 +292,13 @@ export function ActionsTable({
                       </TooltipContent>
                     </Tooltip>
                   ) : (
-                    <div className="flex items-center gap-1.5 text-zinc-400 font-mono text-xs">
-                      <div className="flex h-5 w-5 items-center justify-center rounded-md border border-zinc-200 bg-zinc-50">
-                        <User className="h-3 w-3 text-zinc-400" />
+                    <div className="flex items-center gap-1.5 text-white/45 text-xs">
+                      <div className="flex h-5 w-5 items-center justify-center rounded-full border border-white/15 bg-surface-raised">
+                        <User className="h-3 w-3 text-white/45" />
                       </div>
-                      <span className="text-[11px] font-medium uppercase">Unassigned</span>
+                      <span className="text-[11px] font-medium uppercase">
+                        Unassigned
+                      </span>
                     </div>
                   )}
                 </div>
@@ -303,14 +308,14 @@ export function ActionsTable({
                   {priorityConfig ? (
                     <span
                       className={cn(
-                        "px-2 py-0.5 rounded-sm font-mono text-[10px] font-semibold uppercase",
-                        priorityConfig.bg
+                        "px-2 py-0.5 rounded-sm text-[10px] font-semibold uppercase",
+                        priorityConfig.bg,
                       )}
                     >
                       {priorityConfig.label}
                     </span>
                   ) : (
-                    <span className="font-mono text-xs font-medium text-zinc-300">—</span>
+                    <span className="text-xs font-medium text-white/35">—</span>
                   )}
                 </div>
 
@@ -318,14 +323,14 @@ export function ActionsTable({
                 <div className="col-span-1 hidden lg:flex items-center justify-end">
                   {item.dueDate ? (
                     <div
-                      className="flex items-center gap-1 font-mono text-xs font-medium text-zinc-600"
+                      className="flex items-center gap-1 text-xs font-medium text-white/70"
                       title={`Due Date: ${item.dueDate}`}
                     >
-                      <Calendar className="h-3 w-3 text-zinc-400" />
+                      <Calendar className="h-3 w-3 text-white/45" />
                       <span>{item.dueDate}</span>
                     </div>
                   ) : (
-                    <span className="font-mono text-xs font-medium text-zinc-300">—</span>
+                    <span className="text-xs font-medium text-white/35">—</span>
                   )}
                 </div>
               </div>

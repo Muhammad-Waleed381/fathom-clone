@@ -17,7 +17,6 @@ import {
   Mic,
   MicOff,
   Check,
-  Zap,
 } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -300,7 +299,7 @@ export function VideoPlayer({ className }: VideoPlayerProps) {
         onMouseMove={handleActivity}
         onMouseEnter={() => setControlsVisible(true)}
         className={cn(
-          "group relative flex flex-col justify-between overflow-hidden rounded-3xl border border-white/15 bg-black/70 shadow-2xl backdrop-blur-xl select-none font-mono",
+          "group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-white/15 bg-black select-none",
           isFullscreen ? "h-screen w-screen rounded-none border-0 shadow-none" : "min-h-[460px] aspect-video",
           className
         )}
@@ -308,7 +307,7 @@ export function VideoPlayer({ className }: VideoPlayerProps) {
         {/* Floating Toast Notification */}
         {toastMessage && (
           <div className="absolute top-4 left-1/2 -translate-x-1/2 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
-            <div className="flex items-center gap-2 rounded-xl border border-white/20 bg-black/90 px-3.5 py-1.5 text-xs font-medium text-white shadow-xl backdrop-blur-xl">
+            <div className="flex items-center gap-2 rounded-xl border border-white/20 bg-black/90 px-3.5 py-1.5 text-xs font-medium text-white shadow-xl">
               <Sparkles className="w-3.5 h-3.5 text-white" />
               <span>{toastMessage}</span>
             </div>
@@ -323,22 +322,18 @@ export function VideoPlayer({ className }: VideoPlayerProps) {
           )}
         >
           <div className="flex items-center gap-2.5 min-w-0">
-            <span className="flex items-center gap-1.5 rounded-xl border border-white/15 bg-white/5 px-2.5 py-1 text-[11px] font-medium text-white/80">
-              <Zap className="w-3 h-3 text-white" />
-              <span>SPATIAL STAGE</span>
-            </span>
-            <span className="truncate text-xs font-medium text-white/70 max-w-[220px] sm:max-w-md">
+            <span className="truncate text-[13px] font-medium text-white/80 max-w-[220px] sm:max-w-md">
               {currentMeeting?.title || "Meeting Recording"}
             </span>
           </div>
 
           {/* View Mode Toggle: Stage vs Stream */}
-          <div className="flex items-center gap-1 bg-black/60 p-1 rounded-xl border border-white/15 backdrop-blur-md">
+          <div className="flex items-center gap-1 bg-surface-raised p-1 rounded-full border border-white/15">
             <button
               type="button"
               onClick={() => setViewMode("gallery")}
               className={cn(
-                "flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium uppercase tracking-wider transition-all",
+                "flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium transition-all",
                 viewMode === "gallery"
                   ? "bg-white text-black font-semibold shadow-sm"
                   : "text-white/60 hover:text-white"
@@ -353,7 +348,7 @@ export function VideoPlayer({ className }: VideoPlayerProps) {
                 type="button"
                 onClick={() => setViewMode("video")}
                 className={cn(
-                  "flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium uppercase tracking-wider transition-all",
+                  "flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium transition-all",
                   viewMode === "video"
                     ? "bg-white text-black font-semibold shadow-sm"
                     : "text-white/60 hover:text-white"
@@ -368,7 +363,7 @@ export function VideoPlayer({ className }: VideoPlayerProps) {
 
         {/* Main Canvas Area: Clean Video Tiles Grid */}
         <div
-          className="relative flex-1 w-full h-full flex items-center justify-center bg-zinc-950 overflow-hidden"
+          className="relative flex-1 w-full h-full flex items-center justify-center bg-black overflow-hidden"
           style={{
             perspective: "800px",
           }}
@@ -401,7 +396,7 @@ export function VideoPlayer({ className }: VideoPlayerProps) {
                     className={cn(
                       "relative rounded-2xl flex flex-col items-center justify-center p-3 sm:p-4 select-none transition-all",
                       isActive
-                        ? "border border-white/40 bg-white/10 ring-1 ring-white/50 shadow-2xl z-20 backdrop-blur-md"
+                        ? "border border-white/40 bg-white/10 ring-1 ring-white/50 shadow-2xl z-20"
                         : "border border-white/10 bg-black/40 opacity-80 hover:opacity-100 hover:border-white/25"
                     )}
                   >
@@ -434,10 +429,10 @@ export function VideoPlayer({ className }: VideoPlayerProps) {
 
                     {/* Speaker Name & Role */}
                     <div className="text-center px-1 max-w-full">
-                      <p className={cn("truncate text-xs font-mono font-medium", isActive ? "text-white" : "text-white/80")}>
+                      <p className={cn("truncate text-xs font-medium", isActive ? "text-white" : "text-white/80")}>
                         {speaker.name}
                       </p>
-                      <p className="truncate text-[10px] font-mono text-white/40">
+                      <p className="truncate text-[10px] text-white/40">
                         {speaker.role || "Participant"}
                       </p>
                     </div>
@@ -445,9 +440,9 @@ export function VideoPlayer({ className }: VideoPlayerProps) {
                     {/* Speaking Status Pill */}
                     <div className="absolute bottom-2 left-2 flex items-center gap-1">
                       {isActive ? (
-                        <div className="flex items-center gap-1 rounded-lg border border-white/20 bg-white/15 px-1.5 py-0.5 text-[10px] font-mono font-medium text-white">
+                        <div className="flex items-center gap-1 rounded-full border border-white/20 bg-white/15 px-1.5 py-0.5 text-[10px] font-medium text-white">
                           <Mic className="w-2.5 h-2.5 text-white" />
-                          <span>ACTIVE</span>
+                          <span>Speaking</span>
                         </div>
                       ) : (
                         <div className="flex items-center rounded-lg border border-white/10 bg-black/40 px-1 py-0.5 text-white/30">
@@ -491,7 +486,7 @@ export function VideoPlayer({ className }: VideoPlayerProps) {
             <button
               type="button"
               onClick={togglePlay}
-              className="absolute z-20 flex h-16 w-16 items-center justify-center rounded-2xl border border-white/20 bg-black/80 text-white shadow-2xl backdrop-blur-md hover:bg-white hover:text-black hover:scale-105 active:scale-95 transition-all"
+              className="absolute z-20 flex h-16 w-16 items-center justify-center rounded-2xl border border-white/20 bg-black/80 text-white shadow-2xl hover:bg-white hover:text-black hover:scale-105 active:scale-95 transition-all"
               aria-label="Play video"
             >
               <Play className="w-6 h-6 ml-0.5 fill-current" />
@@ -502,7 +497,7 @@ export function VideoPlayer({ className }: VideoPlayerProps) {
         {/* Bottom Tactile Controls Bar */}
         <div
           className={cn(
-            "relative z-30 flex flex-col gap-2.5 p-3.5 bg-black/85 backdrop-blur-xl border-t border-white/15 transition-opacity duration-200",
+            "relative z-30 flex flex-col gap-2.5 p-3.5 bg-black/85 border-t border-white/15 transition-opacity duration-200",
             controlsVisible ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
           )}
         >
@@ -545,7 +540,7 @@ export function VideoPlayer({ className }: VideoPlayerProps) {
                   <button
                     type="button"
                     onClick={() => handleJump(-10)}
-                    className="flex h-8 items-center gap-1 rounded-xl border border-white/15 bg-white/10 px-2.5 text-xs font-mono uppercase text-white/80 hover:bg-white hover:text-black active:scale-95 transition-all"
+                    className="flex h-8 items-center gap-1 rounded-full border border-white/15 bg-white/10 px-2.5 text-xs font-medium text-white/80 hover:bg-white hover:text-black active:scale-95 transition-all"
                     aria-label="Rewind 10s (J)"
                   >
                     <RotateCcw className="w-3.5 h-3.5" />
@@ -563,7 +558,7 @@ export function VideoPlayer({ className }: VideoPlayerProps) {
                   <button
                     type="button"
                     onClick={() => handleJump(10)}
-                    className="flex h-8 items-center gap-1 rounded-xl border border-white/15 bg-white/10 px-2.5 text-xs font-mono uppercase text-white/80 hover:bg-white hover:text-black active:scale-95 transition-all"
+                    className="flex h-8 items-center gap-1 rounded-full border border-white/15 bg-white/10 px-2.5 text-xs font-medium text-white/80 hover:bg-white hover:text-black active:scale-95 transition-all"
                     aria-label="Forward 10s (L)"
                   >
                     <RotateCw className="w-3.5 h-3.5" />
@@ -623,7 +618,7 @@ export function VideoPlayer({ className }: VideoPlayerProps) {
                   <button
                     type="button"
                     onClick={handleCreate30sHighlight}
-                    className="flex h-8 items-center gap-1.5 rounded-xl border border-white/15 bg-white/10 px-3 text-xs font-mono uppercase text-white/80 hover:bg-white hover:text-black active:scale-95 transition-all"
+                    className="flex h-8 items-center gap-1.5 rounded-full border border-white/15 bg-white/10 px-3 text-xs font-medium text-white/80 hover:bg-white hover:text-black active:scale-95 transition-all"
                   >
                     <Sparkles className="w-3.5 h-3.5" />
                     <span className="hidden sm:inline">Highlight</span>
@@ -656,7 +651,7 @@ export function VideoPlayer({ className }: VideoPlayerProps) {
                 <DropdownMenuContent
                   side="top"
                   align="end"
-                  className="min-w-[5.5rem] rounded-2xl border border-white/15 bg-black/95 text-white backdrop-blur-2xl shadow-2xl p-1.5"
+                  className="min-w-[5.5rem] rounded-2xl border border-white/15 bg-black/95 text-white shadow-2xl p-1.5"
                 >
                   {PLAYBACK_SPEEDS.map((speed) => (
                     <DropdownMenuItem

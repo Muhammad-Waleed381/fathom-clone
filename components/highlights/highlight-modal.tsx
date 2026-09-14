@@ -51,31 +51,31 @@ interface CategoryOption {
 const CATEGORIES: CategoryOption[] = [
   {
     id: "key_moment",
-    label: "KEY MOMENT",
+    label: "Key moment",
     icon: Sparkles,
     color: "#FEF08A",
-    activeBg: "bg-zinc-950 text-white border-zinc-950",
+    activeBg: "bg-white text-black border-white",
   },
   {
     id: "decision",
-    label: "DECISION",
+    label: "Decision",
     icon: CheckCircle2,
     color: "#A7F3D0",
-    activeBg: "bg-zinc-950 text-white border-zinc-950",
+    activeBg: "bg-white text-black border-white",
   },
   {
     id: "action",
-    label: "ACTION ITEM",
+    label: "Action item",
     icon: Zap,
     color: "#DDD6FE",
-    activeBg: "bg-zinc-950 text-white border-zinc-950",
+    activeBg: "bg-white text-black border-white",
   },
   {
     id: "risk",
-    label: "RISK / BLOCKER",
+    label: "Risk / blocker",
     icon: AlertTriangle,
     color: "#FECDD3",
-    activeBg: "bg-zinc-950 text-white border-zinc-950",
+    activeBg: "bg-white text-black border-white",
   },
 ];
 
@@ -188,18 +188,18 @@ export function HighlightModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md border border-zinc-200 bg-white p-6 text-zinc-950 shadow-2xl shadow-black/[0.08] sm:rounded-xl">
-        <DialogHeader className="space-y-1.5 text-left border-b border-zinc-200 pb-4">
+      <DialogContent className="max-w-md border border-white/15 bg-surface-raised p-6 text-white shadow-black/[0.08] sm:rounded-xl">
+        <DialogHeader className="space-y-1.5 text-left border-b border-white/15 pb-4">
           <div className="flex items-center gap-2.5">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-zinc-200 bg-zinc-50 shadow-sm">
-              <Bookmark className="h-5 w-5 text-zinc-950" />
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-white/15 bg-surface-raised shadow-sm">
+              <Bookmark className="h-5 w-5 text-white" />
             </div>
             <div>
-              <DialogTitle className="font-mono text-base font-semibold uppercase text-zinc-950">
-                CREATE HIGHLIGHT & CLIP
+              <DialogTitle className="text-base font-semibold text-white">
+                Create highlight & clip
               </DialogTitle>
-              <DialogDescription className="font-mono text-[11px] font-medium uppercase text-zinc-500">
-                BOOKMARK & EXTRACT BOUNDED CALL CLIP
+              <DialogDescription className="text-xs text-white/60">
+                Bookmark & extract bounded call clip
               </DialogDescription>
             </div>
           </div>
@@ -208,8 +208,8 @@ export function HighlightModal({
         <div className="space-y-4 py-2">
           {/* Title input */}
           <div className="space-y-1.5">
-            <label className="font-mono text-xs font-semibold uppercase text-zinc-700">
-              HIGHLIGHT TITLE
+            <label className="text-[13px] font-medium text-white/80">
+              Highlight title
             </label>
             <input
               type="text"
@@ -219,7 +219,7 @@ export function HighlightModal({
                 if (error) setError(null);
               }}
               placeholder="e.g. Consensus on microservice split"
-              className="h-10 w-full rounded-md border border-zinc-200 bg-zinc-50 px-3 font-mono text-xs font-medium text-zinc-950 placeholder:text-zinc-400 focus:bg-white focus:border-zinc-300 focus:outline-none transition-colors"
+              className="h-10 w-full rounded-xl border border-white/15 bg-surface-raised px-3 text-xs font-medium text-white placeholder:text-white/45 focus:bg-white/5 focus:border-white/25 focus:outline-none transition-colors"
               maxLength={120}
               autoFocus
             />
@@ -227,10 +227,10 @@ export function HighlightModal({
 
           {/* Category Selector */}
           <div className="space-y-2">
-            <div className="flex items-center justify-between font-mono text-xs">
-              <label className="font-semibold uppercase text-zinc-700">CATEGORY</label>
-              <span className="font-medium uppercase text-zinc-400 text-[10px]">
-                COLOR-CODED TIMELINE
+            <div className="flex items-center justify-between text-xs">
+              <label className="font-semibold text-white/80">Category</label>
+              <span className="font-medium text-white/45 text-[10px]">
+                Color-coded timeline
               </span>
             </div>
             <div className="grid grid-cols-2 gap-2">
@@ -243,10 +243,10 @@ export function HighlightModal({
                     type="button"
                     onClick={() => setCategory(cat.id)}
                     className={cn(
-                      "flex items-center gap-2 rounded-md border px-3 py-2 font-mono text-xs font-semibold uppercase transition-colors",
+                      "flex items-center gap-2 rounded-xl border px-3 py-2 text-[13px] font-medium transition-colors",
                       isSelected
-                        ? "border-zinc-950 bg-zinc-950 text-white"
-                        : "border-zinc-200 bg-white text-zinc-700 hover:bg-zinc-50 hover:text-zinc-950"
+                        ? "border-white bg-white text-black"
+                        : "border-white/15 bg-surface-raised text-white/80 hover:bg-white/5 hover:text-white"
                     )}
                   >
                     <Icon className="h-4 w-4 shrink-0" />
@@ -258,29 +258,29 @@ export function HighlightModal({
           </div>
 
           {/* Time boundaries */}
-          <div className="rounded-xl border border-zinc-200 bg-zinc-50 p-4 space-y-3">
-            <div className="flex items-center justify-between border-b border-zinc-200 pb-2">
-              <div className="flex items-center gap-1.5 font-mono text-xs font-semibold uppercase text-zinc-700">
+          <div className="rounded-xl border border-white/15 bg-surface-raised p-4 space-y-3">
+            <div className="flex items-center justify-between border-b border-white/15 pb-2">
+              <div className="flex items-center gap-1.5 text-[13px] font-medium text-white/80">
                 <Clock className="h-4 w-4" />
-                <span>CLIP INTERVAL</span>
+                <span>Clip interval</span>
               </div>
-              <span className="rounded-md border border-zinc-200 bg-white px-2 py-0.5 font-mono text-xs font-semibold text-zinc-950 shadow-sm">
-                DURATION: {formatTime(duration)} ({duration}S)
+              <span className="rounded-xl border border-white/15 bg-surface-raised px-2 py-0.5 text-xs font-semibold text-white shadow-sm">
+                Duration: {formatTime(duration)} ({duration}s)
               </span>
             </div>
 
             <div className="grid grid-cols-2 gap-3">
               {/* Start Time Adjuster */}
               <div className="space-y-1">
-                <div className="flex items-center justify-between font-mono text-[11px] font-medium text-zinc-500 uppercase">
-                  <span>START TIME</span>
-                  <span className="font-semibold text-zinc-950">{formatTime(startTime)}</span>
+                <div className="flex items-center justify-between text-[11px] font-medium text-white/60 uppercase">
+                  <span>Start time</span>
+                  <span className="font-semibold text-white">{formatTime(startTime)}</span>
                 </div>
                 <div className="flex items-center gap-1">
                   <button
                     type="button"
                     onClick={() => adjustStartTime(-5)}
-                    className="h-8 w-8 rounded-sm border border-zinc-200 bg-white font-mono text-xs font-medium text-zinc-700 hover:bg-zinc-50 transition-colors"
+                    className="h-8 w-8 rounded-sm border border-white/15 bg-surface-raised text-xs font-medium text-white/80 hover:bg-white/5 transition-colors"
                     title="-5s"
                   >
                     -5
@@ -288,7 +288,7 @@ export function HighlightModal({
                   <button
                     type="button"
                     onClick={() => adjustStartTime(-1)}
-                    className="h-8 w-8 flex items-center justify-center rounded-sm border border-zinc-200 bg-white font-mono text-zinc-700 hover:bg-zinc-50 transition-colors"
+                    className="h-8 w-8 flex items-center justify-center rounded-sm border border-white/15 bg-surface-raised text-white/80 hover:bg-white/5 transition-colors"
                     title="-1s"
                   >
                     <Minus className="h-3.5 w-3.5" />
@@ -304,12 +304,12 @@ export function HighlightModal({
                         setStartTime(Math.max(0, Math.min(endTime - 1, val)));
                       }
                     }}
-                    className="h-8 w-full rounded-sm border border-zinc-200 bg-white text-center font-mono text-xs font-semibold text-zinc-950 focus:outline-none focus:border-zinc-300"
+                    className="h-8 w-full rounded-sm border border-white/15 bg-surface-raised text-center text-xs font-semibold text-white focus:outline-none focus:border-white/25"
                   />
                   <button
                     type="button"
                     onClick={() => adjustStartTime(1)}
-                    className="h-8 w-8 flex items-center justify-center rounded-sm border border-zinc-200 bg-white font-mono text-zinc-700 hover:bg-zinc-50 transition-colors"
+                    className="h-8 w-8 flex items-center justify-center rounded-sm border border-white/15 bg-surface-raised text-white/80 hover:bg-white/5 transition-colors"
                     title="+1s"
                   >
                     <Plus className="h-3.5 w-3.5" />
@@ -317,7 +317,7 @@ export function HighlightModal({
                   <button
                     type="button"
                     onClick={() => adjustStartTime(5)}
-                    className="h-8 w-8 rounded-sm border border-zinc-200 bg-white font-mono text-xs font-medium text-zinc-700 hover:bg-zinc-50 transition-colors"
+                    className="h-8 w-8 rounded-sm border border-white/15 bg-surface-raised text-xs font-medium text-white/80 hover:bg-white/5 transition-colors"
                     title="+5s"
                   >
                     +5
@@ -327,15 +327,15 @@ export function HighlightModal({
 
               {/* End Time Adjuster */}
               <div className="space-y-1">
-                <div className="flex items-center justify-between font-mono text-[11px] font-medium text-zinc-500 uppercase">
-                  <span>END TIME</span>
-                  <span className="font-semibold text-zinc-950">{formatTime(endTime)}</span>
+                <div className="flex items-center justify-between text-[11px] font-medium text-white/60 uppercase">
+                  <span>End time</span>
+                  <span className="font-semibold text-white">{formatTime(endTime)}</span>
                 </div>
                 <div className="flex items-center gap-1">
                   <button
                     type="button"
                     onClick={() => adjustEndTime(-5)}
-                    className="h-8 w-8 rounded-sm border border-zinc-200 bg-white font-mono text-xs font-medium text-zinc-700 hover:bg-zinc-50 transition-colors"
+                    className="h-8 w-8 rounded-sm border border-white/15 bg-surface-raised text-xs font-medium text-white/80 hover:bg-white/5 transition-colors"
                     title="-5s"
                   >
                     -5
@@ -343,7 +343,7 @@ export function HighlightModal({
                   <button
                     type="button"
                     onClick={() => adjustEndTime(-1)}
-                    className="h-8 w-8 flex items-center justify-center rounded-sm border border-zinc-200 bg-white font-mono text-zinc-700 hover:bg-zinc-50 transition-colors"
+                    className="h-8 w-8 flex items-center justify-center rounded-sm border border-white/15 bg-surface-raised text-white/80 hover:bg-white/5 transition-colors"
                     title="-1s"
                   >
                     <Minus className="h-3.5 w-3.5" />
@@ -359,12 +359,12 @@ export function HighlightModal({
                         setEndTime(Math.max(startTime + 1, Math.min(maxDuration, val)));
                       }
                     }}
-                    className="h-8 w-full rounded-sm border border-zinc-200 bg-white text-center font-mono text-xs font-semibold text-zinc-950 focus:outline-none focus:border-zinc-300"
+                    className="h-8 w-full rounded-sm border border-white/15 bg-surface-raised text-center text-xs font-semibold text-white focus:outline-none focus:border-white/25"
                   />
                   <button
                     type="button"
                     onClick={() => adjustEndTime(1)}
-                    className="h-8 w-8 flex items-center justify-center rounded-sm border border-zinc-200 bg-white font-mono text-zinc-700 hover:bg-zinc-50 transition-colors"
+                    className="h-8 w-8 flex items-center justify-center rounded-sm border border-white/15 bg-surface-raised text-white/80 hover:bg-white/5 transition-colors"
                     title="+1s"
                   >
                     <Plus className="h-3.5 w-3.5" />
@@ -372,7 +372,7 @@ export function HighlightModal({
                   <button
                     type="button"
                     onClick={() => adjustEndTime(5)}
-                    className="h-8 w-8 rounded-sm border border-zinc-200 bg-white font-mono text-xs font-medium text-zinc-700 hover:bg-zinc-50 transition-colors"
+                    className="h-8 w-8 rounded-sm border border-white/15 bg-surface-raised text-xs font-medium text-white/80 hover:bg-white/5 transition-colors"
                     title="+5s"
                   >
                     +5
@@ -383,19 +383,19 @@ export function HighlightModal({
           </div>
 
           {error && (
-            <div className="rounded-md border border-red-200 bg-red-50 px-3 py-2 font-mono text-xs font-medium text-red-700">
+            <div className="rounded-xl border border-red-500/30 bg-red-500/100/10 px-3 py-2 text-xs font-medium text-red-300">
               {error}
             </div>
           )}
         </div>
 
-        <DialogFooter className="flex flex-col-reverse sm:flex-row sm:justify-between sm:space-x-2 gap-2 pt-3 border-t border-zinc-200">
+        <DialogFooter className="flex flex-col-reverse sm:flex-row sm:justify-between sm:space-x-2 gap-2 pt-3 border-t border-white/15">
           <button
             type="button"
             onClick={() => onOpenChange(false)}
-            className="h-9 rounded-md border border-zinc-200 bg-white px-3 font-mono text-xs font-semibold uppercase text-zinc-600 hover:bg-zinc-50 hover:text-zinc-950 transition-colors"
+            className="h-9 rounded-xl border border-white/15 bg-surface-raised px-3 text-[13px] font-medium text-white/70 hover:bg-white/5 hover:text-white transition-colors"
           >
-            CANCEL
+            Cancel
           </button>
 
           <div className="flex items-center gap-2">
@@ -403,19 +403,19 @@ export function HighlightModal({
               <button
                 type="button"
                 onClick={() => handleSave(true)}
-                className="h-9 flex items-center gap-1.5 rounded-md border border-zinc-200 bg-white px-3.5 font-mono text-xs font-semibold uppercase text-zinc-700 hover:bg-zinc-50 hover:text-zinc-950 transition-colors"
+                className="h-9 flex items-center gap-1.5 rounded-xl border border-white/15 bg-surface-raised px-3.5 text-[13px] font-medium text-white/80 hover:bg-white/5 hover:text-white transition-colors"
               >
                 <Share2 className="h-3.5 w-3.5" />
-                <span>SAVE & SHARE</span>
+                <span>Save & share</span>
               </button>
             )}
             <button
               type="button"
               onClick={() => handleSave(false)}
-              className="h-9 flex items-center gap-1.5 rounded-md border border-zinc-950 bg-zinc-950 px-4 font-mono text-xs font-semibold uppercase tracking-wider text-white hover:bg-zinc-800 transition-colors"
+              className="h-9 flex items-center gap-1.5 rounded-xl border border-white bg-white px-4 text-[13px] font-medium text-black hover:bg-white/90 transition-colors"
             >
               <Film className="h-3.5 w-3.5" />
-              <span>SAVE HIGHLIGHT</span>
+              <span>Save highlight</span>
             </button>
           </div>
         </DialogFooter>

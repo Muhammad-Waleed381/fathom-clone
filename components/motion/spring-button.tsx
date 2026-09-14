@@ -17,8 +17,8 @@ const springButtonVariants = cva(
     variants: {
       variant: {
         default: "bg-[#FEF08A] text-black border-2 border-black",
-        destructive: "bg-red-500 text-white border-2 border-black",
-        outline: "bg-white text-black border-2 border-black hover:bg-zinc-50",
+        destructive: "bg-red-500/100 text-white border-2 border-black",
+        outline: "bg-white text-black border-2 border-black hover:bg-white/5",
         secondary: "bg-[#DDD6FE] text-black border-2 border-black",
         mint: "bg-[#A7F3D0] text-black border-2 border-black",
         orange: "bg-[#FED7AA] text-black border-2 border-black",

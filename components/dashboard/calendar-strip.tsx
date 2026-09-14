@@ -1,14 +1,17 @@
 "use client";
 
 import React, { useState } from "react";
-import {
-  Clock,
-  PlayCircle,
-  Mic,
-  Calendar,
-  ChevronRight,
-} from "lucide-react";
+import { Mic, Play } from "lucide-react";
 import { MeetingRecorderModal } from "@/components/record/meeting-recorder-modal";
+import {
+  Item,
+  ItemActions,
+  ItemContent,
+  ItemDescription,
+  ItemGroup,
+  ItemSeparator,
+  ItemTitle,
+} from "@/components/ui/item";
 import { cn } from "@/lib/utils";
 
 export interface UpcomingMeeting {
@@ -61,10 +64,9 @@ export function CalendarStrip({
   const [meetings] = useState<UpcomingMeeting[]>(UPCOMING_MEETINGS);
   const [simulatedId, setSimulatedId] = useState<string | null>(null);
 
-  // In-Browser Recorder Modal state
-  const [recorderOpen, setRecorderOpen] = useState<boolean>(false);
-  const [recorderTitle, setRecorderTitle] = useState<string>("");
-  const [autoSimulate, setAutoSimulate] = useState<boolean>(false);
+  const [recorderOpen, setRecorderOpen] = useState(false);
+  const [recorderTitle, setRecorderTitle] = useState("");
+  const [autoSimulate, setAutoSimulate] = useState(false);
 
   const handleSimulate = (m: UpcomingMeeting) => {
     setSimulatedId(m.id);
@@ -77,8 +79,7 @@ export function CalendarStrip({
     }
   };
 
-  const handleRecordNow = (e?: React.MouseEvent) => {
-    e?.stopPropagation();
+  const handleRecordNow = () => {
     if (onRecordNow) {
       onRecordNow();
     } else {
@@ -89,83 +90,60 @@ export function CalendarStrip({
   };
 
   return (
-    <div
-      className={cn(
-        "rounded-3xl border border-white/15 bg-black/45 p-5 sm:p-6 backdrop-blur-xl shadow-[0_10px_34px_rgba(0,0,0,0.5)] text-white font-sans",
-        className
-      )}
-    >
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-5">
-        {/* Left: Desk Planner Controls */}
-        <div className="flex flex-wrap items-center gap-3 shrink-0">
-          <div className="flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-xs text-white">
-            <Calendar className="h-3.5 w-3.5 text-white/70" />
-            <span className="font-mono text-[11px] uppercase tracking-wider">Daily Agenda</span>
-          </div>
-
-          {/* Record Now Trigger (.cta style) */}
-          <button
-            type="button"
-            onClick={handleRecordNow}
-            className="cta"
-          >
-            <span className="cta-bg bg-white"></span>
-            <span className="cta-text text-black">Record session</span>
-            <span className="cta-circle bg-black text-white ring-1 ring-white/60">
-              <Mic className="h-3.5 w-3.5" />
-            </span>
-          </button>
+    <div className={cn("text-white", className)}>
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <p className="eyebrow">Today</p>
+          <h2 className="mt-2 font-display text-2xl font-normal tracking-tight sm:text-3xl">
+            {meetings.length} meetings on the calendar
+          </h2>
         </div>
-
-        {/* Right: Editorial Desk Agenda Meetings */}
-        <div className="flex flex-1 items-center gap-3 overflow-x-auto pb-1 lg:pb-0 scrollbar-none">
-          {meetings.map((m) => {
-            const isSimulating = simulatedId === m.id;
-
-            return (
-              <div
-                key={m.id}
-                onClick={() => handleSimulate(m)}
-                className={cn(
-                  "group relative flex min-w-[250px] flex-1 cursor-pointer flex-col justify-between rounded-2xl border border-white/15 bg-white/5 p-4 transition-all duration-500 hover:border-white/60 hover:bg-white hover:text-black hover:shadow-[0_18px_40px_rgba(0,0,0,0.45)]",
-                  isSimulating && "bg-white text-black border-white"
-                )}
-              >
-                {/* Time & Platform */}
-                <div className="flex items-center justify-between gap-2">
-                  <div className="flex items-center gap-1.5 font-mono text-[11px] text-white/70 group-hover:text-black/70 transition-colors">
-                    <Clock className="h-3 w-3 text-white/50 group-hover:text-black/50" />
-                    <span className="font-medium text-white group-hover:text-black">{m.time}</span>
-                    <span className="text-white/50 group-hover:text-black/50">({m.duration})</span>
-                  </div>
-
-                  <span className="rounded-full border border-white/20 bg-white/10 group-hover:border-black/20 group-hover:bg-black/5 group-hover:text-black/80 px-2.5 py-0.5 font-mono text-[10px] text-white/80 uppercase tracking-wide transition-all">
-                    {m.platform}
-                  </span>
-                </div>
-
-                {/* Title */}
-                <p className="mt-3 line-clamp-1 text-xs font-medium text-white group-hover:text-black transition-colors">
-                  {m.title}
-                </p>
-
-                {/* Platform & Action */}
-                <div className="mt-3 flex items-center justify-between border-t border-white/10 group-hover:border-black/10 pt-2.5 text-[10px] font-mono">
-                  <span className="text-white/60 group-hover:text-black/60 transition-colors">
-                    {m.attendeesCount} participants
-                  </span>
-                  <div className="flex items-center gap-1 text-[11px] font-medium text-white/80 group-hover:text-black transition-colors">
-                    <span>Simulate</span>
-                    <PlayCircle className="h-3.5 w-3.5" />
-                  </div>
-                </div>
-              </div>
-            );
-          })}
-        </div>
+        <button type="button" onClick={handleRecordNow} className="cta border border-white bg-white text-black">
+          <span className="cta-bg bg-white" />
+          <span className="cta-text text-black">Record now</span>
+          <span className="cta-circle bg-black text-white">
+            <Mic className="h-3.5 w-3.5" />
+          </span>
+        </button>
       </div>
 
-      {/* In-Browser Meeting Recorder Modal */}
+      <ItemGroup className="mt-8 border-t border-white/15">
+        {meetings.map((m, i) => {
+          const active = simulatedId === m.id;
+          return (
+            <React.Fragment key={m.id}>
+              <Item
+                asChild
+                size="sm"
+                className={cn(
+                  "group cursor-pointer rounded-none px-0 py-5 transition-colors hover:bg-transparent",
+                  active && "text-white"
+                )}
+              >
+                <button type="button" onClick={() => handleSimulate(m)} className="w-full text-left">
+                  <span className="step-number w-8 shrink-0 self-start pt-1">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                  <ItemContent className="gap-1">
+                    <ItemTitle className="text-base font-medium text-white sm:text-lg">
+                      {m.title}
+                    </ItemTitle>
+                    <ItemDescription className="text-sm text-white/60">
+                      {m.time} · {m.duration} · {m.platform} · {m.attendeesCount} people
+                    </ItemDescription>
+                  </ItemContent>
+                  <ItemActions className="text-sm font-medium text-white/60 transition-colors group-hover:text-white">
+                    <span className="hidden sm:inline">Simulate</span>
+                    <Play className="h-4 w-4 fill-current" />
+                  </ItemActions>
+                </button>
+              </Item>
+              {i < meetings.length - 1 && <ItemSeparator className="bg-white/15" />}
+            </React.Fragment>
+          );
+        })}
+      </ItemGroup>
+
       <MeetingRecorderModal
         open={recorderOpen}
         onOpenChange={setRecorderOpen}

@@ -46,10 +46,10 @@ interface SelectionState {
 }
 
 const CATEGORIES: { id: MeetingHighlight["category"]; label: string; activeClass: string }[] = [
-  { id: "key_moment", label: "Key Moment", activeClass: "bg-amber-100 border border-amber-300 text-zinc-950 font-semibold" },
-  { id: "decision", label: "Decision", activeClass: "bg-emerald-50 border border-emerald-200 text-zinc-950 font-semibold" },
-  { id: "action", label: "Action Item", activeClass: "bg-violet-50 border border-violet-200 text-zinc-950 font-semibold" },
-  { id: "risk", label: "Risk / Blocker", activeClass: "bg-orange-50 border border-orange-200 text-zinc-950 font-semibold" },
+  { id: "key_moment", label: "Key Moment", activeClass: "bg-amber-400/25 border border-amber-400/40 text-white font-semibold" },
+  { id: "decision", label: "Decision", activeClass: "bg-emerald-400/25 border border-emerald-400/40 text-white font-semibold" },
+  { id: "action", label: "Action Item", activeClass: "bg-violet-50 border border-violet-200 text-white font-semibold" },
+  { id: "risk", label: "Risk / Blocker", activeClass: "bg-orange-50 border border-orange-200 text-white font-semibold" },
 ];
 
 export function TranscriptViewer({ className, onClipCreated }: TranscriptViewerProps) {
@@ -148,7 +148,7 @@ export function TranscriptViewer({ className, onClipCreated }: TranscriptViewerP
     if (!container) return;
 
     const viewport = container.querySelector<HTMLElement>(
-      "[data-radix-scroll-area-viewport]"
+ "[data-radix-scroll-area-viewport]"
     );
     if (!viewport) return;
 
@@ -290,14 +290,14 @@ export function TranscriptViewer({ className, onClipCreated }: TranscriptViewerP
         ref={containerRef}
         onMouseUp={handleMouseUp}
         className={cn(
-          "relative flex flex-col h-full bg-transparent select-text font-mono text-white",
+ "relative flex flex-col h-full bg-transparent select-text text-white",
           className
         )}
       >
         {/* Toast Notification */}
         {toastMessage && (
           <div className="absolute top-14 left-1/2 -translate-x-1/2 z-50 animate-in fade-in slide-in-from-top-2">
-            <div className="flex items-center gap-2 rounded-xl bg-black/90 border border-white/20 px-4 py-1.5 text-xs font-medium text-white shadow-2xl backdrop-blur-xl">
+            <div className="flex items-center gap-2 rounded-full bg-black/90 border border-white/20 px-4 py-1.5 text-xs font-medium text-white">
               <Sparkles className="w-3.5 h-3.5 text-white" />
               <span>{toastMessage}</span>
             </div>
@@ -308,10 +308,10 @@ export function TranscriptViewer({ className, onClipCreated }: TranscriptViewerP
         <div className="flex flex-col gap-2 p-3 border-b border-white/10 bg-white/5 z-10">
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-2">
-              <span className="font-mono text-xs font-semibold uppercase tracking-wider text-white">
+              <span className="text-[13px] font-medium text-white">
                 Transcript
               </span>
-              <span className="font-mono text-[10px] font-medium bg-white/5 text-white/70 border border-white/15 px-2 py-0.5 rounded-lg">
+              <span className="text-[10px] font-medium bg-white/5 text-white/70 border border-white/15 px-2 py-0.5 rounded-full">
                 {filteredSegments.length} segments
               </span>
             </div>
@@ -325,7 +325,7 @@ export function TranscriptViewer({ className, onClipCreated }: TranscriptViewerP
                 if (nextState) scrollToActiveSegment();
               }}
               className={cn(
-                "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl border font-mono text-[11px] font-medium transition-all cursor-pointer",
+ "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-[11px] font-medium transition-all cursor-pointer",
                 autoScrollLocked
                   ? "bg-white text-black border-white font-semibold shadow-sm"
                   : "bg-white/5 text-white/60 border-white/15 hover:bg-white hover:text-black"
@@ -334,7 +334,7 @@ export function TranscriptViewer({ className, onClipCreated }: TranscriptViewerP
             >
               <span
                 className={cn(
-                  "w-1.5 h-1.5 rounded-xs",
+ "w-1.5 h-1.5 rounded-xs",
                   autoScrollLocked ? "bg-black" : "bg-white/40"
                 )}
               />
@@ -351,7 +351,7 @@ export function TranscriptViewer({ className, onClipCreated }: TranscriptViewerP
                 placeholder="Search words or speakers..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="h-8 pl-8 pr-8 text-xs font-mono bg-black/40 border-white/15 text-white placeholder:text-white/40 rounded-xl focus-visible:ring-1 focus-visible:ring-white/30 focus-visible:border-white/30"
+                className="h-8 pl-8 pr-8 text-xs bg-black/40 border-white/15 text-white placeholder:text-white/40 rounded-full focus-visible:ring-1 focus-visible:ring-white/30 focus-visible:border-white/30"
               />
               {searchQuery && (
                 <button
@@ -367,7 +367,7 @@ export function TranscriptViewer({ className, onClipCreated }: TranscriptViewerP
             {activeFilteredSpeakerObj && (
               <Badge
                 variant="outline"
-                className="h-8 gap-1.5 px-2.5 bg-white/10 border-white/20 text-white font-mono text-xs font-medium rounded-xl shrink-0"
+                className="h-8 gap-1.5 px-2.5 bg-white/10 border-white/20 text-white text-xs font-medium rounded-full shrink-0"
               >
                 <Filter className="w-3 h-3 text-white/60" />
                 <span className="truncate max-w-[100px]">{activeFilteredSpeakerObj.name}</span>
@@ -395,7 +395,7 @@ export function TranscriptViewer({ className, onClipCreated }: TranscriptViewerP
                   left: `${Math.max(20, Math.min(containerRef.current ? containerRef.current.clientWidth - 40 : 200, selectionData.x))}px`,
                   top: `${Math.max(50, selectionData.y)}px`,
                 }}
-                className="z-40 -translate-x-1/2 -translate-y-full flex items-center gap-1.5 px-3 py-1 rounded-xl bg-white hover:bg-white/90 text-black text-xs font-semibold shadow-2xl transition-all cursor-pointer"
+                className="z-40 -translate-x-1/2 -translate-y-full flex items-center gap-1.5 px-3 py-1 rounded-full bg-white hover:bg-white/90 text-black text-xs font-semibold transition-all cursor-pointer"
               >
                 <Scissors className="w-3.5 h-3.5" />
                 <span>Create Highlight</span>
@@ -405,26 +405,26 @@ export function TranscriptViewer({ className, onClipCreated }: TranscriptViewerP
             <PopoverContent
               side="top"
               align="center"
-              className="w-80 bg-black/95 border border-white/15 p-4 shadow-2xl text-white rounded-2xl backdrop-blur-2xl"
+              className="w-80 bg-black/95 border border-white/15 p-4 text-white rounded-2xl"
             >
-              <div className="space-y-3 font-mono">
+              <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="flex items-center gap-1.5 font-mono text-xs font-semibold uppercase text-white">
+                  <span className="flex items-center gap-1.5 text-[13px] font-medium text-white">
                     <Bookmark className="w-3.5 h-3.5 fill-current" />
                     New Highlight
                   </span>
-                  <span className="font-mono text-xs font-medium bg-white/10 text-white border border-white/15 px-2 py-0.5 rounded-lg">
+                  <span className="text-xs font-medium bg-white/10 text-white border border-white/15 px-2 py-0.5 rounded-full">
                     {formatTime(selectionData.start)} – {formatTime(selectionData.end)}
                   </span>
                 </div>
 
-                <p className="text-xs text-white/80 bg-white/5 p-2.5 rounded-xl border border-white/10 italic line-clamp-3">
+                <p className="text-xs text-white/80 bg-white/5 p-2.5 rounded-full border border-white/10 italic line-clamp-3">
                   &ldquo;{selectionData.text}&rdquo;
                 </p>
 
                 {/* Category Selector */}
                 <div className="space-y-1">
-                  <span className="text-[10px] uppercase font-mono font-medium text-zinc-500">
+                  <span className="text-[11px] font-medium text-white/60">
                     Category
                   </span>
                   <div className="grid grid-cols-2 gap-1.5">
@@ -434,7 +434,7 @@ export function TranscriptViewer({ className, onClipCreated }: TranscriptViewerP
                         type="button"
                         onClick={() => setSelectedCategory(cat.id)}
                         className={cn(
-                          "flex items-center justify-between px-2.5 py-1.5 rounded-xl text-xs font-mono font-medium border transition-all text-left cursor-pointer",
+ "flex items-center justify-between px-2.5 py-1.5 rounded-full text-xs font-medium border transition-all text-left cursor-pointer",
                           selectedCategory === cat.id
                             ? "bg-white text-black font-semibold border-white shadow-sm"
                             : "bg-white/5 border-white/15 text-white/80 hover:border-white/30 hover:bg-white/10"
@@ -450,7 +450,7 @@ export function TranscriptViewer({ className, onClipCreated }: TranscriptViewerP
                 </div>
 
                 {/* Action Buttons */}
-                <div className="flex items-center justify-end gap-2 pt-1 font-mono">
+                <div className="flex items-center justify-end gap-2 pt-1">
                   <Button
                     type="button"
                     variant="outline"
@@ -459,7 +459,7 @@ export function TranscriptViewer({ className, onClipCreated }: TranscriptViewerP
                       setPopoverOpen(false);
                       setSelectionData(null);
                     }}
-                    className="h-8 text-xs font-mono font-medium border-white/15 bg-white/5 hover:bg-white hover:text-black text-white rounded-xl cursor-pointer"
+                    className="h-8 text-xs font-medium border-white/15 bg-white/5 hover:bg-white hover:text-black text-white rounded-full cursor-pointer"
                   >
                     Cancel
                   </Button>
@@ -467,7 +467,7 @@ export function TranscriptViewer({ className, onClipCreated }: TranscriptViewerP
                     type="button"
                     size="sm"
                     onClick={handleCreateClipFromSelection}
-                    className="h-8 text-xs font-mono font-semibold bg-white hover:bg-white/90 text-black border-0 rounded-xl gap-1.5 cursor-pointer shadow-sm"
+                    className="h-8 text-xs font-semibold bg-white hover:bg-white/90 text-black border-0 rounded-full gap-1.5 cursor-pointer shadow-sm"
                   >
                     <Sparkles className="w-3 h-3" />
                     Save Clip
@@ -507,9 +507,9 @@ export function TranscriptViewer({ className, onClipCreated }: TranscriptViewerP
                 );
               })
             ) : (
-              <div className="py-16 text-center text-white/50 space-y-2 font-mono">
+              <div className="py-16 text-center text-white/50 space-y-2">
                 <Search className="w-8 h-8 mx-auto text-white/20" />
-                <p className="font-mono text-sm font-medium text-white">
+                <p className="text-sm font-medium text-white">
                   No matching segments
                 </p>
                 <p className="text-xs text-white/50">
@@ -524,7 +524,7 @@ export function TranscriptViewer({ className, onClipCreated }: TranscriptViewerP
                       setSearchQuery("");
                       setActiveSpeakerFilter(null);
                     }}
-                    className="mt-2 text-xs font-mono font-medium border-white/15 bg-white/5 hover:bg-white hover:text-black text-white rounded-xl"
+                    className="mt-2 text-xs font-medium border-white/15 bg-white/5 hover:bg-white hover:text-black text-white rounded-full"
                   >
                     Clear all filters
                   </Button>
@@ -543,7 +543,7 @@ export function TranscriptViewer({ className, onClipCreated }: TranscriptViewerP
                 setAutoScrollLocked(true);
                 scrollToActiveSegment();
               }}
-              className="flex items-center gap-2 rounded-2xl bg-black/90 text-white border border-white/20 shadow-2xl backdrop-blur-xl font-mono text-xs px-4 py-2 hover:bg-white hover:text-black transition-all cursor-pointer"
+              className="flex items-center gap-2 rounded-2xl bg-black/90 text-white border border-white/20 text-xs px-4 py-2 hover:bg-white hover:text-black transition-all cursor-pointer"
             >
               <ArrowDown className="w-3.5 h-3.5 animate-bounce" />
               <span>Resume Auto-scroll</span>

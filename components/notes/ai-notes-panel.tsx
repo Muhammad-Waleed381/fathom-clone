@@ -61,7 +61,7 @@ function RichTextWithTimestamps({
                 e.stopPropagation();
                 onSeek(seconds);
               }}
-              className="inline-flex items-center gap-1 mx-1 px-1.5 py-0.5 rounded-lg font-mono text-xs font-medium text-white/90 bg-white/10 hover:bg-white hover:text-black border border-white/15 transition-all align-middle cursor-pointer"
+              className="inline-flex items-center gap-1 mx-1 px-1.5 py-0.5 rounded-full text-xs font-medium text-white/90 bg-white/10 hover:bg-white hover:text-black border border-white/15 transition-all align-middle cursor-pointer"
               title={`Jump video to ${part}`}
             >
               <Play className="h-2 w-2 fill-current text-current" />
@@ -108,12 +108,12 @@ export function AiNotesPanel({ className }: AiNotesPanelProps) {
       `# ${activeSummary.name}`,
       `**Meeting:** ${currentMeeting.title}`,
       `**Date:** ${new Date(currentMeeting.date).toLocaleDateString()} | **Duration:** ${formatTime(currentMeeting.duration)}`,
-      "",
+ "",
       `## Executive Overview`,
       activeSummary.overview,
-      "",
+ "",
       sectionsText,
-      "",
+ "",
       `— Synchronized via Fathom AI`,
     ].join("\n");
 
@@ -145,14 +145,14 @@ export function AiNotesPanel({ className }: AiNotesPanelProps) {
 
   if (!currentMeeting) {
     return (
-      <div className="flex h-64 items-center justify-center rounded-2xl border border-white/15 bg-black/50 p-6 text-center font-mono text-xs font-medium text-white/50 shadow-xl backdrop-blur-xl">
+      <div className="flex h-64 items-center justify-center rounded-2xl border border-white/15 bg-surface-raised p-6 text-center text-xs font-medium text-white/50">
         No active meeting selected.
       </div>
     );
   }
 
   return (
-    <div className={cn("flex flex-col space-y-4 font-mono text-white", className)}>
+    <div className={cn("flex flex-col space-y-4 text-white", className)}>
       {/* Top Controls: Template Switcher Tabs */}
       <div className="flex flex-col gap-2.5">
         <TemplateSelector />
@@ -160,18 +160,18 @@ export function AiNotesPanel({ className }: AiNotesPanelProps) {
         {/* Action Toolbar */}
         <div className="flex flex-wrap items-center justify-between gap-2 pt-1 border-b border-white/10 pb-3">
           <div className="flex items-center gap-2">
-            <span className="font-mono text-xs font-semibold uppercase tracking-wider text-white">
+            <span className="text-[13px] font-medium text-white">
               {activeSummary?.name || "Meeting Summary"}
             </span>
 
             {/* If on action items template, toggle between AI narrative & checklist */}
             {activeTemplateId === "action_items" && (
-              <div className="inline-flex rounded-xl bg-black/60 p-0.5 border border-white/15 text-xs">
+              <div className="inline-flex rounded-full bg-surface-raised p-0.5 border border-white/15 text-xs">
                 <button
                   type="button"
                   onClick={() => setActiveSubTab("summary")}
                   className={cn(
-                    "px-2.5 py-1 rounded-lg font-mono text-[11px] font-medium transition-all cursor-pointer",
+ "px-2.5 py-1 rounded-full text-[11px] font-medium transition-all cursor-pointer",
                     activeSubTab === "summary"
                       ? "bg-white text-black font-semibold shadow-sm"
                       : "text-white/60 hover:text-white"
@@ -183,7 +183,7 @@ export function AiNotesPanel({ className }: AiNotesPanelProps) {
                   type="button"
                   onClick={() => setActiveSubTab("checklist")}
                   className={cn(
-                    "px-2.5 py-1 rounded-lg font-mono text-[11px] font-medium transition-all cursor-pointer",
+ "px-2.5 py-1 rounded-full text-[11px] font-medium transition-all cursor-pointer",
                     activeSubTab === "checklist"
                       ? "bg-white text-black font-semibold shadow-sm"
                       : "text-white/60 hover:text-white"
@@ -201,7 +201,7 @@ export function AiNotesPanel({ className }: AiNotesPanelProps) {
               type="button"
               onClick={() => setShowAskAi(!showAskAi)}
               className={cn(
-                "flex h-8 items-center gap-1.5 rounded-xl border border-white/15 px-3 font-mono text-xs font-medium text-white/80 transition-all cursor-pointer hover:bg-white hover:text-black",
+ "flex h-8 items-center gap-1.5 rounded-full border border-white/15 px-3 text-xs font-medium text-white/80 transition-all cursor-pointer hover:bg-white hover:text-black",
                 showAskAi ? "bg-white text-black border-white font-semibold" : "bg-white/5"
               )}
               title="Toggle Ask Fathom AI drawer"
@@ -216,14 +216,14 @@ export function AiNotesPanel({ className }: AiNotesPanelProps) {
               onClick={handleRegenerate}
               disabled={isRegenerating}
               className={cn(
-                "flex h-8 items-center gap-1.5 rounded-xl border border-white/15 bg-white/5 px-3 font-mono text-xs font-medium text-white/80 hover:bg-white hover:text-black transition-all cursor-pointer",
+ "flex h-8 items-center gap-1.5 rounded-full border border-white/15 bg-white/5 px-3 text-xs font-medium text-white/80 hover:bg-white hover:text-black transition-all cursor-pointer",
                 isRegenerating && "opacity-75"
               )}
               title="Regenerate notes with Fathom AI"
             >
               <RotateCw
                 className={cn(
-                  "h-3.5 w-3.5",
+ "h-3.5 w-3.5",
                   isRegenerating && "animate-spin"
                 )}
               />
@@ -236,7 +236,7 @@ export function AiNotesPanel({ className }: AiNotesPanelProps) {
             <button
               type="button"
               onClick={handleCopyMarkdown}
-              className="flex h-8 items-center gap-1.5 rounded-xl border border-white/15 bg-white/10 px-3 font-mono text-xs font-medium text-white hover:bg-white hover:text-black transition-all cursor-pointer"
+              className="flex h-8 items-center gap-1.5 rounded-full border border-white/15 bg-white/10 px-3 text-xs font-medium text-white hover:bg-white hover:text-black transition-all cursor-pointer"
               title="Copy formatted Markdown notes"
             >
               {copied ? (
@@ -269,10 +269,10 @@ export function AiNotesPanel({ className }: AiNotesPanelProps) {
         <div className="relative space-y-4">
           {/* Shimmer Overlay during AI Regeneration */}
           {isRegenerating && (
-            <div className="absolute inset-0 z-20 rounded-2xl bg-black/80 backdrop-blur-md flex flex-col items-center justify-center p-6 border border-white/15 shadow-2xl">
-              <div className="flex items-center gap-2.5 bg-black/90 border border-white/20 rounded-2xl px-4 py-2 shadow-xl">
+            <div className="absolute inset-0 z-20 rounded-2xl bg-black/80 flex flex-col items-center justify-center p-6 border border-white/15">
+              <div className="flex items-center gap-2.5 bg-black/90 border border-white/20 rounded-2xl px-4 py-2">
                 <Sparkles className="h-4 w-4 text-white animate-spin" />
-                <p className="font-mono text-xs font-medium text-white">
+                <p className="text-xs font-medium text-white">
                   Synthesizing {activeSummary?.name}...
                 </p>
               </div>
@@ -281,14 +281,14 @@ export function AiNotesPanel({ className }: AiNotesPanelProps) {
 
           {/* Executive Overview Card */}
           {activeSummary?.overview && (
-            <Card className="rounded-2xl border border-white/15 bg-white/5 shadow-xl text-white backdrop-blur-xl">
+            <Card className="rounded-2xl border border-white/15 bg-white/5 text-white">
               <CardHeader className="p-4 pb-2 border-b border-white/10">
-                <div className="flex items-center gap-1.5 font-mono text-xs font-semibold uppercase tracking-wider text-white">
+                <div className="flex items-center gap-1.5 text-[13px] font-medium text-white">
                   <Sparkles className="h-3.5 w-3.5 text-white/70" />
                   <span>Executive Synthesis</span>
                 </div>
               </CardHeader>
-              <CardContent className="p-4 pt-3 text-xs text-white/80 leading-relaxed font-mono">
+              <CardContent className="p-4 pt-3 text-xs text-white/80 leading-relaxed">
                 <RichTextWithTimestamps
                   text={activeSummary.overview}
                   onSeek={seekTo}
@@ -302,13 +302,13 @@ export function AiNotesPanel({ className }: AiNotesPanelProps) {
             {activeSummary?.sections?.map((section, sIndex) => (
               <Card
                 key={`sec-${sIndex}`}
-                className="rounded-2xl border border-white/10 bg-black/40 shadow-xl text-white"
+                className="rounded-2xl border border-white/10 bg-black/40 text-white"
               >
                 <CardHeader className="p-4 pb-2 border-b border-white/10">
-                  <CardTitle className="font-mono text-xs font-semibold uppercase text-white flex items-center justify-between">
+                  <CardTitle className="text-[13px] font-medium text-white flex items-center justify-between">
                     <span>{section.title}</span>
                     {section.timestampRefs && section.timestampRefs.length > 0 && (
-                      <span className="font-mono text-[10px] font-medium text-white/60 bg-white/5 border border-white/15 px-2 py-0.5 rounded-lg">
+                      <span className="text-[10px] font-medium text-white/60 bg-white/5 border border-white/15 px-2 py-0.5 rounded-full">
                         {section.timestampRefs.length} citation{section.timestampRefs.length > 1 ? "s" : ""}
                       </span>
                     )}
@@ -317,7 +317,7 @@ export function AiNotesPanel({ className }: AiNotesPanelProps) {
 
                 <CardContent className="p-4 pt-3 space-y-3">
                   {/* Bullets */}
-                  <ul className="space-y-2 text-xs text-white/80 font-mono">
+                  <ul className="space-y-2 text-xs text-white/80">
                     {section.bullets.map((bullet, bIndex) => (
                       <li
                         key={`b-${bIndex}`}
@@ -337,7 +337,7 @@ export function AiNotesPanel({ className }: AiNotesPanelProps) {
                   {/* Timestamp References Citations */}
                   {section.timestampRefs && section.timestampRefs.length > 0 && (
                     <div className="pt-3 border-t border-white/10 mt-3">
-                      <div className="flex items-center gap-1.5 font-mono text-[10px] font-medium uppercase tracking-wider text-white/50 mb-2">
+                      <div className="flex items-center gap-1.5 text-[10px] font-medium text-white/50 mb-2">
                         <Clock className="h-3 w-3" />
                         <span>Key Moments</span>
                       </div>
@@ -352,7 +352,7 @@ export function AiNotesPanel({ className }: AiNotesPanelProps) {
                               type="button"
                               onClick={() => seekTo(ref.time)}
                               className={cn(
-                                "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl font-mono text-xs font-medium border transition-all cursor-pointer",
+ "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border transition-all cursor-pointer",
                                 isCurrent
                                   ? "bg-white text-black border-white font-semibold"
                                   : "bg-white/5 hover:bg-white hover:text-black text-white/80 border-white/15"
@@ -360,8 +360,8 @@ export function AiNotesPanel({ className }: AiNotesPanelProps) {
                               title={`Jump to ${formatTime(ref.time)} in recording`}
                             >
                               <Play
-                                className={cn(
-                                  "h-2.5 w-2.5 fill-current",
+                                className={cn("tabular-nums",
+ "h-2.5 w-2.5 fill-current",
                                   isCurrent ? "text-black" : "text-white/60"
                                 )}
                               />

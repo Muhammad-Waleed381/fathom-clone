@@ -251,16 +251,16 @@ export function PublicClipViewer({
       : 0;
 
   return (
-    <div className="min-h-screen bg-zinc-50 text-zinc-950 flex flex-col font-sans selection:bg-zinc-200 selection:text-zinc-950">
+    <div className="min-h-screen bg-surface-raised text-white flex flex-col font-sans selection:bg-white/15 selection:text-white">
       {/* Demo notice banner if fallback */}
       {isDemoFallback && (
-        <div className="w-full border-b border-zinc-200 bg-zinc-100 px-4 py-2 text-center font-mono text-xs font-semibold uppercase text-zinc-700">
+        <div className="w-full border-b border-white/15 bg-white/10 px-4 py-2 text-center text-[13px] font-medium text-white/80">
           Guest Preview: Demo benchmark highlight active
         </div>
       )}
 
       {/* Top Navbar */}
-      <header className="sticky top-0 z-40 border-b border-zinc-200 bg-white/80 backdrop-blur-md">
+      <header className="sticky top-0 z-40 border-b border-white/15 bg-surface-raised/80">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 sm:px-6 h-16">
           {/* Brand */}
           <div className="flex items-center gap-3">
@@ -268,17 +268,17 @@ export function PublicClipViewer({
               href="/"
               className="flex items-center gap-2.5 transition-transform active:scale-95"
             >
-              <div className="flex h-9 w-9 items-center justify-center rounded-md bg-zinc-950 text-white shadow-sm">
-                <span className="font-mono text-base font-bold">F</span>
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-white text-black shadow-sm">
+                <span className="text-base font-bold">F</span>
               </div>
               <div className="flex flex-col">
-                <span className="font-mono text-xs font-bold uppercase tracking-wider text-zinc-950 flex items-center gap-1.5">
-                  FATHOM // GUEST CLIP
-                  <span className="rounded-md border border-zinc-200 bg-zinc-100 px-1.5 py-0.2 font-mono text-[9px] font-semibold text-zinc-700">
-                    PUBLIC
+                <span className="text-xs font-bold text-white flex items-center gap-1.5">
+                  Fathom · guest clip
+                  <span className="rounded-xl border border-white/15 bg-white/10 px-1.5 py-0.2 text-[9px] font-semibold text-white/80">
+                    Public
                   </span>
                 </span>
-                <span className="font-mono text-[10px] text-zinc-500 uppercase font-medium">
+                <span className="text-[10px] text-white/60 font-medium">
                   AI Meeting Intelligence
                 </span>
               </div>
@@ -291,41 +291,41 @@ export function PublicClipViewer({
               type="button"
               onClick={handleCopyLink}
               className={cn(
-                "h-9 flex items-center gap-1.5 rounded-md border border-zinc-200 px-3 font-mono text-xs font-semibold uppercase tracking-wider transition-all shadow-sm",
+                "h-9 flex items-center gap-1.5 rounded-xl border border-white/15 px-3 text-[13px] font-medium transition-all shadow-sm",
                 copiedLink
-                  ? "bg-zinc-950 text-white border-zinc-950"
-                  : "bg-white text-zinc-800 hover:bg-zinc-50 hover:border-zinc-300"
+                  ? "bg-white text-black border-white"
+                  : "bg-transparent text-white/90 hover:bg-white/5 hover:border-white/25"
               )}
             >
               {copiedLink ? (
                 <>
                   <Check className="h-3.5 w-3.5 stroke-[2.5]" />
-                  <span>LINK COPIED!</span>
+                  <span>Link copied!</span>
                 </>
               ) : (
                 <>
                   <Copy className="h-3.5 w-3.5" />
-                  <span className="hidden sm:inline">COPY CLIP LINK</span>
-                  <span className="sm:hidden">COPY</span>
+                  <span className="hidden sm:inline">Copy clip link</span>
+                  <span className="sm:hidden">Copy</span>
                 </>
               )}
             </button>
 
             <Link
               href={`/meetings/${meeting.id}`}
-              className="h-9 inline-flex items-center gap-1.5 rounded-md border border-zinc-200 bg-white px-3 font-mono text-xs font-semibold uppercase text-zinc-800 shadow-sm hover:bg-zinc-50 hover:border-zinc-300 transition-all"
+              className="h-9 inline-flex items-center gap-1.5 rounded-xl border border-white/15 bg-surface-raised px-3 text-[13px] font-medium text-white/90 shadow-sm hover:bg-white/5 hover:border-white/25 transition-all"
             >
               <ExternalLink className="h-3.5 w-3.5" />
-              <span className="hidden sm:inline">FULL MEETING</span>
-              <span className="sm:hidden">FULL</span>
+              <span className="hidden sm:inline">Full meeting</span>
+              <span className="sm:hidden">Full</span>
             </Link>
 
             <Link
               href="/"
-              className="h-9 inline-flex items-center gap-1.5 rounded-md bg-zinc-950 px-3.5 font-mono text-xs font-semibold uppercase text-white shadow-sm hover:bg-zinc-800 transition-all"
+              className="h-9 inline-flex items-center gap-1.5 rounded-xl bg-white px-3.5 text-[13px] font-medium text-black shadow-sm hover:bg-white/90 transition-all"
             >
               <Sparkles className="h-3.5 w-3.5" />
-              <span>TRY FATHOM</span>
+              <span>Try Fathom</span>
             </Link>
           </div>
         </div>
@@ -334,29 +334,29 @@ export function PublicClipViewer({
       {/* Main Content Area */}
       <main className="mx-auto flex-1 w-full max-w-7xl px-4 sm:px-6 py-6 sm:py-8 space-y-6">
         {/* Clip Title & Meeting Header */}
-        <div className="space-y-2 border-b border-zinc-200 pb-5">
-          <div className="flex flex-wrap items-center gap-2 font-mono text-xs font-medium">
-            <span className="flex items-center gap-1.5 rounded-md border border-zinc-200 bg-white px-2.5 py-0.5 uppercase text-zinc-950 shadow-sm">
+        <div className="space-y-2 border-b border-white/15 pb-5">
+          <div className="flex flex-wrap items-center gap-2 text-xs font-medium">
+            <span className="flex items-center gap-1.5 rounded-xl border border-white/15 bg-surface-raised px-2.5 py-0.5 text-white shadow-sm">
               <Sparkles className="h-3 w-3" />
-              KEY MOMENT CLIP
+              Key moment clip
             </span>
 
-            <span className="flex items-center gap-1 rounded-md border border-zinc-200 bg-white px-2.5 py-0.5 uppercase text-zinc-700 shadow-sm">
+            <span className="flex items-center gap-1 rounded-xl border border-white/15 bg-surface-raised px-2.5 py-0.5 text-white/80 shadow-sm">
               <Clock className="h-3 w-3" />
               {formatTime(clipDuration)} ({clipDuration}S)
             </span>
 
-            <span className="rounded-md border border-zinc-200 bg-zinc-100 px-2.5 py-0.5 uppercase text-zinc-600">
+            <span className="rounded-xl border border-white/15 bg-white/10 px-2.5 py-0.5 text-white/70">
               {formatTime(clipStart)} – {formatTime(clipEnd)}
             </span>
           </div>
 
-          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-zinc-950">
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-white">
             {displayTitle}
           </h1>
 
-          <p className="font-mono text-xs text-zinc-500 flex flex-wrap items-center gap-x-2 gap-y-1">
-            <span>FROM: <strong className="text-zinc-900 font-semibold">{meeting.title}</strong></span>
+          <p className="text-xs text-white/60 flex flex-wrap items-center gap-x-2 gap-y-1">
+            <span>From: <strong className="text-white font-semibold">{meeting.title}</strong></span>
             <span>•</span>
             <span>{new Date(meeting.date).toLocaleDateString(undefined, {
               weekday: "short",
@@ -373,10 +373,10 @@ export function PublicClipViewer({
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
           {/* Left: Video Player Card */}
           <div className="lg:col-span-7 space-y-4">
-            <div className="rounded-xl border border-zinc-200 bg-zinc-950 shadow-xl shadow-black/[0.04] overflow-hidden">
+            <div className="rounded-2xl border border-white/15 bg-surface-raised overflow-hidden">
               <div
                 ref={playerContainerRef}
-                className="relative aspect-video w-full bg-zinc-950 flex flex-col justify-between overflow-hidden select-none group"
+                className="relative aspect-video w-full bg-black flex flex-col justify-between overflow-hidden select-none group"
               >
                 {/* Media Canvas */}
                 {viewMode === "video" && meeting.videoUrl ? (
@@ -390,7 +390,7 @@ export function PublicClipViewer({
                   />
                 ) : (
                   /* Multi-Speaker Gallery */
-                  <div className="w-full h-full p-4 grid grid-cols-2 sm:grid-cols-3 gap-3 bg-zinc-900">
+                  <div className="w-full h-full p-4 grid grid-cols-2 sm:grid-cols-3 gap-3 bg-black">
                     {clipSpeakers.map((speaker) => {
                       const isActive = activeSpeakerId === speaker.id;
                       const initials = speaker.name
@@ -406,8 +406,8 @@ export function PublicClipViewer({
                           className={cn(
                             "relative rounded-xl border flex flex-col items-center justify-center p-3 transition-all duration-200",
                             isActive
-                              ? "bg-zinc-800 border-zinc-400 text-white ring-2 ring-zinc-400 shadow-md"
-                              : "bg-zinc-950 border-zinc-800 text-zinc-300"
+                              ? "bg-zinc-800 border-zinc-400 text-white ring-2 ring-white/30 shadow-md"
+                              : "bg-black border-zinc-800 text-white/35"
                           )}
                         >
                           <Avatar className="h-12 w-12 sm:h-14 sm:w-14 border border-zinc-700 shadow-sm">
@@ -416,7 +416,7 @@ export function PublicClipViewer({
                             )}
                             <AvatarFallback
                               style={{ backgroundColor: speaker.color || "#27272a" }}
-                              className="font-mono text-xs font-bold text-white"
+                              className="text-xs font-bold text-white"
                             >
                               {initials}
                             </AvatarFallback>
@@ -426,15 +426,15 @@ export function PublicClipViewer({
                             <p className="font-sans text-xs font-medium text-zinc-100 truncate">
                               {speaker.name}
                             </p>
-                            <p className="font-mono text-[9px] uppercase text-zinc-400 truncate">
+                            <p className="text-[9px] text-white/45 truncate">
                               {speaker.role || speaker.company || "Participant"}
                             </p>
                           </div>
 
                           {isActive && (
-                            <div className="absolute bottom-1.5 left-1.5 flex items-center gap-1 rounded-sm border border-zinc-700 bg-zinc-900 px-1.5 py-0.5 font-mono text-[8px] font-semibold text-zinc-200">
+                            <div className="absolute bottom-1.5 left-1.5 flex items-center gap-1 rounded-full border border-white/20 bg-black/70 px-1.5 py-0.5 text-[8px] font-semibold text-white/80">
                               <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                              SPEAKING
+                              Speaking
                             </div>
                           )}
                         </div>
@@ -448,7 +448,7 @@ export function PublicClipViewer({
                   <button
                     type="button"
                     onClick={handleTogglePlay}
-                    className="absolute inset-0 m-auto h-16 w-16 rounded-xl border border-zinc-700 bg-white/95 text-zinc-950 flex items-center justify-center shadow-lg hover:scale-105 active:scale-95 transition-all z-20 cursor-pointer backdrop-blur-sm"
+                    className="absolute inset-0 m-auto h-16 w-16 rounded-xl border border-zinc-700 bg-surface-raised text-white flex items-center justify-center shadow-lg hover:scale-105 active:scale-95 transition-all z-20 cursor-pointer"
                     aria-label="Play Clip"
                   >
                     <Play className="h-7 w-7 fill-zinc-950 translate-x-0.5" />
@@ -456,19 +456,19 @@ export function PublicClipViewer({
                 )}
 
                 {/* Top Overlay Mode Selector */}
-                <div className="absolute top-3 right-3 z-30 flex items-center gap-1 rounded-md border border-zinc-700 bg-zinc-900/90 p-1 backdrop-blur-sm">
+                <div className="absolute top-3 right-3 z-30 flex items-center gap-1 rounded-xl border border-zinc-700 bg-white/90 p-1">
                   <button
                     type="button"
                     onClick={() => setViewMode("gallery")}
                     className={cn(
-                      "flex items-center gap-1 px-2 py-0.5 rounded-sm font-mono text-[10px] font-semibold uppercase transition-colors",
+                      "flex items-center gap-1 px-2 py-0.5 rounded-sm text-[10px] font-semibold transition-colors",
                       viewMode === "gallery"
-                        ? "bg-white text-zinc-950"
-                        : "text-zinc-400 hover:text-white"
+                        ? "bg-white text-black"
+                        : "text-white/45 hover:text-white"
                     )}
                   >
                     <LayoutGrid className="h-3 w-3" />
-                    <span>GALLERY</span>
+                    <span>Gallery</span>
                   </button>
 
                   {meeting.videoUrl && (
@@ -476,23 +476,23 @@ export function PublicClipViewer({
                       type="button"
                       onClick={() => setViewMode("video")}
                       className={cn(
-                        "flex items-center gap-1 px-2 py-0.5 rounded-sm font-mono text-[10px] font-semibold uppercase transition-colors",
+                        "flex items-center gap-1 px-2 py-0.5 rounded-sm text-[10px] font-semibold transition-colors",
                         viewMode === "video"
-                          ? "bg-white text-zinc-950"
-                          : "text-zinc-400 hover:text-white"
+                          ? "bg-white text-black"
+                          : "text-white/45 hover:text-white"
                       )}
                     >
                       <VideoIcon className="h-3 w-3" />
-                      <span>VIDEO</span>
+                      <span>Video</span>
                     </button>
                   )}
                 </div>
 
                 {/* Bottom Player Controls Bar */}
-                <div className="relative z-30 bg-white border-t border-zinc-200 p-3 space-y-2">
+                <div className="relative z-30 bg-black border-t border-white/15 p-3 space-y-2">
                   {/* Bounded Clip Progress Scrubber */}
                   <div
-                    className="group/scrub relative h-2 w-full cursor-pointer rounded-sm bg-zinc-100 border border-zinc-200 hover:h-2.5 transition-all"
+                    className="group/scrub relative h-2 w-full cursor-pointer rounded-sm bg-white/10 border border-white/15 hover:h-2.5 transition-all"
                     onClick={(e) => {
                       const rect = e.currentTarget.getBoundingClientRect();
                       const clickX = Math.max(0, Math.min(rect.width, e.clientX - rect.left));
@@ -503,7 +503,7 @@ export function PublicClipViewer({
                   >
                     {/* Played fill */}
                     <div
-                      className="absolute inset-y-0 left-0 rounded-sm bg-zinc-950"
+                      className="absolute inset-y-0 left-0 rounded-sm bg-white"
                       style={{ width: `${progressPercent}%` }}
                     />
 
@@ -515,12 +515,12 @@ export function PublicClipViewer({
                   </div>
 
                   {/* Buttons & Time row */}
-                  <div className="flex items-center justify-between font-mono text-xs text-zinc-950">
+                  <div className="flex items-center justify-between text-xs text-white">
                     <div className="flex items-center gap-2">
                       <button
                         type="button"
                         onClick={handleTogglePlay}
-                        className="h-8 w-8 flex items-center justify-center rounded-md border border-zinc-200 bg-white shadow-sm hover:bg-zinc-50 active:scale-95 transition-all"
+                        className="h-8 w-8 flex items-center justify-center rounded-xl border border-white/15 bg-surface-raised shadow-sm hover:bg-white/5 active:scale-95 transition-all"
                         title={isPlaying ? "Pause" : "Play"}
                       >
                         {isPlaying ? (
@@ -533,7 +533,7 @@ export function PublicClipViewer({
                       <button
                         type="button"
                         onClick={handleRestart}
-                        className="h-8 w-8 flex items-center justify-center rounded-md border border-zinc-200 bg-white shadow-sm hover:bg-zinc-50 active:scale-95 transition-all"
+                        className="h-8 w-8 flex items-center justify-center rounded-xl border border-white/15 bg-surface-raised shadow-sm hover:bg-white/5 active:scale-95 transition-all"
                         title="Restart Clip"
                       >
                         <RotateCcw className="h-3.5 w-3.5" />
@@ -543,10 +543,10 @@ export function PublicClipViewer({
                         type="button"
                         onClick={() => setIsLooping(!isLooping)}
                         className={cn(
-                          "h-8 w-8 flex items-center justify-center rounded-md border border-zinc-200 font-mono shadow-sm active:scale-95 transition-all",
+                          "h-8 w-8 flex items-center justify-center rounded-xl border border-white/15 shadow-sm active:scale-95 transition-all",
                           isLooping
-                            ? "bg-zinc-950 text-white border-zinc-950"
-                            : "bg-white text-zinc-700 hover:bg-zinc-50"
+                            ? "bg-white text-black border-white"
+                            : "bg-surface-raised text-white/80 hover:bg-white/5"
                         )}
                         title={isLooping ? "Disable Loop" : "Loop Clip"}
                       >
@@ -554,9 +554,9 @@ export function PublicClipViewer({
                       </button>
 
                       {/* Time Readout */}
-                      <span className="font-mono text-xs font-semibold text-zinc-950 ml-1">
+                      <span className="text-xs font-semibold text-white ml-1">
                         {formatTime(Math.max(0, currentTime - clipStart))} / {formatTime(clipDuration)}
-                        <span className="text-zinc-500 ml-1 text-[11px] font-normal">
+                        <span className="text-white/60 ml-1 text-[11px] font-normal">
                           ({formatTime(currentTime)})
                         </span>
                       </span>
@@ -572,7 +572,7 @@ export function PublicClipViewer({
                           const nextRate = rates[(idx + 1) % rates.length];
                           setPlaybackRate(nextRate);
                         }}
-                        className="h-8 px-2 rounded-md border border-zinc-200 bg-white font-mono text-xs font-medium shadow-sm hover:bg-zinc-50 active:scale-95 transition-all"
+                        className="h-8 px-2 rounded-xl border border-white/15 bg-surface-raised text-xs font-medium shadow-sm hover:bg-white/5 active:scale-95 transition-all"
                         title="Change Speed"
                       >
                         {playbackRate}X
@@ -582,7 +582,7 @@ export function PublicClipViewer({
                       <button
                         type="button"
                         onClick={() => setIsMuted(!isMuted)}
-                        className="h-8 w-8 flex items-center justify-center rounded-md border border-zinc-200 bg-white shadow-sm hover:bg-zinc-50 active:scale-95 transition-all"
+                        className="h-8 w-8 flex items-center justify-center rounded-xl border border-white/15 bg-surface-raised shadow-sm hover:bg-white/5 active:scale-95 transition-all"
                         title={isMuted ? "Unmute" : "Mute"}
                       >
                         {isMuted ? (
@@ -596,7 +596,7 @@ export function PublicClipViewer({
                       <button
                         type="button"
                         onClick={handleToggleFullscreen}
-                        className="h-8 w-8 flex items-center justify-center rounded-md border border-zinc-200 bg-white shadow-sm hover:bg-zinc-50 active:scale-95 transition-all"
+                        className="h-8 w-8 flex items-center justify-center rounded-xl border border-white/15 bg-surface-raised shadow-sm hover:bg-white/5 active:scale-95 transition-all"
                         title="Toggle Fullscreen"
                       >
                         {isFullscreen ? (
@@ -612,13 +612,13 @@ export function PublicClipViewer({
             </div>
 
             {/* Attendees / Speakers in Clip Details */}
-            <div className="rounded-xl border border-zinc-200 bg-white p-4 shadow-sm">
-              <div className="flex items-center justify-between mb-3 border-b border-zinc-200 pb-2">
-                <div className="flex items-center gap-2 font-mono text-xs font-semibold uppercase text-zinc-950">
+            <div className="rounded-xl border border-white/15 bg-surface-raised p-4 shadow-sm">
+              <div className="flex items-center justify-between mb-3 border-b border-white/15 pb-2">
+                <div className="flex items-center gap-2 text-[13px] font-medium text-white">
                   <Users className="h-4 w-4" />
-                  <span>SPEAKERS IN THIS CLIP</span>
+                  <span>Speakers in this clip</span>
                 </div>
-                <span className="font-mono text-[11px] text-zinc-500">
+                <span className="text-[11px] text-white/60">
                   {clipSpeakers.length} ATTENDEES PRESENT
                 </span>
               </div>
@@ -627,20 +627,20 @@ export function PublicClipViewer({
                 {clipSpeakers.map((spk) => (
                   <div
                     key={spk.id}
-                    className="flex items-center gap-2.5 rounded-lg border border-zinc-200 bg-zinc-50 p-2 text-xs shadow-sm"
+                    className="flex items-center gap-2.5 rounded-lg border border-white/15 bg-surface-raised p-2 text-xs shadow-sm"
                   >
-                    <Avatar className="h-8 w-8 border border-zinc-200 shrink-0">
+                    <Avatar className="h-8 w-8 border border-white/15 shrink-0">
                       {spk.avatarUrl && <AvatarImage src={spk.avatarUrl} alt={spk.name} />}
                       <AvatarFallback
                         style={{ backgroundColor: spk.color || "#e4e4e7" }}
-                        className="font-mono text-xs font-bold text-zinc-800"
+                        className="text-xs font-bold text-white/90"
                       >
                         {spk.name.slice(0, 2).toUpperCase()}
                       </AvatarFallback>
                     </Avatar>
                     <div className="min-w-0 flex-1">
-                      <p className="font-sans font-medium text-zinc-950 truncate">{spk.name}</p>
-                      <p className="font-mono text-[10px] text-zinc-500 uppercase truncate">
+                      <p className="font-sans font-medium text-white truncate">{spk.name}</p>
+                      <p className="text-[10px] text-white/60 truncate">
                         {spk.role || spk.company || "Attendee"}
                       </p>
                     </div>
@@ -652,31 +652,31 @@ export function PublicClipViewer({
 
           {/* Right: Synchronized Interactive Transcript Panel */}
           <div className="lg:col-span-5 space-y-4">
-            <div className="rounded-xl border border-zinc-200 bg-white shadow-xl shadow-black/[0.04] flex flex-col h-[540px] overflow-hidden">
-              <div className="p-4 border-b border-zinc-200 bg-zinc-50 flex items-center justify-between">
+            <div className="rounded-xl border border-white/15 bg-surface-raised shadow-black/[0.04] flex flex-col h-[540px] overflow-hidden">
+              <div className="p-4 border-b border-white/15 bg-surface-raised flex items-center justify-between">
                 <div>
-                  <h3 className="font-mono text-xs font-bold uppercase text-zinc-950 flex items-center gap-2">
+                  <h3 className="text-xs font-bold text-white flex items-center gap-2">
                     <MessageSquareQuote className="h-4 w-4" />
-                    <span>CLIP TRANSCRIPT // KARAOKE SYNC</span>
+                    <span>Clip transcript · karaoke sync</span>
                   </h3>
-                  <p className="font-mono text-[10px] text-zinc-500 uppercase">
-                    CLICK ANY WORD TO SEEK PLAYBACK
+                  <p className="text-[10px] text-white/60 uppercase">
+                    Click any word to seek playback
                   </p>
                 </div>
-                <span className="rounded-md border border-zinc-200 bg-white px-2 py-0.5 font-mono text-[10px] font-semibold uppercase text-zinc-800 shadow-sm">
-                  LIVE SYNC
+                <span className="rounded-xl border border-white/15 bg-surface-raised px-2 py-0.5 text-[10px] font-semibold text-white/90 shadow-sm">
+                  Live sync
                 </span>
               </div>
 
               {/* Scrollable Transcript Lines */}
               <div
                 ref={transcriptContainerRef}
-                className="flex-1 overflow-y-auto p-4 space-y-3 font-mono text-xs scroll-smooth"
+                className="flex-1 overflow-y-auto p-4 space-y-3 text-xs scroll-smooth"
               >
                 {clipSegments.length === 0 ? (
-                  <div className="flex flex-col items-center justify-center h-full text-center text-zinc-400 p-6">
+                  <div className="flex flex-col items-center justify-center h-full text-center text-white/45 p-6">
                     <MessageSquareQuote className="h-8 w-8 mb-2 stroke-[1.5]" />
-                    <p className="font-medium uppercase text-xs">
+                    <p className="font-medium text-xs">
                       No transcript segments in this interval.
                     </p>
                   </div>
@@ -692,22 +692,22 @@ export function PublicClipViewer({
                         className={cn(
                           "rounded-lg border p-3 transition-colors shadow-sm",
                           isSegmentActive
-                            ? "bg-zinc-50 border-zinc-400 ring-1 ring-zinc-400"
-                            : "bg-white border-zinc-200"
+                            ? "bg-surface-raised border-zinc-400 ring-1 ring-white/30"
+                            : "bg-surface-raised border-white/15"
                         )}
                       >
                         {/* Segment Header */}
                         <div className="flex items-center justify-between mb-2">
                           <div className="flex items-center gap-1.5">
-                            <span className="rounded-sm border border-zinc-200 bg-zinc-100 px-1.5 py-0.2 font-mono text-[9px] font-semibold uppercase text-zinc-700">
-                              {speaker?.name || "SPEAKER"}
+                            <span className="rounded-sm border border-white/15 bg-white/10 px-1.5 py-0.2 text-[9px] font-semibold text-white/80">
+                              {speaker?.name || "Speaker"}
                             </span>
                           </div>
 
                           <button
                             type="button"
                             onClick={() => seekClip(segment.start)}
-                            className="rounded-sm border border-zinc-200 bg-zinc-50 px-1.5 py-0.2 font-mono text-[10px] font-medium text-zinc-700 hover:bg-zinc-100 transition-colors"
+                            className="rounded-sm border border-white/15 bg-surface-raised px-1.5 py-0.2 text-[10px] font-medium text-white/80 hover:bg-white/10 transition-colors"
                             title="Seek to start of segment"
                           >
                             {formatTime(segment.start)}
@@ -715,7 +715,7 @@ export function PublicClipViewer({
                         </div>
 
                         {/* Words with amber karaoke spotlighting */}
-                        <p className="font-sans text-xs font-normal text-zinc-950 leading-relaxed">
+                        <p className="font-sans text-xs font-normal text-white leading-relaxed">
                           {segment.words && segment.words.length > 0 ? (
                             segment.words.map((word, wIdx) => {
                               const isCurrentWord =
@@ -729,8 +729,8 @@ export function PublicClipViewer({
                                   className={cn(
                                     "cursor-pointer rounded-sm px-0.5 py-0.5 transition-colors",
                                     isCurrentWord
-                                      ? "bg-amber-100 text-zinc-950 font-semibold"
-                                      : "hover:bg-zinc-100"
+                                      ? "bg-amber-400/30 text-white font-semibold"
+                                      : "hover:bg-white/10"
                                   )}
                                   title={`Seek to ${formatTime(word.start)}`}
                                 >
@@ -741,7 +741,7 @@ export function PublicClipViewer({
                           ) : (
                             <span
                               onClick={() => seekClip(segment.start)}
-                              className="cursor-pointer hover:bg-zinc-100"
+                              className="cursor-pointer hover:bg-white/10"
                             >
                               {segment.text}
                             </span>
@@ -754,30 +754,30 @@ export function PublicClipViewer({
               </div>
 
               {/* Bottom Quick Seek Action */}
-              <div className="p-3 border-t border-zinc-200 bg-zinc-50 flex items-center justify-between font-mono text-[11px] font-medium text-zinc-700">
-                <span>CLICK WORDS TO SEEK</span>
+              <div className="p-3 border-t border-white/15 bg-surface-raised flex items-center justify-between text-[11px] font-medium text-white/80">
+                <span>Click words to seek</span>
                 <button
                   type="button"
                   onClick={handleRestart}
-                  className="hover:underline flex items-center gap-1 font-semibold text-zinc-950"
+                  className="hover:underline flex items-center gap-1 font-semibold text-white"
                 >
                   <RotateCcw className="h-3 w-3" />
-                  REPLAY FROM START
+                  Replay from start
                 </button>
               </div>
             </div>
 
             {/* Viral CTA Card */}
-            <div className="rounded-xl border border-zinc-200 bg-zinc-950 p-4 shadow-sm space-y-2.5 text-white">
+            <div className="rounded-2xl border border-white/15 bg-surface-raised p-4 space-y-2.5 text-white">
               <div className="flex items-start gap-3">
-                <div className="h-9 w-9 rounded-md border border-zinc-700 bg-zinc-900 flex items-center justify-center text-white shrink-0">
+                <div className="h-9 w-9 rounded-xl border border-white/15 bg-white/10 flex items-center justify-center text-white shrink-0">
                   <ShieldCheck className="h-5 w-5" />
                 </div>
                 <div>
-                  <h4 className="font-mono text-xs font-bold uppercase text-white">
-                    FATHOM WORKSPACE INTELLIGENCE
+                  <h4 className="text-xs font-bold text-white">
+                    Fathom workspace intelligence
                   </h4>
-                  <p className="font-sans text-xs text-zinc-300 leading-snug mt-0.5">
+                  <p className="font-sans text-xs text-white/35 leading-snug mt-0.5">
                     Record, transcribe, highlight, and summarize meeting calls with 100% accuracy and zero AI slop.
                   </p>
                 </div>
@@ -786,16 +786,16 @@ export function PublicClipViewer({
               <div className="flex items-center gap-2 pt-1">
                 <Link
                   href="/"
-                  className="flex-1 h-8 flex items-center justify-center gap-1.5 rounded-md bg-white px-3 font-mono text-xs font-bold uppercase text-zinc-950 shadow-sm hover:bg-zinc-100 active:scale-95 transition-all"
+                  className="flex-1 h-8 flex items-center justify-center gap-1.5 rounded-xl bg-white px-3 text-xs font-bold text-black shadow-sm hover:bg-white/10 active:scale-95 transition-all"
                 >
-                  <span>TRY FATHOM FREE</span>
+                  <span>Try Fathom free</span>
                   <ArrowRight className="h-3.5 w-3.5" />
                 </Link>
                 <Link
                   href={`/meetings/${meeting.id}`}
-                  className="h-8 flex items-center justify-center rounded-md border border-zinc-700 bg-zinc-900 px-3 font-mono text-xs font-semibold uppercase text-white hover:bg-zinc-800 active:scale-95 transition-all"
+                  className="h-8 flex items-center justify-center rounded-xl border border-zinc-700 bg-white px-3 text-[13px] font-medium text-black hover:bg-white/90 active:scale-95 transition-all"
                 >
-                  FULL VIDEO
+                  Full video
                 </Link>
               </div>
             </div>
@@ -804,22 +804,22 @@ export function PublicClipViewer({
       </main>
 
       {/* Guest Footer */}
-      <footer className="border-t border-zinc-200 bg-white py-6 mt-8 font-mono text-xs text-zinc-500">
+      <footer className="border-t border-white/15 bg-surface-raised py-6 mt-8 text-xs text-white/60">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-3">
           <p>© 2026 Fathom AI Inc. Public Guest Clip Player.</p>
-          <div className="flex items-center gap-4 text-xs font-medium text-zinc-700">
-            <Link href="/" className="hover:text-zinc-950">
-              WORKSPACE
+          <div className="flex items-center gap-4 text-xs font-medium text-white/80">
+            <Link href="/" className="hover:text-white">
+              Workspace
             </Link>
-            <Link href={`/meetings/${meeting.id}`} className="hover:text-zinc-950">
-              FULL RECORDING
+            <Link href={`/meetings/${meeting.id}`} className="hover:text-white">
+              Full recording
             </Link>
             <button
               type="button"
               onClick={handleCopyLink}
-              className="hover:text-zinc-950"
+              className="hover:text-white"
             >
-              SHARE LINK
+              Share link
             </button>
           </div>
         </div>

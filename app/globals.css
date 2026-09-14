@@ -1,5 +1,3 @@
-@import url("https://fonts.googleapis.com/css2?family=Instrument+Serif:ital,wght@0,400;1,400&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap");
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -9,33 +7,29 @@
     --background: 0 0% 4%;
     --foreground: 0 0% 98%;
 
-    --font-serif: 'Instrument Serif', Georgia, serif;
-    --font-sans: 'Inter', system-ui, sans-serif;
-    --font-mono: 'JetBrains Mono', monospace;
-
-    --card: 0 0% 7%;
+    --card: 240 10% 8%;
     --card-foreground: 0 0% 98%;
 
-    --popover: 0 0% 7%;
+    --popover: 240 10% 8%;
     --popover-foreground: 0 0% 98%;
 
     --primary: 0 0% 98%;
-    --primary-foreground: 0 0% 9%;
+    --primary-foreground: 0 0% 4%;
 
-    --secondary: 0 0% 12%;
+    --secondary: 240 8% 11%;
     --secondary-foreground: 0 0% 98%;
 
-    --muted: 0 0% 15%;
-    --muted-foreground: 0 0% 65%;
+    --muted: 240 8% 11%;
+    --muted-foreground: 215 16% 57%;
 
-    --accent: 0 0% 15%;
+    --accent: 240 8% 11%;
     --accent-foreground: 0 0% 98%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 0 0% 18%;
-    --input: 0 0% 18%;
+    --border: 0 0% 100% / 0.12;
+    --input: 0 0% 100% / 0.12;
     --ring: 0 0% 98%;
 
     --radius: 1rem;
@@ -46,14 +40,63 @@
   * {
     @apply border-border;
   }
+  html {
+    scroll-padding-top: 96px;
+  }
   body {
-    background-color: #0A0A0A;
-    color: #FFFFFF;
+    background-color: #0a0a0a;
+    color: #ffffff;
+    overflow-x: hidden;
     @apply antialiased selection:bg-white selection:text-black;
   }
 }
 
-/* Signature Expandable Pill CTA Button (From 5G Network Reference Site) */
+@layer components {
+  /* Reference section grammar: edge-to-edge padding, no max-width container. */
+  .section {
+    @apply px-5 py-16 sm:px-8 sm:py-24 md:px-12 md:py-32;
+  }
+  .section-screen {
+    @apply flex min-h-screen flex-col justify-between px-5 pb-12 pt-24 sm:px-8 sm:pt-28 md:px-12 md:pb-16;
+  }
+  .eyebrow {
+    @apply text-[10px] uppercase tracking-[0.15em] text-white/45;
+  }
+  .eyebrow-dark {
+    @apply text-[10px] uppercase tracking-[0.15em] text-black/45;
+  }
+  .display-h1 {
+    @apply font-display text-[34px] font-normal leading-[1.06] tracking-tight sm:text-5xl md:text-6xl lg:text-7xl;
+  }
+  .display-h2 {
+    @apply font-display text-[28px] font-normal leading-[1.08] tracking-tight sm:text-4xl md:text-5xl lg:text-6xl;
+  }
+  .lede {
+    @apply text-sm leading-relaxed sm:text-base;
+  }
+
+  /* Reference card: flat, bordered, inverts to white on hover.
+     Pair with `group` in the markup so the child *-invert-* classes can react. */
+  .card-invert {
+    @apply relative flex h-full flex-col justify-between overflow-hidden rounded-2xl border border-white/15 bg-black p-6 text-white shadow-[0_1px_3px_rgba(0,0,0,0.5)] transition-all duration-500 hover:border-white/60 hover:bg-white hover:text-black hover:shadow-[0_18px_40px_rgba(0,0,0,0.45)] sm:p-7;
+  }
+  .card-invert-muted {
+    @apply text-white/70 transition-colors duration-500 group-hover:text-black/75;
+  }
+  .card-invert-faint {
+    @apply text-white/45 transition-colors duration-500 group-hover:text-black/60;
+  }
+  .card-arrow {
+    @apply h-4 w-4 -rotate-45 transition-transform duration-500 group-hover:translate-x-1 group-hover:-translate-y-1 group-hover:rotate-0;
+  }
+
+  /* Reference numbered row (01 / 02 / 03). */
+  .step-number {
+    @apply text-[11px] tracking-[0.15em] text-white/70;
+  }
+}
+
+/* Expandable pill CTA (reference signature) */
 .cta {
   cursor: pointer;
   border-radius: 9999px;
@@ -84,8 +127,7 @@
   padding: 6px 18px;
   font-size: 12px;
   font-weight: 500;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+  letter-spacing: 0.02em;
   transition: color 0.3s ease;
   position: relative;
 }
@@ -105,53 +147,7 @@
   transform: translate(-3px);
 }
 
-/* Reference Left-Accented Section Tag Badge */
-.section-badge {
-  display: inline-block;
-  border-left: 2px solid #FFFFFF;
-  background-color: rgba(255, 255, 255, 0.12);
-  padding: 4px 12px;
-  font-family: var(--font-mono);
-  font-size: 11px;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  color: #FFFFFF;
-  backdrop-filter: blur(12px);
-}
-
-/* Signature Reference Micro Dotted Divider */
-.micro-divider {
-  display: flex;
-  width: 100%;
-  align-items: center;
-  gap: 6px;
-}
-.micro-divider-dot {
-  height: 4px;
-  width: 4px;
-  flex-shrink: 0;
-  border-radius: 9999px;
-  background-color: rgba(255, 255, 255, 0.25);
-}
-.micro-divider-line {
-  height: 1px;
-  flex: 1;
-  background-color: rgba(255, 255, 255, 0.12);
-}
-
-/* Stipple Underline Effect */
-.stipple-underline {
-  background-image: url("data:image/svg+xml,%3Csvg width='4' height='4' viewBox='0 0 4 4' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='1' cy='2' r='0.8' fill='%23FFFFFF'/%3E%3Ccircle cx='3' cy='1' r='0.6' fill='%23FFFFFF'/%3E%3Ccircle cx='3' cy='3' r='0.5' fill='%23FFFFFF'/%3E%3C/svg%3E");
-  background-repeat: repeat-x;
-  background-size: 4px 3px;
-  height: 3px;
-  transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-  position: absolute;
-  left: 0;
-  bottom: -3px;
-}
-
-/* Sleek thin scrollbars */
+/* Thin scrollbars */
 ::-webkit-scrollbar {
   width: 5px;
   height: 5px;
@@ -160,9 +156,9 @@
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #E4E4E7;
+  background: rgba(255, 255, 255, 0.2);
   border-radius: 2px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #737373;
+  background: rgba(255, 255, 255, 0.4);
 }
