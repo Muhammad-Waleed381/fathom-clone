@@ -14,7 +14,6 @@ import { ActionItemsList } from "@/components/notes/action-items-list";
 import { AskFathomChat } from "@/components/notes/ask-fathom-chat";
 import { HighlightModal } from "@/components/highlights/highlight-modal";
 import { ClipShareModal } from "@/components/highlights/clip-share-modal";
-import { ApiKeysModal } from "@/components/settings/api-keys-modal";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -25,7 +24,6 @@ import {
   Bookmark,
   Copy,
   Check,
-  Settings,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -58,7 +56,6 @@ function MeetingDetailContent() {
 
   const [highlightModalOpen, setHighlightModalOpen] = useState(false);
   const [shareModalOpen, setShareModalOpen] = useState(false);
-  const [settingsModalOpen, setSettingsModalOpen] = useState(false);
 
   const [shareStart, setShareStart] = useState(0);
   const [shareEnd, setShareEnd] = useState(60);
@@ -191,9 +188,6 @@ function MeetingDetailContent() {
               {copiedSummary ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
               {copiedSummary ? "Copied" : "Copy notes"}
             </button>
-            <button type="button" onClick={() => setSettingsModalOpen(true)} aria-label="Settings" className={cn(actionButton, "w-9 justify-center px-0")}>
-              <Settings className="h-4 w-4" />
-            </button>
           </div>
         </div>
 
@@ -263,7 +257,6 @@ function MeetingDetailContent() {
             meeting.summaries?.executive?.overview
           }
         />
-        <ApiKeysModal open={settingsModalOpen} onOpenChange={setSettingsModalOpen} />
       </div>
     </TooltipProvider>
   );

@@ -4,7 +4,7 @@ import { askMeetingQuestion } from "@/lib/openrouter";
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json().catch(() => ({}));
-    const { transcriptText, question, meetingTitle, apiKey: bodyApiKey, model } = body;
+    const { transcriptText, question, meetingTitle } = body;
 
     if (!question || typeof question !== "string" || !question.trim()) {
       return NextResponse.json(
@@ -16,18 +16,11 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Check for API key from headers, body, or server env
-    const headerKey =
-      req.headers.get("x-openrouter-api-key") ||
-      req.headers.get("authorization")?.replace(/^Bearer\s+/i, "");
-    const apiKey = headerKey || bodyApiKey;
 
     const result = await askMeetingQuestion({
       transcriptText: transcriptText || "",
       question: question.trim(),
       meetingTitle: meetingTitle || "Meeting Recording",
-      apiKey,
-      model,
     });
 
     return NextResponse.json({

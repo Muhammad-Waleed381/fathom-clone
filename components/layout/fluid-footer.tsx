@@ -1,9 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ApiKeysModal } from "@/components/settings/api-keys-modal";
 
 const COLUMNS = [
   {
@@ -28,14 +27,13 @@ const linkClass =
 
 export function FluidFooter() {
   const pathname = usePathname();
-  const [settingsOpen, setSettingsOpen] = useState(false);
 
   if (pathname.startsWith("/share")) return null;
 
   return (
     <footer className="relative z-10 overflow-hidden bg-black text-white">
       <div className="section pb-10 md:pb-12">
-        <div className="grid grid-cols-2 gap-10 border-t border-white/15 pt-12 md:grid-cols-4">
+        <div className="grid grid-cols-2 gap-10 border-t border-white/15 pt-12 md:grid-cols-3">
           {COLUMNS.map((col) => (
             <div key={col.label}>
               <span className="eyebrow">{col.label}</span>
@@ -50,17 +48,6 @@ export function FluidFooter() {
               </ul>
             </div>
           ))}
-
-          <div>
-            <span className="eyebrow">Settings</span>
-            <ul className="mt-5 flex flex-col gap-3">
-              <li>
-                <button type="button" onClick={() => setSettingsOpen(true)} className={linkClass}>
-                  API keys
-                </button>
-              </li>
-            </ul>
-          </div>
 
           <div>
             <span className="eyebrow">Contact</span>
@@ -88,7 +75,6 @@ export function FluidFooter() {
         </span>
       </div>
 
-      <ApiKeysModal open={settingsOpen} onOpenChange={setSettingsOpen} />
     </footer>
   );
 }

@@ -5,13 +5,8 @@ import { SummaryTemplateId } from "@/types/meeting";
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json().catch(() => ({}));
-    const { transcriptText, template = "executive", meetingTitle, apiKey: bodyApiKey, model } = body;
+    const { transcriptText, template = "executive", meetingTitle } = body;
 
-    // Check for API key from headers, body, or server env
-    const headerKey =
-      req.headers.get("x-openrouter-api-key") ||
-      req.headers.get("authorization")?.replace(/^Bearer\s+/i, "");
-    const apiKey = headerKey || bodyApiKey;
 
     const validTemplate: SummaryTemplateId = [
       "executive",
@@ -26,8 +21,6 @@ export async function POST(req: NextRequest) {
       transcriptText: transcriptText || "",
       template: validTemplate,
       meetingTitle: meetingTitle || "Meeting Recording",
-      apiKey,
-      model,
     });
 
     return NextResponse.json({

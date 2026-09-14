@@ -6,6 +6,11 @@ export const DEFAULT_OPENROUTER_MODEL = "nex-agi/nex-n2.5-pro:free";
  * Free-tier models can queue for many minutes; without a deadline the recorder
  * would hang. Past this the callers fall through to the local fallback.
  */
+/** Model comes from the server environment; falls back to a known free model. */
+export function resolveOpenRouterModel(): string {
+  return process.env.OPENROUTER_MODEL?.trim() || DEFAULT_OPENROUTER_MODEL;
+}
+
 export const OPENROUTER_TIMEOUT_MS = Number(process.env.OPENROUTER_TIMEOUT_MS || 45000);
 
 function withTimeout(ms: number) {
@@ -730,19 +735,14 @@ export async function generateMeetingSummary({
   transcriptText,
   template,
   meetingTitle,
-  apiKey,
-  model = DEFAULT_OPENROUTER_MODEL,
+  model = resolveOpenRouterModel(),
 }: {
   transcriptText: string;
   template: SummaryTemplateId;
   meetingTitle?: string;
-  apiKey?: string;
   model?: string;
 }): Promise<SummaryResult> {
-  const activeKey =
-    apiKey ||
-    process.env.OPENROUTER_API_KEY ||
-    process.env.NEXT_PUBLIC_OPENROUTER_API_KEY;
+  const activeKey = process.env.OPENROUTER_API_KEY;
 
   if (!activeKey) {
     return {
@@ -856,19 +856,14 @@ export async function askMeetingQuestion({
   transcriptText,
   question,
   meetingTitle,
-  apiKey,
-  model = DEFAULT_OPENROUTER_MODEL,
+  model = resolveOpenRouterModel(),
 }: {
   transcriptText: string;
   question: string;
   meetingTitle?: string;
-  apiKey?: string;
   model?: string;
 }): Promise<AskFathomResult> {
-  const activeKey =
-    apiKey ||
-    process.env.OPENROUTER_API_KEY ||
-    process.env.NEXT_PUBLIC_OPENROUTER_API_KEY;
+  const activeKey = process.env.OPENROUTER_API_KEY;
 
   if (!activeKey) {
     const fallback = generateFallbackAnswer(question, transcriptText, meetingTitle);

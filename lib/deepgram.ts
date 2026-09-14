@@ -8,7 +8,6 @@ export const DEEPGRAM_API_URL =
 export interface TranscribeOptions {
   buffer: Buffer | ArrayBuffer;
   mimeType?: string;
-  apiKey?: string;
 }
 
 export interface TranscriptionResponse {
@@ -226,13 +225,9 @@ function isRetryable(status: number) {
 export async function transcribeAudioWithDeepgram({
   buffer,
   mimeType = "audio/wav",
-  apiKey,
   allowFallback = false,
 }: TranscribeOptions & { allowFallback?: boolean }): Promise<TranscriptionResponse> {
-  const activeKey =
-    apiKey ||
-    process.env.DEEPGRAM_API_KEY ||
-    process.env.NEXT_PUBLIC_DEEPGRAM_API_KEY;
+  const activeKey = process.env.DEEPGRAM_API_KEY;
 
   if (!activeKey) {
     console.info("Deepgram API key not provided: using intelligent diarized fallback mock.");

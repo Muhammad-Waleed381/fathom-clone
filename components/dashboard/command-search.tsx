@@ -21,7 +21,6 @@ import {
   Search,
   Video,
   ListTodo,
-  Settings,
   Sparkles,
   Play,
   ArrowRight,
@@ -32,13 +31,11 @@ import { cn } from "@/lib/utils";
 export interface CommandSearchProps {
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
-  onOpenSettings?: () => void;
 }
 
 export function CommandSearch({
   open: controlledOpen,
   onOpenChange: controlledOnOpenChange,
-  onOpenSettings,
 }: CommandSearchProps) {
   const router = useRouter();
   const [internalOpen, setInternalOpen] = useState(false);
@@ -329,26 +326,6 @@ export function CommandSearch({
                     <ArrowRight className="h-3.5 w-3.5 text-white/45" />
                   </CommandItem>
 
-                  <CommandItem
-                    onSelect={() => {
-                      setIsOpen(false);
-                      if (onOpenSettings) onOpenSettings();
-                    }}
-                    className="flex items-center justify-between rounded-xl border border-transparent px-3 py-2 text-xs font-medium text-white cursor-pointer hover:bg-white/5 hover:border-white/15/70 data-[selected=true]:bg-white/10 data-[selected=true]:border-white/15 mb-1 transition-colors"
-                  >
-                    <div className="flex items-center gap-2.5">
-                      <div className="flex h-7 w-7 items-center justify-center rounded-xl border border-white/15 bg-surface-raised text-white">
-                        <Settings className="h-3.5 w-3.5" />
-                      </div>
-                      <div>
-                        <p className="font-semibold text-white">AI & API Settings</p>
-                        <p className="text-[10px] text-white/60">
-                          OpenRouter & Deepgram Nova-2 keys
-                        </p>
-                      </div>
-                    </div>
-                    <ArrowRight className="h-3.5 w-3.5 text-white/45" />
-                  </CommandItem>
                 </CommandGroup>
 
                 <CommandSeparator className="my-2 bg-white/15 h-px" />

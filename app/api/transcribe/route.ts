@@ -32,12 +32,6 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Extract API key from headers or request form data or server env
-    const headerKey =
-      req.headers.get("x-deepgram-api-key") ||
-      req.headers.get("authorization")?.replace(/^(?:Token|Bearer)\s+/i, "");
-    const formKey = formData.get("apiKey") as string | null;
-    const apiKey = headerKey || formKey || undefined;
 
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
@@ -47,7 +41,6 @@ export async function POST(req: NextRequest) {
     const result = await transcribeAudioWithDeepgram({
       buffer,
       mimeType: file.type || "audio/wav",
-      apiKey,
       allowFallback,
     });
 

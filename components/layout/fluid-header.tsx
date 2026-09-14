@@ -14,9 +14,8 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { CommandSearch } from "@/components/dashboard/command-search";
 import { MeetingRecorderModal } from "@/components/record/meeting-recorder-modal";
-import { ApiKeysModal } from "@/components/settings/api-keys-modal";
 import { FathomLogo } from "@/components/ui/fathom-logo";
-import { Search, Settings, ChevronDown, Check, Plus, Mic } from "lucide-react";
+import { Search, ChevronDown, Check, Plus, Mic } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const WORKSPACES = ["Acme Engineering", "Product & Design", "Enterprise Sales"];
@@ -33,7 +32,6 @@ export function FluidHeader() {
   const [currentWorkspace, setCurrentWorkspace] = useState("Acme Engineering");
   const [searchOpen, setSearchOpen] = useState(false);
   const [recorderOpen, setRecorderOpen] = useState(false);
-  const [settingsOpen, setSettingsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
   // Reference behavior: transparent over the hero, becomes a pill once scrolled.
@@ -162,15 +160,6 @@ export function FluidHeader() {
               </span>
             </button>
 
-            <button
-              type="button"
-              onClick={() => setSettingsOpen(true)}
-              aria-label="Settings"
-              className="flex h-8 w-8 items-center justify-center rounded-full border border-white/20 bg-white/10 text-white/80 backdrop-blur-md transition-colors hover:bg-white/15 hover:text-white"
-            >
-              <Settings className="h-3.5 w-3.5" />
-            </button>
-
             <Avatar className="h-8 w-8 rounded-full border border-white/25">
               <AvatarImage
                 src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&h=150&fit=crop&crop=face"
@@ -184,13 +173,8 @@ export function FluidHeader() {
         </div>
       </header>
 
-      <CommandSearch
-        open={searchOpen}
-        onOpenChange={setSearchOpen}
-        onOpenSettings={() => setSettingsOpen(true)}
-      />
+      <CommandSearch open={searchOpen} onOpenChange={setSearchOpen} />
       <MeetingRecorderModal open={recorderOpen} onOpenChange={setRecorderOpen} />
-      <ApiKeysModal open={settingsOpen} onOpenChange={setSettingsOpen} />
     </>
   );
 }

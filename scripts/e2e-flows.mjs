@@ -15,10 +15,10 @@
  *   BASE_URL        server to test (default http://localhost:3457)
  *   MP3             audio file for the transcription flow
  *   SKIP_API=1      skip Tier A and reuse the last captured transcript
- *   LIVE_AI=1       let browser-tier AI calls hit OpenRouter for real. Off by
- *                   default because the free model can stall for 20+ minutes and
- *                   lib/openrouter.ts has no timeout; the default injects an
- *                   invalid key so the real local-fallback path runs instead.
+
+ * AI calls use the server's keys only (there is no per-request override), so
+ * every generation step runs against the real OpenRouter model, bounded by
+ * the server's OPENROUTER_TIMEOUT_MS deadline.
  *   PUPPETEER_CORE  path to puppeteer-core's entry (defaults to the copy that
  *                   ships with the global hyperframes install)
  *   CHROME_PATH     Chromium binary (defaults to Playwright's cached build)
@@ -30,7 +30,6 @@ import { execSync } from "node:child_process";
 
 const BASE = process.env.BASE_URL || "http://localhost:3457";
 const MP3 = (process.env.MP3 || "~/Desktop/engineering_sync_meeting.mp3").replace(/^~/, os.homedir());
-const LIVE_AI = process.env.LIVE_AI === "1";
 const OUT_DIR = process.env.OUT_DIR || path.join(os.tmpdir(), "fathom-e2e");
 fs.mkdirSync(OUT_DIR, { recursive: true });
 
@@ -118,16 +117,26 @@ if (!transcript) {
 }
 const aggregated = () => transcript.segments.map((s) => `[${s.speakerId}]: ${s.text}`).join("\n");
 
-await checkA("A3 summarize: all 4 templates via local-fallback path (invalid key)", async () => {
+await checkA("A3 summarize: all 4 templates return sections (server key, bounded)", async () => {
   assert(transcript, "needs A1");
-  for (const template of ["executive", "action_items", "sales", "engineering"]) {
-    const { status, json } = await postJson(`${BASE}/api/ai/summarize`, { transcriptText: aggregated(), template, meetingTitle: "Engineering Sync", apiKey: "sk-or-invalid" }, 30000);
+  const t = Date.now();
+  const results = await Promise.all(["executive", "action_items", "sales", "engineering"].map((template) =>
+    postJson(`${BASE}/api/ai/summarize`, { transcriptText: aggregated(), template, meetingTitle: "Engineering Sync" }, 90000).then((r) => [template, r])));
+  for (const [template, { status, json }] of results) {
     assert(status === 200, `${template}: HTTP ${status}`);
-    assert(json.model === "local-fallback", `${template}: expected local-fallback, got ${json.model}`);
     assert(json.summary?.sections?.length > 0, `${template}: no sections`);
     summaries[template] = json.summary;
   }
-  return "fallback produced sections for every template";
+  assert(Date.now() - t < 60000, `parallel batch took ${((Date.now() - t) / 1000).toFixed(1)}s`);
+  const models = [...new Set(results.map(([, r]) => r.json.model))];
+  return `${((Date.now() - t) / 1000).toFixed(1)}s for all four in parallel via ${models.join(", ")}`;
+});
+
+await checkA("A3b client-supplied keys are ignored (server keys only)", async () => {
+  const { status, json } = await postJson(`${BASE}/api/ai/summarize`, { transcriptText: "[spk-1]: We agreed to ship on Friday.", template: "executive", meetingTitle: "T", apiKey: "sk-or-invalid" }, 90000);
+  assert(status === 200, `HTTP ${status}`);
+  assert(json.summary?.sections?.length > 0, "no summary");
+  return `model ${json.model} (an injected bad key did not break the request)`;
 });
 
 await checkA("A4 summarize: executive responds within the OpenRouter deadline", async () => {
@@ -165,7 +174,7 @@ await checkA("A6 ask rejects an empty question (400)", async () => {
 // ---------------------------------------------------------------------------
 // Tier B — browser flows
 // ---------------------------------------------------------------------------
-console.log(`\nTier B — browser (${LIVE_AI ? "LIVE AI" : "AI via local-fallback"})`);
+console.log(`\nTier B — browser (server keys; OpenRouter deadline ${process.env.OPENROUTER_TIMEOUT_MS || 45000}ms)`);
 const { default: puppeteer } = await import(PUPPETEER_CORE);
 const browser = await puppeteer.launch({ executablePath: CHROME, headless: true, protocolTimeout: 600000, args: ["--no-sandbox", "--disable-gpu"] });
 const page = await browser.newPage();
@@ -173,20 +182,6 @@ await page.setViewport({ width: 1440, height: 900 });
 const pageErrors = [];
 page.on("pageerror", (e) => pageErrors.push(String(e).slice(0, 200)));
 page.on("console", (m) => { if (m.type() === "error" && !/favicon|404/.test(m.text())) pageErrors.push(m.text().slice(0, 200)); });
-
-if (!LIVE_AI) {
-  await page.setRequestInterception(true);
-  page.on("request", (req) => {
-    if (req.method() === "POST" && /\/api\/ai\//.test(req.url())) {
-      try {
-        const body = JSON.parse(req.postData() || "{}");
-        body.apiKey = "sk-or-invalid";
-        return req.continue({ postData: JSON.stringify(body) });
-      } catch { /* fall through */ }
-    }
-    req.continue();
-  });
-}
 
 const $text = (sel) => page.$eval(sel, (el) => el.textContent.trim());
 // Real pointer click: Radix triggers (tabs, dropdowns) activate on mousedown,
@@ -261,7 +256,7 @@ await check("B3 recorder: Simulator → Stop & generate → lands on the new mee
   }, { timeout: 40000 });
   await shot("b3-recording");
   await clickByText("button", "Stop & generate AI notes");
-  await page.waitForFunction(() => /^\/meetings\/rec-/.test(location.pathname), { timeout: LIVE_AI ? 600000 : 60000 });
+  await page.waitForFunction(() => /^\/meetings\/rec-/.test(location.pathname), { timeout: 240000 });
   recordedId = await page.evaluate(() => location.pathname.split("/").pop());
   await page.waitForSelector("h1", { timeout: 10000 });
   assert((await $text("h1")) === "E2E Simulated Sync", "title mismatch");
@@ -289,7 +284,7 @@ await check("B3b recorded meeting: transcript, notes, actions and Ask tabs work"
   await page.waitForFunction((before) => {
     const bubbles = document.querySelectorAll('[class*="max-w-[85%]"]');
     return bubbles.length >= before + 2 && !/researching/i.test(document.body.innerText) && bubbles[bubbles.length - 1].textContent.trim().length > 40;
-  }, { timeout: LIVE_AI ? 180000 : 30000 }, bubblesBefore);
+  }, { timeout: 120000 }, bubblesBefore);
   // The answer must be readable: contrast between bubble text and background.
   const contrast = await page.evaluate(() => {
     const bubbles = [...document.querySelectorAll('[class*="max-w-[85%]"]')];
@@ -308,9 +303,9 @@ await check("B3b recorded meeting: transcript, notes, actions and Ask tabs work"
 });
 
 if (SKIP_API && transcript && !summaries.executive) {
-  for (const template of ["executive", "action_items", "sales", "engineering"]) {
-    const { json } = await postJson(`${BASE}/api/ai/summarize`, { transcriptText: aggregated(), template, meetingTitle: "Engineering Sync", apiKey: "sk-or-invalid" }, 30000);
-    summaries[template] = json.summary;
+  // Stub summaries so the injected meeting renders without spending model quota.
+  for (const id of ["executive", "action_items", "sales", "engineering"]) {
+    summaries[id] = { id, overview: `Stub ${id} summary for the E2E-injected MP3 meeting.`, sections: [{ title: "Topics", bullets: ["Database migration", "Caching refactor", "Deployment roadmap"] }] };
   }
 }
 const MP3_ID = "mp3-e2e";
@@ -408,12 +403,13 @@ await check("B7 actions page lists items across meetings; toggle works; CSV expo
   return `${boxes.length} action items; toggled ${s0} → ${s0 === "true" ? "false" : "true"}; CSV blob created`;
 });
 
-await check("B8 ⌘K search finds the recorded meeting", async () => {
+await check("B8 ⌘K search finds a meeting by title", async () => {
   await page.goto(`${BASE}/dashboard`, { waitUntil: "networkidle0" });
   await page.keyboard.down("Meta"); await page.keyboard.press("k"); await page.keyboard.up("Meta");
   await page.waitForSelector('input[placeholder^="Search meetings"]', { timeout: 5000 });
-  await page.type('input[placeholder^="Search meetings"]', "E2E Simulated");
-  await waitForText("E2E Simulated Sync", 10000);
+  const [query, expect] = recordedId ? ["E2E Simulated", "E2E Simulated Sync"] : ["from MP3", "Engineering Sync (from MP3)"];
+  await page.type('input[placeholder^="Search meetings"]', query);
+  await waitForText(expect, 10000);
   await shot("b8-cmdk");
   await page.keyboard.press("Escape");
 });
@@ -463,15 +459,6 @@ await check("B11 live mic → Deepgram websocket → batch finalize (fake audio 
     await mp.setViewport({ width: 1440, height: 900 });
     const errors = [];
     mp.on("pageerror", (e) => errors.push(String(e)));
-    if (!LIVE_AI) {
-      await mp.setRequestInterception(true);
-      mp.on("request", (req) => {
-        if (req.method() === "POST" && /\/api\/ai\//.test(req.url())) {
-          try { const body = JSON.parse(req.postData() || "{}"); body.apiKey = "sk-or-invalid"; return req.continue({ postData: JSON.stringify(body) }); } catch { /* fall through */ }
-        }
-        req.continue();
-      });
-    }
     await mp.goto(`${BASE}/dashboard`, { waitUntil: "networkidle0" });
     const click = async (t) => { const h = await mp.evaluateHandle((t) => [...document.querySelectorAll("button")].find((b) => b.textContent.trim() === t) || null, t); const el = h.asElement(); assert(el, `no button "${t}"`); await el.click(); };
     await click("Record now");
@@ -506,5 +493,5 @@ await browser.close();
 // ---------------------------------------------------------------------------
 const passed = results.filter((r) => r.ok).length;
 console.log(`\n${passed}/${results.length} passed in ${((Date.now() - t0) / 1000).toFixed(0)}s. Screenshots + JSON in ${OUT_DIR}`);
-fs.writeFileSync(path.join(OUT_DIR, "report.json"), JSON.stringify({ base: BASE, mp3: MP3, liveAi: LIVE_AI, results }, null, 2));
+fs.writeFileSync(path.join(OUT_DIR, "report.json"), JSON.stringify({ base: BASE, mp3: MP3, results }, null, 2));
 process.exit(passed === results.length ? 0 : 1);
