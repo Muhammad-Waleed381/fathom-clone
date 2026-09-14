@@ -9,70 +9,75 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { ApiKeysModal } from "@/components/settings/api-keys-modal";
-import { Github, Linkedin, Mail, FileText, MapPin } from "lucide-react";
+import { Terminal, Layers, Mail, FileText, MapPin } from "lucide-react";
 
 export function FluidFooter() {
   const [apiModalOpen, setApiModalOpen] = useState(false);
+  const [copiedFeedback, setCopiedFeedback] = useState(false);
+
+  const handleCopyFeedbackEmail = () => {
+    if (typeof navigator !== "undefined" && navigator.clipboard) {
+      navigator.clipboard.writeText("support@fathom.internal");
+      setCopiedFeedback(true);
+      setTimeout(() => setCopiedFeedback(false), 2000);
+    }
+  };
 
   return (
     <TooltipProvider delayDuration={150}>
       <footer className="w-full py-12 px-4 sm:px-6 lg:px-8 font-mono">
         <div className="mx-auto max-w-6xl flex flex-col items-center gap-6">
-          {/* Floating Icon Dock matching user reference */}
+          {/* Floating Product Dock matching user reference (No social links, pure product placeholders) */}
           <div className="rounded-2xl border border-[#E4E4E7] bg-white/80 backdrop-blur-xl px-7 py-3 shadow-xs hover:border-[#0B0B0B]/40 transition-all flex items-center justify-center gap-7 sm:gap-9">
-            {/* 1. GitHub */}
+            {/* 1. Core Engine Placeholder */}
             <Tooltip>
               <TooltipTrigger asChild>
-                <a
-                  href="https://github.com/Muhammad-Waleed381/fathom-clone"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-[#737373] hover:text-[#0B0B0B] transition-all hover:scale-115 cursor-pointer focus:outline-none p-1"
-                  aria-label="GitHub Repository"
+                <div
+                  className="text-[#737373] hover:text-[#0B0B0B] transition-all hover:scale-115 cursor-default p-1"
+                  aria-label="Engine Core"
                 >
-                  <Github className="h-4 w-4 sm:h-[18px] sm:w-[18px]" />
-                </a>
+                  <Terminal className="h-4 w-4 sm:h-[18px] sm:w-[18px]" />
+                </div>
               </TooltipTrigger>
               <TooltipContent side="top" className="font-mono text-[10px] uppercase tracking-wider rounded-lg">
-                GitHub Repository
+                Engine: Nova-2 · v2.4.0
               </TooltipContent>
             </Tooltip>
 
-            {/* 2. LinkedIn */}
+            {/* 2. Workspace Matrix / Action Hub */}
             <Tooltip>
               <TooltipTrigger asChild>
-                <a
-                  href="https://linkedin.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <Link
+                  href="/actions"
                   className="text-[#737373] hover:text-[#0B0B0B] transition-all hover:scale-115 cursor-pointer focus:outline-none p-1"
-                  aria-label="LinkedIn"
+                  aria-label="Workspace Actions Matrix"
                 >
-                  <Linkedin className="h-4 w-4 sm:h-[18px] sm:w-[18px]" />
-                </a>
+                  <Layers className="h-4 w-4 sm:h-[18px] sm:w-[18px]" />
+                </Link>
               </TooltipTrigger>
               <TooltipContent side="top" className="font-mono text-[10px] uppercase tracking-wider rounded-lg">
-                LinkedIn Network
+                Action Items Matrix
               </TooltipContent>
             </Tooltip>
 
-            {/* 3. Mail */}
+            {/* 3. Internal Feedback Placeholder */}
             <Tooltip>
               <TooltipTrigger asChild>
-                <a
-                  href="mailto:support@fathom-clone.app"
+                <button
+                  type="button"
+                  onClick={handleCopyFeedbackEmail}
                   className="text-[#737373] hover:text-[#0B0B0B] transition-all hover:scale-115 cursor-pointer focus:outline-none p-1"
-                  aria-label="Email Support"
+                  aria-label="Workspace Inquiries"
                 >
                   <Mail className="h-4 w-4 sm:h-[18px] sm:w-[18px]" />
-                </a>
+                </button>
               </TooltipTrigger>
               <TooltipContent side="top" className="font-mono text-[10px] uppercase tracking-wider rounded-lg">
-                Contact & Support
+                {copiedFeedback ? "Email Copied!" : "Inquiries: support@fathom.internal"}
               </TooltipContent>
             </Tooltip>
 
-            {/* 4. Document / API */}
+            {/* 4. Document / API Keys Modal */}
             <Tooltip>
               <TooltipTrigger asChild>
                 <button
@@ -85,11 +90,11 @@ export function FluidFooter() {
                 </button>
               </TooltipTrigger>
               <TooltipContent side="top" className="font-mono text-[10px] uppercase tracking-wider rounded-lg">
-                API & Model Settings
+                API Keys & Documentation
               </TooltipContent>
             </Tooltip>
 
-            {/* 5. Location Pin */}
+            {/* 5. Location / Platform Region Placeholder */}
             <Tooltip>
               <TooltipTrigger asChild>
                 <div
@@ -100,7 +105,7 @@ export function FluidFooter() {
                 </div>
               </TooltipTrigger>
               <TooltipContent side="top" className="font-mono text-[10px] uppercase tracking-wider rounded-lg">
-                Region: us-east-1
+                Cluster Region: us-east-1
               </TooltipContent>
             </Tooltip>
           </div>
