@@ -47,7 +47,7 @@ export const TranscriptSegment = React.forwardRef<HTMLDivElement, TranscriptSegm
         data-segment-id={segment.id}
         data-speaker-id={segment.speakerId}
         className={cn(
- "relative rounded-full p-3.5 transition-colors duration-150 border text-left",
+ "relative rounded-2xl p-3.5 transition-colors duration-150 border text-left",
           isActiveSegment
             ? "bg-amber-500/10/60 border-amber-500/30 shadow-sm"
             : "bg-surface-raised border-white/15 hover:border-white/25",

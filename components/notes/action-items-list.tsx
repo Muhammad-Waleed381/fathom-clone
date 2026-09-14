@@ -243,7 +243,7 @@ export function ActionItemsList({
       {/* Items list */}
       <div className="space-y-2.5">
         {filteredItems.length === 0 ? (
-          <div className="py-8 text-center text-xs font-medium text-white/60 border border-dashed border-white/15 rounded-full bg-surface-raised">
+          <div className="py-8 text-center text-xs font-medium text-white/60 border border-dashed border-white/15 rounded-2xl bg-surface-raised">
             {filter === "completed"
               ? "No completed action items yet."
               : filter === "pending"
@@ -263,7 +263,7 @@ export function ActionItemsList({
               <Card
                 key={item.id}
                 className={cn(
- "p-3 rounded-full border border-white/15 transition-all group",
+ "p-3 rounded-2xl border border-white/15 transition-all group",
                   item.completed
                     ? "bg-surface-raised opacity-75 shadow-none"
                     : "bg-white shadow-sm hover:shadow-md hover:shadow-black/[0.04]",

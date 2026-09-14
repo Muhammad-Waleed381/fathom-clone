@@ -418,7 +418,7 @@ export function TranscriptViewer({ className, onClipCreated }: TranscriptViewerP
                   </span>
                 </div>
 
-                <p className="text-xs text-white/80 bg-white/5 p-2.5 rounded-full border border-white/10 italic line-clamp-3">
+                <p className="text-xs text-white/80 bg-white/5 p-2.5 rounded-2xl border border-white/10 italic line-clamp-3">
                   &ldquo;{selectionData.text}&rdquo;
                 </p>
 
