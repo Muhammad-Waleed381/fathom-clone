@@ -25,95 +25,88 @@ export function FluidFooter() {
 
   return (
     <TooltipProvider delayDuration={150}>
-      <footer className="w-full py-12 px-4 sm:px-6 lg:px-8 font-mono">
-        <div className="mx-auto max-w-6xl flex flex-col items-center gap-6">
-          {/* Floating Product Dock matching user reference (No social links, pure product placeholders) */}
-          <div className="rounded-2xl border border-[#E4E4E7] bg-white/80 backdrop-blur-xl px-7 py-3 shadow-xs hover:border-[#0B0B0B]/40 transition-all flex items-center justify-center gap-7 sm:gap-9">
-            {/* 1. Core Engine Placeholder */}
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <div
-                  className="text-[#737373] hover:text-[#0B0B0B] transition-all hover:scale-115 cursor-default p-1"
-                  aria-label="Engine Core"
-                >
-                  <Terminal className="h-4 w-4 sm:h-[18px] sm:w-[18px]" />
-                </div>
-              </TooltipTrigger>
-              <TooltipContent side="top" className="font-mono text-[10px] uppercase tracking-wider rounded-lg">
-                Engine: Nova-2 · v2.4.0
-              </TooltipContent>
-            </Tooltip>
+      <footer className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 pointer-events-auto">
+        {/* Floating Product Dock matching user reference image uploaded_media_1789361326782.png */}
+        <div className="rounded-2xl border border-white/20 bg-[#0C0C0C]/85 backdrop-blur-2xl px-6 py-2.5 shadow-[0_12px_40px_rgba(0,0,0,0.8)] flex items-center justify-center gap-6 sm:gap-8 text-white transition-all hover:border-white/40">
+          {/* 1. Core Engine Placeholder */}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div
+                className="text-white/70 hover:text-white transition-all hover:scale-110 cursor-default p-1"
+                aria-label="Engine Core"
+              >
+                <Terminal className="h-4 w-4 sm:h-[18px] sm:w-[18px]" />
+              </div>
+            </TooltipTrigger>
+            <TooltipContent side="top" className="font-mono text-[10px] uppercase tracking-wider rounded-xl border border-white/20 bg-[#121212] text-white shadow-xl">
+              Engine: Nova-2 · v2.4.0
+            </TooltipContent>
+          </Tooltip>
 
-            {/* 2. Workspace Matrix / Action Hub */}
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Link
-                  href="/actions"
-                  className="text-[#737373] hover:text-[#0B0B0B] transition-all hover:scale-115 cursor-pointer focus:outline-none p-1"
-                  aria-label="Workspace Actions Matrix"
-                >
-                  <Layers className="h-4 w-4 sm:h-[18px] sm:w-[18px]" />
-                </Link>
-              </TooltipTrigger>
-              <TooltipContent side="top" className="font-mono text-[10px] uppercase tracking-wider rounded-lg">
-                Action Items Matrix
-              </TooltipContent>
-            </Tooltip>
+          {/* 2. Workspace Matrix / Action Hub */}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Link
+                href="/actions"
+                className="text-white/70 hover:text-white transition-all hover:scale-110 cursor-pointer focus:outline-none p-1"
+                aria-label="Workspace Actions Matrix"
+              >
+                <Layers className="h-4 w-4 sm:h-[18px] sm:w-[18px]" />
+              </Link>
+            </TooltipTrigger>
+            <TooltipContent side="top" className="font-mono text-[10px] uppercase tracking-wider rounded-xl border border-white/20 bg-[#121212] text-white shadow-xl">
+              Action Items Matrix
+            </TooltipContent>
+          </Tooltip>
 
-            {/* 3. Internal Feedback Placeholder */}
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <button
-                  type="button"
-                  onClick={handleCopyFeedbackEmail}
-                  className="text-[#737373] hover:text-[#0B0B0B] transition-all hover:scale-115 cursor-pointer focus:outline-none p-1"
-                  aria-label="Workspace Inquiries"
-                >
-                  <Mail className="h-4 w-4 sm:h-[18px] sm:w-[18px]" />
-                </button>
-              </TooltipTrigger>
-              <TooltipContent side="top" className="font-mono text-[10px] uppercase tracking-wider rounded-lg">
-                {copiedFeedback ? "Email Copied!" : "Inquiries: support@fathom.internal"}
-              </TooltipContent>
-            </Tooltip>
+          {/* 3. Internal Feedback Placeholder */}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button
+                type="button"
+                onClick={handleCopyFeedbackEmail}
+                className="text-white/70 hover:text-white transition-all hover:scale-110 cursor-pointer focus:outline-none p-1"
+                aria-label="Workspace Inquiries"
+              >
+                <Mail className="h-4 w-4 sm:h-[18px] sm:w-[18px]" />
+              </button>
+            </TooltipTrigger>
+            <TooltipContent side="top" className="font-mono text-[10px] uppercase tracking-wider rounded-xl border border-white/20 bg-[#121212] text-white shadow-xl">
+              {copiedFeedback ? "Email Copied!" : "Inquiries: support@fathom.internal"}
+            </TooltipContent>
+          </Tooltip>
 
-            {/* 4. Document / API Keys Modal */}
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <button
-                  type="button"
-                  onClick={() => setApiModalOpen(true)}
-                  className="text-[#737373] hover:text-[#0B0B0B] transition-all hover:scale-115 cursor-pointer focus:outline-none p-1"
-                  aria-label="API Keys & Documentation"
-                >
-                  <FileText className="h-4 w-4 sm:h-[18px] sm:w-[18px]" />
-                </button>
-              </TooltipTrigger>
-              <TooltipContent side="top" className="font-mono text-[10px] uppercase tracking-wider rounded-lg">
-                API Keys & Documentation
-              </TooltipContent>
-            </Tooltip>
+          {/* 4. Document / API Keys Modal */}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button
+                type="button"
+                onClick={() => setApiModalOpen(true)}
+                className="text-white/70 hover:text-white transition-all hover:scale-110 cursor-pointer focus:outline-none p-1"
+                aria-label="API Keys & Documentation"
+              >
+                <FileText className="h-4 w-4 sm:h-[18px] sm:w-[18px]" />
+              </button>
+            </TooltipTrigger>
+            <TooltipContent side="top" className="font-mono text-[10px] uppercase tracking-wider rounded-xl border border-white/20 bg-[#121212] text-white shadow-xl">
+              API Keys & Documentation
+            </TooltipContent>
+          </Tooltip>
 
-            {/* 5. Location / Platform Region Placeholder */}
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <div
-                  className="text-[#737373] hover:text-[#0B0B0B] transition-all hover:scale-115 cursor-default p-1"
-                  aria-label="Platform Region"
-                >
-                  <MapPin className="h-4 w-4 sm:h-[18px] sm:w-[18px]" />
-                </div>
-              </TooltipTrigger>
-              <TooltipContent side="top" className="font-mono text-[10px] uppercase tracking-wider rounded-lg">
-                Cluster Region: us-east-1
-              </TooltipContent>
-            </Tooltip>
-          </div>
-
-          {/* Minimalist Subtitle */}
-          <div className="text-center text-[10px] uppercase tracking-widest text-[#737373]">
-            © 2026 FATHOM · AUTONOMOUS MEETING INTELLIGENCE
-          </div>
+          {/* 5. Location / Platform Region Placeholder */}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div
+                className="text-white/70 hover:text-white transition-all hover:scale-110 cursor-default p-1"
+                aria-label="Platform Region"
+              >
+                <MapPin className="h-4 w-4 sm:h-[18px] sm:w-[18px]" />
+              </div>
+            </TooltipTrigger>
+            <TooltipContent side="top" className="font-mono text-[10px] uppercase tracking-wider rounded-xl border border-white/20 bg-[#121212] text-white shadow-xl">
+              Cluster Region: us-east-1
+            </TooltipContent>
+          </Tooltip>
         </div>
 
         {/* Api Keys Modal */}

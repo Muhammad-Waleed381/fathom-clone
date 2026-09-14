@@ -6,6 +6,7 @@ import {
   PlayCircle,
   Mic,
   Calendar,
+  ChevronRight,
 } from "lucide-react";
 import { MeetingRecorderModal } from "@/components/record/meeting-recorder-modal";
 import { cn } from "@/lib/utils";
@@ -90,26 +91,29 @@ export function CalendarStrip({
   return (
     <div
       className={cn(
-        "rounded-2xl border border-[#E4E4E7] bg-white p-5 shadow-xs",
+        "rounded-3xl border border-white/15 bg-black/45 p-5 sm:p-6 backdrop-blur-xl shadow-[0_10px_34px_rgba(0,0,0,0.5)] text-white font-sans",
         className
       )}
     >
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 font-mono">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-5">
         {/* Left: Desk Planner Controls */}
-        <div className="flex flex-wrap items-center gap-2.5 shrink-0">
-          <div className="flex items-center gap-2 rounded-xl border border-[#E4E4E7] bg-[#F4F4F5]/70 px-3.5 py-2 text-xs text-[#0B0B0B]">
-            <Calendar className="h-3.5 w-3.5 text-[#737373]" />
-            <span className="font-medium uppercase tracking-wider text-[11px]">Daily Agenda</span>
+        <div className="flex flex-wrap items-center gap-3 shrink-0">
+          <div className="flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-xs text-white">
+            <Calendar className="h-3.5 w-3.5 text-white/70" />
+            <span className="font-mono text-[11px] uppercase tracking-wider">Daily Agenda</span>
           </div>
 
-          {/* Record Now Trigger */}
+          {/* Record Now Trigger (.cta style) */}
           <button
             type="button"
             onClick={handleRecordNow}
-            className="flex items-center gap-2 rounded-xl bg-[#0B0B0B] px-3.5 py-2 text-[11px] font-medium uppercase tracking-wider text-white hover:opacity-90 transition-opacity"
+            className="cta"
           >
-            <Mic className="h-3.5 w-3.5 text-white" />
-            <span>Record Session</span>
+            <span className="cta-bg bg-white"></span>
+            <span className="cta-text text-black">Record session</span>
+            <span className="cta-circle bg-black text-white ring-1 ring-white/60">
+              <Mic className="h-3.5 w-3.5" />
+            </span>
           </button>
         </div>
 
@@ -123,36 +127,36 @@ export function CalendarStrip({
                 key={m.id}
                 onClick={() => handleSimulate(m)}
                 className={cn(
-                  "group relative flex min-w-[240px] flex-1 cursor-pointer flex-col justify-between rounded-xl border border-[#E4E4E7] bg-[#FAFAFA] p-3.5 transition-all hover:bg-white hover:border-[#0B0B0B]/40 hover:shadow-xs",
-                  isSimulating && "bg-white border-[#0B0B0B]"
+                  "group relative flex min-w-[250px] flex-1 cursor-pointer flex-col justify-between rounded-2xl border border-white/15 bg-white/5 p-4 transition-all duration-500 hover:border-white/60 hover:bg-white hover:text-black hover:shadow-[0_18px_40px_rgba(0,0,0,0.45)]",
+                  isSimulating && "bg-white text-black border-white"
                 )}
               >
                 {/* Time & Platform */}
                 <div className="flex items-center justify-between gap-2">
-                  <div className="flex items-center gap-1.5 text-[11px] text-[#737373]">
-                    <Clock className="h-3 w-3 text-[#A1A1AA]" />
-                    <span className="font-medium text-[#0B0B0B]">{m.time}</span>
-                    <span className="text-[#A1A1AA]">({m.duration})</span>
+                  <div className="flex items-center gap-1.5 font-mono text-[11px] text-white/70 group-hover:text-black/70 transition-colors">
+                    <Clock className="h-3 w-3 text-white/50 group-hover:text-black/50" />
+                    <span className="font-medium text-white group-hover:text-black">{m.time}</span>
+                    <span className="text-white/50 group-hover:text-black/50">({m.duration})</span>
                   </div>
 
-                  <span className="rounded-lg border border-[#E4E4E7] bg-white px-2 py-0.5 text-[10px] text-[#737373] uppercase tracking-wide">
+                  <span className="rounded-full border border-white/20 bg-white/10 group-hover:border-black/20 group-hover:bg-black/5 group-hover:text-black/80 px-2.5 py-0.5 font-mono text-[10px] text-white/80 uppercase tracking-wide transition-all">
                     {m.platform}
                   </span>
                 </div>
 
                 {/* Title */}
-                <p className="mt-2.5 line-clamp-1 text-xs font-semibold text-[#0B0B0B] group-hover:text-black">
+                <p className="mt-3 line-clamp-1 text-xs font-medium text-white group-hover:text-black transition-colors">
                   {m.title}
                 </p>
 
                 {/* Platform & Action */}
-                <div className="mt-3 flex items-center justify-between border-t border-[#E4E4E7]/60 pt-2 text-[10px]">
-                  <span className="text-[#737373]">
+                <div className="mt-3 flex items-center justify-between border-t border-white/10 group-hover:border-black/10 pt-2.5 text-[10px] font-mono">
+                  <span className="text-white/60 group-hover:text-black/60 transition-colors">
                     {m.attendeesCount} participants
                   </span>
-                  <div className="flex items-center gap-1 text-[11px] font-medium text-[#737373] group-hover:text-[#0B0B0B] transition-colors">
+                  <div className="flex items-center gap-1 text-[11px] font-medium text-white/80 group-hover:text-black transition-colors">
                     <span>Simulate</span>
-                    <PlayCircle className="h-3 w-3" />
+                    <PlayCircle className="h-3.5 w-3.5" />
                   </div>
                 </div>
               </div>

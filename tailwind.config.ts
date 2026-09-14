@@ -21,24 +21,20 @@ const config: Config = {
   		fontFamily: {
   			serif: [
   				'var(--font-serif)',
+  				'Instrument Serif',
   				'Georgia',
-  				'Cambria',
   				'serif'
+  			],
+  			sans: [
+  				'var(--font-sans)',
+  				'Inter',
+  				'system-ui',
+  				'sans-serif'
   			],
   			mono: [
   				'var(--font-mono)',
+  				'JetBrains Mono',
   				'ui-monospace',
-  				'SFMono-Regular',
-  				'Menlo',
-  				'Monaco',
-  				'Consolas',
-  				'monospace'
-  			],
-  			sans: [
-  				'var(--font-mono)',
-  				'ui-monospace',
-  				'SFMono-Regular',
-  				'Menlo',
   				'monospace'
   			]
   		},

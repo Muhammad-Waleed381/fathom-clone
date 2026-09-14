@@ -133,32 +133,32 @@ export function SpeakerPresenceBar({
     <TooltipProvider delayDuration={150}>
       <div
         className={cn(
-          "w-full rounded-xl border border-zinc-200 bg-white p-3.5 space-y-3 shadow-sm",
+          "w-full rounded-3xl border border-white/15 bg-black/60 backdrop-blur-xl p-4 space-y-3.5 shadow-2xl text-white font-mono",
           className
         )}
       >
         {/* Presence Header & Active Filter Bar */}
         <div className="flex items-center justify-between text-xs">
           <div className="flex items-center gap-2">
-            <span className="flex items-center gap-1.5 text-xs font-semibold text-zinc-950">
-              <Users className="w-3.5 h-3.5 text-zinc-400" />
-              <span>Talk Time</span>
+            <span className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-white">
+              <Users className="w-3.5 h-3.5 text-white/60" />
+              <span>Talk Time Distribution</span>
             </span>
-            <span className="rounded-md border border-zinc-200 bg-zinc-50 px-1.5 py-0.5 text-[10px] font-medium text-zinc-500">
+            <span className="rounded-xl border border-white/15 bg-white/5 px-2 py-0.5 text-[10px] font-medium text-white/60">
               {speakers.length} speakers
             </span>
           </div>
 
           {activeFilteredSpeaker && (
             <div className="flex items-center gap-1.5 animate-in fade-in zoom-in-95">
-              <span className="text-[11px] font-medium text-zinc-700 flex items-center gap-1 border border-zinc-200 bg-zinc-50 px-1.5 py-0.5 rounded-md">
-                <Filter className="w-3 h-3 text-zinc-400" />
+              <span className="text-[11px] font-medium text-white flex items-center gap-1 border border-white/20 bg-white/10 px-2 py-0.5 rounded-xl">
+                <Filter className="w-3 h-3 text-white/60" />
                 <span>{activeFilteredSpeaker.name}</span>
               </span>
               <button
                 type="button"
                 onClick={() => setSpeakerFilter(null)}
-                className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md border border-zinc-200 bg-white text-zinc-700 text-[10px] font-medium hover:bg-zinc-50 transition-colors"
+                className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-xl border border-white/15 bg-white/5 text-white/80 text-[10px] font-medium hover:bg-white hover:text-black transition-all"
                 title="Clear speaker filter"
               >
                 <X className="w-3 h-3" />
@@ -170,7 +170,7 @@ export function SpeakerPresenceBar({
 
         {/* Monochrome Talk Time Distribution Meter */}
         {totalSpokenSeconds > 0 && (
-          <div className="relative flex h-2 w-full overflow-hidden rounded-sm border border-zinc-200 bg-zinc-100">
+          <div className="relative flex h-2 w-full overflow-hidden rounded-md border border-white/15 bg-white/10">
             {speakers.map((speaker) => {
               const stats = speakerStats[speaker.id];
               const pct = stats?.percentage || 0;
@@ -185,8 +185,8 @@ export function SpeakerPresenceBar({
                       type="button"
                       onClick={() => handleSpeakerClick(speaker.id)}
                       className={cn(
-                        "h-full transition-all focus:outline-none border-r border-white/40 last:border-r-0 cursor-pointer",
-                        isOtherSelected ? "opacity-30 hover:opacity-60" : "opacity-100 hover:brightness-90",
+                        "h-full transition-all focus:outline-none border-r border-black/40 last:border-r-0 cursor-pointer",
+                        isOtherSelected ? "opacity-30 hover:opacity-60" : "opacity-100 hover:brightness-110",
                         isSelected && "ring-1 ring-inset ring-white"
                       )}
                       style={{
@@ -198,13 +198,13 @@ export function SpeakerPresenceBar({
                   </TooltipTrigger>
                   <TooltipContent
                     side="top"
-                    className="rounded-md border border-zinc-200 bg-white p-2 text-zinc-950 shadow-sm"
+                    className="rounded-2xl border border-white/15 bg-black/95 p-2.5 text-white shadow-2xl backdrop-blur-xl"
                   >
-                    <p className="font-semibold text-xs">{speaker.name}</p>
-                    <p className="text-[11px] text-zinc-500">
+                    <p className="font-semibold text-xs text-white">{speaker.name}</p>
+                    <p className="text-[11px] text-white/60">
                       {pct}% · {formatTime(stats?.totalSeconds || 0)}
                     </p>
-                    <p className="text-[10px] text-zinc-400 mt-1">
+                    <p className="text-[10px] text-white/40 mt-1">
                       {isSelected ? "Click to clear isolation" : "Click to isolate speaker"}
                     </p>
                   </TooltipContent>
@@ -214,7 +214,7 @@ export function SpeakerPresenceBar({
           </div>
         )}
 
-        {/* 1-Click Speaker Isolation Filter Chips — monochrome, rectangular */}
+        {/* 1-Click Speaker Isolation Filter Chips */}
         <div className="flex flex-wrap items-center gap-2 pt-0.5">
           {speakers.map((speaker) => {
             const stats = speakerStats[speaker.id] || {
@@ -240,17 +240,17 @@ export function SpeakerPresenceBar({
                     type="button"
                     onClick={() => handleSpeakerClick(speaker.id)}
                     className={cn(
-                      "group relative flex items-center gap-2 rounded-md border px-2 py-1 text-xs transition-all duration-150 text-left select-none",
+                      "group relative flex items-center gap-2 rounded-xl border px-2.5 py-1 text-xs transition-all duration-150 text-left select-none",
                       isFiltered
-                        ? "border-zinc-950 bg-zinc-950 text-white shadow-sm"
-                        : "border-zinc-200 bg-white text-zinc-800 shadow-xs hover:border-zinc-300 hover:bg-zinc-50",
+                        ? "border-white bg-white text-black shadow-md font-semibold"
+                        : "border-white/15 bg-white/5 text-white/80 hover:border-white/30 hover:bg-white/10",
                       isDimmed && "opacity-40 hover:opacity-80",
-                      isSpeakingNow && !isFiltered && "border-zinc-400 bg-zinc-50 ring-1 ring-zinc-200"
+                      isSpeakingNow && !isFiltered && "border-white/40 bg-white/10 ring-1 ring-white/20"
                     )}
                   >
-                    {/* Avatar with speaking ring indicator */}
+                    {/* Avatar */}
                     <div className="relative shrink-0">
-                      <Avatar className="h-5 w-5 rounded-md border border-zinc-200">
+                      <Avatar className="h-5 w-5 rounded-lg border border-white/15">
                         {speaker.avatarUrl && (
                           <AvatarImage
                             src={speaker.avatarUrl}
@@ -259,23 +259,15 @@ export function SpeakerPresenceBar({
                         )}
                         <AvatarFallback
                           className={cn(
-                            "rounded-md text-[9px] font-medium",
+                            "rounded-lg text-[9px] font-mono font-medium",
                             isFiltered
-                              ? "bg-zinc-800 text-white"
-                              : "bg-zinc-100 text-zinc-700"
+                              ? "bg-black text-white"
+                              : "bg-white/10 text-white"
                           )}
                         >
                           {initials}
                         </AvatarFallback>
                       </Avatar>
-
-                      {/* Live Speaking Indicator — subtle pulsing dot */}
-                      {isSpeakingNow && (
-                        <span className="absolute -top-1 -right-1 flex h-2 w-2">
-                          <span className="animate-ping absolute inline-flex h-full w-full rounded-xs bg-zinc-400 opacity-75" />
-                          <span className="relative inline-flex rounded-xs h-2 w-2 bg-zinc-950" />
-                        </span>
-                      )}
                     </div>
 
                     {/* Speaker name */}
@@ -283,18 +275,18 @@ export function SpeakerPresenceBar({
                       {speaker.name}
                     </span>
 
-                    {/* Live Mic icon if currently speaking */}
+                    {/* Mic icon if currently active */}
                     {isSpeakingNow && (
-                      <Mic className={cn("w-3 h-3 shrink-0 animate-pulse", isFiltered ? "text-zinc-300" : "text-zinc-500")} />
+                      <Mic className={cn("w-3 h-3 shrink-0", isFiltered ? "text-black" : "text-white")} />
                     )}
 
-                    {/* Talk Time Percentage Badge — rectangular, monochrome */}
+                    {/* Talk Time Percentage Badge */}
                     <span
                       className={cn(
-                        "ml-auto rounded-sm border px-1 py-0.5 font-mono text-[10px] font-medium shrink-0",
+                        "ml-auto rounded-md border px-1.5 py-0.5 font-mono text-[10px] font-medium shrink-0",
                         isFiltered
-                          ? "border-zinc-700 bg-zinc-800 text-zinc-200"
-                          : "border-zinc-200 bg-zinc-100 text-zinc-600"
+                          ? "border-black/20 bg-black/10 text-black font-semibold"
+                          : "border-white/15 bg-white/5 text-white/70"
                       )}
                     >
                       {stats.percentage}%
@@ -304,18 +296,18 @@ export function SpeakerPresenceBar({
 
                 <TooltipContent
                   side="bottom"
-                  className="rounded-md border border-zinc-200 bg-white p-2.5 text-zinc-950 shadow-sm text-xs"
+                  className="rounded-2xl border border-white/15 bg-black/95 p-3 text-white shadow-2xl backdrop-blur-xl text-xs"
                 >
-                  <p className="font-semibold text-xs">{speaker.name}</p>
-                  <p className="text-[11px] text-zinc-500">
+                  <p className="font-semibold text-xs text-white">{speaker.name}</p>
+                  <p className="text-[11px] text-white/60">
                     {speaker.role || "Participant"}
                     {speaker.company ? ` · ${speaker.company}` : ""}
                   </p>
-                  <div className="mt-1 flex items-center justify-between gap-4 border-t border-zinc-100 pt-1 text-[11px]">
-                    <span className="text-zinc-500">Talk time: {formatTime(stats.totalSeconds)}</span>
-                    <span className="font-semibold text-zinc-950">{stats.percentage}%</span>
+                  <div className="mt-1 flex items-center justify-between gap-4 border-t border-white/10 pt-1 text-[11px]">
+                    <span className="text-white/60">Talk time: {formatTime(stats.totalSeconds)}</span>
+                    <span className="font-semibold text-white">{stats.percentage}%</span>
                   </div>
-                  <p className="text-[10px] text-zinc-400 mt-1">
+                  <p className="text-[10px] text-white/40 mt-1">
                     {isFiltered
                       ? "Click to clear filter"
                       : "Click to isolate speaker in transcript"}

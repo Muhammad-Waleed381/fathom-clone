@@ -174,16 +174,30 @@ function MeetingDetailContent() {
 
   return (
     <TooltipProvider delayDuration={150}>
-      <div className="min-h-screen bg-zinc-50/40 text-zinc-950 selection:bg-zinc-200 selection:text-zinc-950 flex flex-col font-sans">
-        {/* Clean Editorial Header Navigation */}
-        <header className="sticky top-0 z-40 border-b border-zinc-200 bg-white/95 backdrop-blur-md">
-          <div className="mx-auto flex h-18 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8 gap-4">
+      <div className="min-h-screen bg-[#0A0A0A] text-white selection:bg-white selection:text-black flex flex-col font-mono relative overflow-x-hidden">
+        {/* Fixed Ambient Background Video Loop */}
+        <div className="fixed inset-0 -z-10 pointer-events-none overflow-hidden">
+          <video
+            autoPlay
+            loop
+            muted
+            playsInline
+            poster="/hero-poster.jpg"
+            src="/hero-video.mp4"
+            className="h-full w-full object-cover opacity-15 scale-105 filter grayscale contrast-125"
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-[#0A0A0A]/95 via-[#0A0A0A]/85 to-[#0A0A0A]" />
+        </div>
+
+        {/* Meeting Header Section: clears FluidHeader cleanly */}
+        <div className="pt-28 sm:pt-32 pb-6 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-6 border-b border-white/10">
             {/* Left: Back Link & Meeting Title */}
-            <div className="flex items-center gap-3.5 min-w-0">
+            <div className="flex items-start gap-4 min-w-0">
               <Link href="/">
                 <button
                   type="button"
-                  className="flex h-9 w-9 items-center justify-center rounded-md border border-zinc-200 bg-white text-zinc-700 shadow-xs hover:bg-zinc-50 hover:text-zinc-950 transition-colors"
+                  className="mt-1 flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-white/20 bg-white/5 text-white shadow-sm hover:bg-white hover:text-black transition-all"
                   title="Back to Dashboard"
                 >
                   <ArrowLeft className="h-4 w-4" />
@@ -191,43 +205,41 @@ function MeetingDetailContent() {
               </Link>
 
               <div className="min-w-0">
-                <h1 className="truncate font-bold text-xl text-zinc-950 tracking-tight">
+                <div className="flex items-center gap-2 font-mono text-xs uppercase tracking-widest text-white/50 mb-1">
+                  <span>/ 01 SESSION</span>
+                  <span>•</span>
+                  <span>{formattedDate}</span>
+                  <span>•</span>
+                  <span>{formatTime(meeting.duration)}</span>
+                </div>
+                <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-light text-white tracking-tight">
                   {meeting.title}
                 </h1>
 
                 {/* Attendee Badges & Metadata */}
-                <div className="flex flex-wrap items-center gap-2 mt-1">
-                  <span className="inline-flex items-center gap-1.5 rounded-md border border-zinc-200 bg-zinc-50 px-2 py-0.5 text-xs font-medium text-zinc-700">
-                    <Calendar className="h-3 w-3 text-zinc-500" />
-                    <span>{formattedDate}</span>
-                  </span>
-                  <span className="inline-flex items-center gap-1.5 rounded-md border border-zinc-200 bg-zinc-50 px-2 py-0.5 text-xs font-medium text-zinc-700">
-                    <Clock className="h-3 w-3 text-zinc-500" />
-                    <span>{formatTime(meeting.duration)}</span>
-                  </span>
-
+                <div className="flex flex-wrap items-center gap-2 mt-3 font-mono text-[11px]">
                   {/* Compact Attendee Avatars */}
-                  <div className="hidden sm:flex items-center -space-x-1 ml-0.5">
-                    {meeting.participants.slice(0, 5).map((p) => (
+                  <div className="flex items-center -space-x-1.5 mr-1">
+                    {meeting.participants.slice(0, 6).map((p) => (
                       <Avatar
                         key={p.id}
-                        className="h-5 w-5 rounded-md border border-zinc-200"
+                        className="h-6 w-6 rounded-full border border-white/25 bg-black"
                         title={p.name}
                       >
                         {p.avatarUrl && <AvatarImage src={p.avatarUrl} alt={p.name} />}
-                        <AvatarFallback className="text-[9px] font-medium bg-zinc-100 text-zinc-800">
+                        <AvatarFallback className="text-[9px] font-medium bg-white/10 text-white">
                           {p.name[0]}
                         </AvatarFallback>
                       </Avatar>
                     ))}
                   </div>
 
-                  <span className="rounded-md border border-zinc-200 bg-zinc-50 px-2 py-0.5 text-xs font-medium text-zinc-700">
-                    {meeting.participants.length} attendees
+                  <span className="rounded-full border border-white/15 bg-white/5 px-2.5 py-0.5 text-white/70 uppercase">
+                    {meeting.participants.length} ATTENDEES
                   </span>
 
                   {meeting.tags?.[0] && (
-                    <span className="hidden md:inline-flex rounded-md border border-zinc-200 bg-zinc-100 px-2 py-0.5 text-xs font-medium text-zinc-600">
+                    <span className="rounded-full border border-white/15 bg-white/10 px-2.5 py-0.5 text-white/80 uppercase">
                       {meeting.tags[0]}
                     </span>
                   )}
@@ -236,110 +248,102 @@ function MeetingDetailContent() {
             </div>
 
             {/* Right: Quick Action Buttons */}
-            <div className="flex items-center gap-2 shrink-0">
+            <div className="flex flex-wrap items-center gap-2.5 shrink-0">
               {/* Highlight Action */}
-              <Button
+              <button
                 type="button"
                 onClick={handleOpenHighlight}
-                variant="default"
-                size="sm"
-                className="gap-1.5"
+                className="h-9 flex items-center gap-1.5 rounded-2xl border border-white/20 bg-white text-black px-4 text-xs font-mono uppercase tracking-wider font-semibold hover:bg-white/90 transition-all shadow-sm"
               >
                 <Bookmark className="h-3.5 w-3.5 fill-current" />
-                <span className="hidden sm:inline">Highlight</span>
-              </Button>
+                <span>Highlight</span>
+              </button>
 
               {/* Share Clip Action */}
-              <Button
+              <button
                 type="button"
                 onClick={() => handleOpenShare()}
-                variant="outline"
-                size="sm"
-                className="gap-1.5"
+                className="h-9 flex items-center gap-1.5 rounded-2xl border border-white/20 bg-white/10 px-4 text-xs font-mono uppercase tracking-wider text-white hover:bg-white hover:text-black transition-all"
               >
-                <Share2 className="h-3.5 w-3.5 text-zinc-600" />
-                <span className="hidden sm:inline">Share Clip</span>
-              </Button>
+                <Share2 className="h-3.5 w-3.5" />
+                <span>Share</span>
+              </button>
 
               {/* Copy Notes */}
-              <Button
+              <button
                 type="button"
                 onClick={handleCopySummary}
-                variant="outline"
-                size="sm"
-                className="gap-1.5"
+                className="h-9 flex items-center gap-1.5 rounded-2xl border border-white/20 bg-white/10 px-4 text-xs font-mono uppercase tracking-wider text-white hover:bg-white hover:text-black transition-all"
               >
                 {copiedSummary ? (
                   <>
-                    <Check className="h-3.5 w-3.5 text-emerald-600" />
-                    <span className="hidden sm:inline text-emerald-600 font-medium">Copied</span>
+                    <Check className="h-3.5 w-3.5 text-white" />
+                    <span className="font-medium">Copied</span>
                   </>
                 ) : (
                   <>
-                    <Copy className="h-3.5 w-3.5 text-zinc-600" />
-                    <span className="hidden sm:inline">Copy Notes</span>
+                    <Copy className="h-3.5 w-3.5" />
+                    <span>Copy Notes</span>
                   </>
                 )}
-              </Button>
+              </button>
 
               {/* API Settings */}
-              <Button
+              <button
                 type="button"
                 onClick={() => setSettingsModalOpen(true)}
-                variant="outline"
-                size="icon"
-                className="h-8 w-8 text-zinc-700"
+                className="h-9 w-9 flex items-center justify-center rounded-2xl border border-white/20 bg-white/10 text-white hover:bg-white hover:text-black transition-all"
                 title="API Keys & Settings"
               >
                 <Settings className="h-4 w-4" />
-              </Button>
+              </button>
             </div>
           </div>
-        </header>
+        </div>
 
         {/* Main Split Grid: Left Player Column / Right Workspace Tabs Column */}
-        <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-28">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
             {/* Left Column (7 cols on lg): Audio-Synchronized Video Player + Speaker Presence */}
-            <div className="lg:col-span-7 flex flex-col gap-4">
+            <div className="lg:col-span-7 flex flex-col gap-5">
               <VideoPlayer />
               <SpeakerPresenceBar />
             </div>
 
             {/* Right Column (5 cols on lg): Workspace Container Card */}
-            <div className="lg:col-span-5 flex flex-col min-h-[640px] rounded-xl border border-zinc-200 bg-white shadow-sm overflow-hidden">
+            <div className="lg:col-span-5 flex flex-col min-h-[640px] rounded-3xl border border-white/15 bg-black/50 shadow-2xl backdrop-blur-xl overflow-hidden">
               <Tabs
                 value={activeTab}
                 onValueChange={(val) => setActiveTab(val as any)}
                 className="flex flex-col h-full"
               >
                 {/* Refined Tabs Navigation Bar */}
-                <div className="border-b border-zinc-200 bg-zinc-50/50 p-2">
-                  <TabsList className="grid grid-cols-4 h-9 w-full bg-zinc-100 p-0.5 rounded-lg">
+                <div className="border-b border-white/10 bg-white/5 p-3">
+                  <TabsList className="grid grid-cols-4 h-11 w-full bg-black/40 border border-white/10 p-1 rounded-2xl">
                     <TabsTrigger
                       value="notes"
-                      className="gap-1.5 text-xs font-medium rounded-md data-[state=active]:bg-white data-[state=active]:text-zinc-950 data-[state=active]:shadow-xs"
+                      className="gap-1.5 text-xs font-mono uppercase tracking-wider rounded-xl text-white/60 data-[state=active]:bg-white data-[state=active]:text-black data-[state=active]:font-semibold transition-all"
                     >
-                      <Sparkles className="h-3.5 w-3.5 text-zinc-500" />
+                      <Sparkles className="h-3.5 w-3.5" />
                       <span>Notes</span>
                     </TabsTrigger>
 
                     <TabsTrigger
                       value="transcript"
-                      className="gap-1.5 text-xs font-medium rounded-md data-[state=active]:bg-white data-[state=active]:text-zinc-950 data-[state=active]:shadow-xs"
+                      className="gap-1.5 text-xs font-mono uppercase tracking-wider rounded-xl text-white/60 data-[state=active]:bg-white data-[state=active]:text-black data-[state=active]:font-semibold transition-all"
                     >
-                      <FileText className="h-3.5 w-3.5 text-zinc-500" />
+                      <FileText className="h-3.5 w-3.5" />
                       <span>Transcript</span>
                     </TabsTrigger>
 
                     <TabsTrigger
                       value="actions"
-                      className="relative gap-1.5 text-xs font-medium rounded-md data-[state=active]:bg-white data-[state=active]:text-zinc-950 data-[state=active]:shadow-xs"
+                      className="relative gap-1.5 text-xs font-mono uppercase tracking-wider rounded-xl text-white/60 data-[state=active]:bg-white data-[state=active]:text-black data-[state=active]:font-semibold transition-all"
                     >
-                      <ListTodo className="h-3.5 w-3.5 text-zinc-500" />
+                      <ListTodo className="h-3.5 w-3.5" />
                       <span>Actions</span>
                       {pendingActionCount > 0 && (
-                        <span className="ml-1 rounded-sm bg-zinc-950 px-1 py-0.2 text-[10px] font-semibold text-white">
+                        <span className="ml-1 rounded-md bg-black text-white px-1.5 py-0.2 text-[10px] font-bold border border-white/20">
                           {pendingActionCount}
                         </span>
                       )}
@@ -347,9 +351,9 @@ function MeetingDetailContent() {
 
                     <TabsTrigger
                       value="ask"
-                      className="gap-1.5 text-xs font-medium rounded-md data-[state=active]:bg-white data-[state=active]:text-zinc-950 data-[state=active]:shadow-xs"
+                      className="gap-1.5 text-xs font-mono uppercase tracking-wider rounded-xl text-white/60 data-[state=active]:bg-white data-[state=active]:text-black data-[state=active]:font-semibold transition-all"
                     >
-                      <Bot className="h-3.5 w-3.5 text-zinc-500" />
+                      <Bot className="h-3.5 w-3.5" />
                       <span>Ask AI</span>
                     </TabsTrigger>
                   </TabsList>
@@ -423,10 +427,10 @@ export default function MeetingDetailPage() {
   return (
     <Suspense
       fallback={
-        <div className="flex min-h-screen items-center justify-center bg-zinc-50/50 text-zinc-950">
-          <div className="flex flex-col items-center gap-3 border border-zinc-200 bg-white p-6 rounded-xl shadow-sm">
-            <div className="h-6 w-6 animate-spin rounded-md border-2 border-zinc-950 border-t-transparent" />
-            <p className="text-xs font-medium text-zinc-500">Loading workspace...</p>
+        <div className="flex min-h-screen items-center justify-center bg-[#0A0A0A] text-white">
+          <div className="flex flex-col items-center gap-3 border border-white/15 bg-black/60 p-6 rounded-3xl shadow-xl backdrop-blur-xl">
+            <div className="h-6 w-6 animate-spin rounded-full border-2 border-white border-t-transparent" />
+            <p className="text-xs font-mono text-white/60 uppercase tracking-wider">Loading workspace...</p>
           </div>
         </div>
       }

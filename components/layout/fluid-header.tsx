@@ -3,14 +3,6 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import {
-  NavigationMenu,
-  NavigationMenuContent,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  NavigationMenuList,
-  NavigationMenuTrigger,
-} from "@/components/ui/navigation-menu";
-import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -31,6 +23,8 @@ import {
   FileText,
   Check,
   Plus,
+  ChevronRight,
+  Mic,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -61,199 +55,139 @@ export function FluidHeader() {
 
   return (
     <>
-      {/* Floating Island Header - Nockchain architectural minimalism */}
-      <header className="sticky top-3 z-50 w-full px-4 sm:px-6 lg:px-8 pointer-events-none mb-2 font-mono">
-        <div className="mx-auto max-w-6xl pointer-events-auto rounded-2xl border border-[#E4E4E7]/80 bg-white/80 backdrop-blur-xl shadow-xs transition-all hover:bg-white/95">
-          <div className="flex h-12 items-center justify-between px-3 sm:px-4 gap-2 sm:gap-3">
-            {/* Left: Nockchain typography brand + workspace dropdown */}
-            <div className="flex items-center gap-2.5 shrink-0">
-              <Link
-                href="/"
-                className="flex items-center gap-2 transition-opacity hover:opacity-80 group"
-              >
-                <FathomLogo className="h-6 w-6 rounded-xl" size={24} />
-                <span className="text-sm font-semibold tracking-wider text-[#0B0B0B] uppercase">
-                  FATHOM
-                </span>
-              </Link>
+      {/* 3-Column Floating Pill Header (5G Network Technologies Design System) */}
+      <header className="fixed left-1/2 z-50 -translate-x-1/2 top-4 w-[calc(100%-2rem)] max-w-6xl pointer-events-none font-sans">
+        <div className="grid w-full grid-cols-[1fr_auto_1fr] items-center gap-3 rounded-full border border-white/20 bg-black/45 px-3 sm:px-4 py-2 shadow-[0_10px_34px_rgba(0,0,0,0.5)] backdrop-blur-xl pointer-events-auto transition-all duration-300">
+          
+          {/* Left Column: Brand & Workspace Selector */}
+          <div className="flex items-center gap-2.5 min-w-0 justify-self-start">
+            <Link
+              href="/"
+              className="flex items-center gap-2 group transition-opacity hover:opacity-90"
+            >
+              <span className="flex shrink-0 items-center justify-center rounded-full h-8 w-8 border border-white/25 bg-white/10 text-white backdrop-blur-md shadow-inner transition-transform duration-300 group-hover:scale-105">
+                <FathomLogo className="h-4 w-4" size={16} />
+              </span>
+              <span className="truncate text-[13px] sm:text-[14px] font-semibold tracking-tight text-white drop-shadow-md">
+                FATHOM
+              </span>
+            </Link>
 
-              {/* Workspace Selector Dropdown */}
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <button
-                    type="button"
-                    className="hidden sm:flex items-center gap-1.5 rounded-xl border border-[#E4E4E7] bg-white/70 px-2.5 py-1 text-xs text-[#737373] hover:text-[#0B0B0B] hover:bg-white transition-colors focus:outline-none"
+            {/* Workspace Dropdown */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button
+                  type="button"
+                  className="hidden sm:flex items-center gap-1.5 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs text-white/80 hover:text-white hover:bg-white/15 backdrop-blur-md transition-colors focus:outline-none"
+                >
+                  <span className="max-w-[110px] truncate text-[11px] uppercase tracking-wide font-mono">
+                    {currentWorkspace}
+                  </span>
+                  <ChevronDown className="h-3 w-3 opacity-70" />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" className="w-56 p-1.5 text-xs font-mono rounded-2xl border border-white/20 bg-[#121212]/95 backdrop-blur-xl text-white shadow-2xl">
+                <DropdownMenuLabel className="text-[10px] font-medium uppercase tracking-widest text-white/50 px-2.5 py-1">
+                  Workspaces
+                </DropdownMenuLabel>
+                {WORKSPACES.map((ws) => (
+                  <DropdownMenuItem
+                    key={ws}
+                    onClick={() => setCurrentWorkspace(ws)}
+                    className="flex items-center justify-between px-2.5 py-2 cursor-pointer rounded-xl hover:bg-white/10 text-white/90 hover:text-white transition-colors"
                   >
-                    <span className="max-w-[120px] truncate text-[11px] uppercase tracking-wide">
-                      {currentWorkspace}
-                    </span>
-                    <ChevronDown className="h-3 w-3 opacity-60" />
-                  </button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="start" className="w-52 p-1.5 text-xs font-mono rounded-xl border border-[#E4E4E7] shadow-lg">
-                  <DropdownMenuLabel className="text-[10px] font-medium uppercase tracking-wider text-[#737373] px-2 py-1">
-                    Workspaces
-                  </DropdownMenuLabel>
-                  {WORKSPACES.map((ws) => (
-                    <DropdownMenuItem
-                      key={ws}
-                      onClick={() => setCurrentWorkspace(ws)}
-                      className="flex items-center justify-between px-2.5 py-1.5 cursor-pointer rounded-lg hover:bg-[#F4F4F5]"
-                    >
-                      <span className="text-[11px]">{ws}</span>
-                      {currentWorkspace === ws && (
-                        <Check className="h-3.5 w-3.5 text-[#0B0B0B]" />
-                      )}
-                    </DropdownMenuItem>
-                  ))}
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem className="flex items-center gap-2 px-2.5 py-1.5 cursor-pointer rounded-lg text-[#737373] hover:bg-[#F4F4F5]">
-                    <Plus className="h-3.5 w-3.5" />
-                    <span className="text-[11px]">Create Workspace</span>
+                    <span className="text-[11px]">{ws}</span>
+                    {currentWorkspace === ws && (
+                      <Check className="h-3.5 w-3.5 text-white" />
+                    )}
                   </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
+                ))}
+                <DropdownMenuSeparator className="bg-white/10" />
+                <DropdownMenuItem className="flex items-center gap-2 px-2.5 py-2 cursor-pointer rounded-xl text-white/60 hover:text-white hover:bg-white/10 transition-colors">
+                  <Plus className="h-3.5 w-3.5" />
+                  <span className="text-[11px]">Create Workspace</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
 
-            {/* Center: Nockchain Style Nav with Stipple Underline on Hover */}
-            <div className="hidden md:flex items-center justify-center">
-              <NavigationMenu>
-                <NavigationMenuList className="gap-2">
-                  {/* Meetings */}
-                  <NavigationMenuItem>
-                    <NavigationMenuTrigger className="h-7 px-2 text-xs font-normal tracking-wide uppercase text-[#0B0B0B] bg-transparent hover:bg-transparent data-[state=open]:bg-transparent relative group">
-                      <span>Meetings</span>
-                      <span className="stipple-underline w-0 group-hover:w-full" />
-                    </NavigationMenuTrigger>
-                    <NavigationMenuContent>
-                      <ul className="grid w-[340px] gap-1 p-2 font-mono text-xs">
-                        <li>
-                          <NavigationMenuLink asChild>
-                            <Link
-                              href="/"
-                              className="flex items-center justify-between rounded p-2 hover:bg-[#F4F4F5] transition-colors"
-                            >
-                              <div className="flex items-center gap-2 text-[#0B0B0B]">
-                                <Video className="h-3.5 w-3.5" />
-                                <span className="uppercase text-[11px]">All Recordings</span>
-                              </div>
-                              <span className="text-[10px] text-[#737373]">&rarr;</span>
-                            </Link>
-                          </NavigationMenuLink>
-                        </li>
-                        <li>
-                          <NavigationMenuLink asChild>
-                            <Link
-                              href="/meetings/meeting-1"
-                              className="flex items-center justify-between rounded p-2 hover:bg-[#F4F4F5] transition-colors"
-                            >
-                              <span className="text-[11px] uppercase">Benchmark Call</span>
-                              <span className="rounded bg-[#E4E4E7]/80 px-1.5 py-0.2 text-[10px]">
-                                42M
-                              </span>
-                            </Link>
-                          </NavigationMenuLink>
-                        </li>
-                      </ul>
-                    </NavigationMenuContent>
-                  </NavigationMenuItem>
+          {/* Center Column: Floating Navigation Pill */}
+          <nav className="hidden md:flex items-center gap-1 justify-self-center rounded-full border border-white/20 bg-black/50 px-2 py-1 backdrop-blur-xl shadow-inner">
+            <Link
+              href="/"
+              className="rounded-full px-3.5 py-1 text-[12px] font-medium text-white/80 hover:text-white transition-colors duration-200"
+            >
+              Recordings
+            </Link>
+            <Link
+              href="/meetings/meeting-1"
+              className="rounded-full px-3.5 py-1 text-[12px] font-medium text-white/80 hover:text-white transition-colors duration-200"
+            >
+              Benchmark
+            </Link>
+            <Link
+              href="/actions"
+              className="rounded-full px-3.5 py-1 text-[12px] font-medium text-white/80 hover:text-white transition-colors duration-200"
+            >
+              Actions Hub
+            </Link>
+            <Link
+              href="/#specifications"
+              className="rounded-full px-3.5 py-1 text-[12px] font-medium text-white/80 hover:text-white transition-colors duration-200"
+            >
+              Specs
+            </Link>
+          </nav>
 
-                  {/* Action Items */}
-                  <NavigationMenuItem>
-                    <NavigationMenuLink asChild>
-                      <Link
-                        href="/actions"
-                        className="h-7 px-2 inline-flex items-center text-xs font-normal tracking-wide uppercase text-[#0B0B0B] relative group transition-opacity hover:opacity-80"
-                      >
-                        <span>Actions</span>
-                        <span className="stipple-underline w-0 group-hover:w-full" />
-                      </Link>
-                    </NavigationMenuLink>
-                  </NavigationMenuItem>
+          {/* Right Column: Search, Record CTA & Settings */}
+          <div className="flex shrink-0 items-center gap-2 justify-self-end">
+            {/* Quick Search */}
+            <button
+              type="button"
+              onClick={handleOpenSearch}
+              className="flex items-center gap-1.5 rounded-full border border-white/20 bg-white/10 px-3 py-1.5 text-xs text-white/80 hover:text-white hover:bg-white/15 backdrop-blur-md transition-colors"
+              aria-label="Search"
+            >
+              <Search className="h-3.5 w-3.5 text-white/70" />
+              <span className="hidden lg:inline text-[11px] uppercase tracking-wider font-mono">Search</span>
+              <kbd className="hidden lg:inline-flex items-center rounded-full border border-white/20 bg-white/10 px-1.5 py-0.2 text-[9px] font-mono">
+                ⌘K
+              </kbd>
+            </button>
 
-                  {/* Templates */}
-                  <NavigationMenuItem>
-                    <NavigationMenuTrigger className="h-7 px-2 text-xs font-normal tracking-wide uppercase text-[#0B0B0B] bg-transparent hover:bg-transparent data-[state=open]:bg-transparent relative group">
-                      <span>Templates</span>
-                      <span className="stipple-underline w-0 group-hover:w-full" />
-                    </NavigationMenuTrigger>
-                    <NavigationMenuContent>
-                      <ul className="grid w-[300px] gap-1 p-2 font-mono text-xs">
-                        <li>
-                          <NavigationMenuLink asChild>
-                            <Link
-                              href="/meetings/meeting-1?tab=notes"
-                              className="flex items-center gap-2 rounded p-2 hover:bg-[#F4F4F5] text-[#0B0B0B] text-[11px] uppercase"
-                            >
-                              <FileText className="h-3.5 w-3.5 text-[#737373]" />
-                              <span>Executive Brief</span>
-                            </Link>
-                          </NavigationMenuLink>
-                        </li>
-                        <li>
-                          <NavigationMenuLink asChild>
-                            <Link
-                              href="/meetings/meeting-1?tab=notes"
-                              className="flex items-center gap-2 rounded p-2 hover:bg-[#F4F4F5] text-[#0B0B0B] text-[11px] uppercase"
-                            >
-                              <FileText className="h-3.5 w-3.5 text-[#737373]" />
-                              <span>Engineering Sync</span>
-                            </Link>
-                          </NavigationMenuLink>
-                        </li>
-                      </ul>
-                    </NavigationMenuContent>
-                  </NavigationMenuItem>
-                </NavigationMenuList>
-              </NavigationMenu>
-            </div>
+            {/* Signature .cta Record Button from Reference Site */}
+            <button
+              type="button"
+              onClick={() => setRecorderOpen(true)}
+              className="cta"
+            >
+              <span className="cta-bg bg-white"></span>
+              <span className="cta-text text-black">Record</span>
+              <span className="cta-circle bg-black text-white ring-1 ring-white/60">
+                <Mic className="h-3.5 w-3.5" />
+              </span>
+            </button>
 
-            {/* Right: Search, Record, Settings */}
-            <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-              {/* Cmd+K Quick Search Trigger */}
-              <button
-                type="button"
-                onClick={handleOpenSearch}
-                className="rounded-xl border border-[#E4E4E7] bg-white/70 px-2.5 py-1 text-xs text-[#737373] hover:text-[#0B0B0B] hover:bg-white transition-colors flex items-center gap-1.5"
-                aria-label="Open search dialog"
-              >
-                <Search className="h-3 w-3 text-[#737373]" />
-                <span className="hidden sm:inline text-[11px] uppercase">Search</span>
-                <kbd className="hidden sm:inline-flex items-center rounded-md border border-[#E4E4E7] bg-[#F4F4F5] px-1 py-0.2 text-[9px]">
-                  ⌘K
-                </kbd>
-              </button>
+            {/* Settings Trigger */}
+            <button
+              type="button"
+              onClick={() => setSettingsOpen(true)}
+              className="flex h-8 w-8 items-center justify-center rounded-full border border-white/20 bg-white/10 text-white/80 hover:text-white hover:bg-white/15 backdrop-blur-md transition-colors"
+              title="API Keys & Settings"
+            >
+              <Settings className="h-3.5 w-3.5" />
+            </button>
 
-              {/* Record Button */}
-              <button
-                type="button"
-                onClick={() => setRecorderOpen(true)}
-                className="rounded-xl bg-[#0B0B0B] text-white hover:opacity-90 text-[11px] font-medium tracking-wide uppercase px-3 py-1 flex items-center gap-1.5 transition-opacity"
-              >
-                <span>Record</span>
-              </button>
-
-              {/* Settings Button */}
-              <button
-                type="button"
-                onClick={() => setSettingsOpen(true)}
-                className="rounded-xl border border-[#E4E4E7] bg-white/70 p-1.5 text-[#737373] hover:text-[#0B0B0B] hover:bg-white transition-colors"
-                title="API Keys & Settings"
-              >
-                <Settings className="h-3.5 w-3.5" />
-              </button>
-
-              {/* User Avatar */}
-              <Avatar className="h-6 w-6 rounded-full border border-[#E4E4E7]">
-                <AvatarImage
-                  src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&h=150&fit=crop&crop=face"
-                  alt="User"
-                />
-                <AvatarFallback className="rounded-full bg-[#F4F4F5] text-[9px] font-medium text-[#0B0B0B]">
-                  MW
-                </AvatarFallback>
-              </Avatar>
-            </div>
+            {/* User Avatar */}
+            <Avatar className="h-8 w-8 rounded-full border border-white/25 shadow-sm">
+              <AvatarImage
+                src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&h=150&fit=crop&crop=face"
+                alt="User"
+              />
+              <AvatarFallback className="rounded-full bg-white/10 font-mono text-[10px] font-semibold text-white">
+                MW
+              </AvatarFallback>
+            </Avatar>
           </div>
         </div>
       </header>

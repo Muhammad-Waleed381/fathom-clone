@@ -21,7 +21,10 @@ import {
   Trash2,
   Cpu,
   Mic,
+  Headphones,
 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
 export const STORAGE_KEYS = {
@@ -151,35 +154,35 @@ export function ApiKeysModal({
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       {trigger ? (
         <DialogTrigger asChild>{trigger}</DialogTrigger>
-      ) : (
+      ) : controlledOpen !== undefined ? null : (
         <DialogTrigger asChild>
           <button
             type="button"
-            className="h-8 flex items-center gap-1.5 rounded-md border border-zinc-200 bg-white px-2.5 font-mono text-xs font-medium uppercase text-zinc-700 hover:bg-zinc-50 hover:text-zinc-950 transition-colors"
+            className="h-8 flex items-center gap-1.5 rounded-full border border-white/20 bg-white/10 px-3 font-mono text-xs font-medium uppercase text-white hover:bg-white/20 transition-colors"
           >
             <KeyRound className="h-3.5 w-3.5" />
             <span>API KEYS</span>
             {hasCustomKeys ? (
-              <span className="h-2 w-2 rounded-sm bg-zinc-950 animate-pulse" />
+              <span className="h-2 w-2 rounded-full bg-white" />
             ) : (
-              <span className="h-2 w-2 rounded-sm bg-zinc-300" />
+              <span className="h-2 w-2 rounded-full bg-white/30" />
             )}
           </button>
         </DialogTrigger>
       )}
 
-      <DialogContent className="sm:max-w-[500px] border border-zinc-200 bg-white text-zinc-950 shadow-2xl shadow-black/[0.08] p-6 sm:rounded-xl">
-        <DialogHeader className="border-b border-zinc-200 pb-4">
+      <DialogContent className="sm:max-w-[500px] border border-white/15 bg-black/90 text-white backdrop-blur-2xl shadow-2xl p-6 sm:rounded-3xl">
+        <DialogHeader className="border-b border-white/10 pb-4">
           <div className="flex items-center justify-between pr-4">
             <div className="flex items-center gap-2.5">
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-zinc-200 bg-zinc-50 shadow-sm">
-                <KeyRound className="h-5 w-5 text-zinc-950" />
+              <div className="flex h-9 w-9 items-center justify-center rounded-2xl border border-white/15 bg-white/10 text-white shadow-sm">
+                <KeyRound className="h-5 w-5 text-white" />
               </div>
               <div>
-                <DialogTitle className="font-mono text-base font-semibold uppercase text-zinc-950">
+                <DialogTitle className="font-mono text-base font-semibold uppercase text-white">
                   API & INTELLIGENCE CONFIG
                 </DialogTitle>
-                <DialogDescription className="font-mono text-[11px] font-medium uppercase text-zinc-500">
+                <DialogDescription className="font-mono text-[11px] font-medium uppercase text-white/50">
                   LIVE AI PROVIDERS VS DETERMINISTIC SEED MODE
                 </DialogDescription>
               </div>
@@ -187,17 +190,17 @@ export function ApiKeysModal({
           </div>
 
           {/* Status Badge Indicator */}
-          <div className="mt-3 flex items-center justify-between rounded-md border border-zinc-200 bg-zinc-50 p-2.5">
-            <span className="font-mono text-xs font-semibold uppercase text-zinc-700">
+          <div className="mt-3 flex items-center justify-between rounded-2xl border border-white/10 bg-white/5 p-3">
+            <span className="font-mono text-xs font-semibold uppercase text-white/70">
               ACTIVE ENGINE:
             </span>
             {hasCustomKeys ? (
-              <span className="flex items-center gap-1.5 rounded-md border border-zinc-200 bg-zinc-950 px-2 py-0.5 font-mono text-[11px] font-semibold uppercase text-white">
+              <span className="flex items-center gap-1.5 rounded-full border border-white/20 bg-white px-2.5 py-0.5 font-mono text-[11px] font-semibold uppercase text-black">
                 <ShieldCheck className="h-3.5 w-3.5" />
                 CUSTOM LIVE APIS
               </span>
             ) : (
-              <span className="flex items-center gap-1.5 rounded-md border border-zinc-200 bg-white px-2 py-0.5 font-mono text-[11px] font-semibold uppercase text-zinc-700 shadow-sm">
+              <span className="flex items-center gap-1.5 rounded-full border border-white/15 bg-white/10 px-2.5 py-0.5 font-mono text-[11px] font-semibold uppercase text-white/80">
                 <Zap className="h-3.5 w-3.5" />
                 SEED MODE ACTIVE
               </span>
@@ -207,11 +210,11 @@ export function ApiKeysModal({
 
         <div className="space-y-4 py-2">
           {/* OpenRouter Configuration */}
-          <div className="space-y-2 rounded-xl border border-zinc-200 bg-zinc-50 p-3.5">
+          <div className="space-y-2 rounded-2xl border border-white/10 bg-white/5 p-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Cpu className="h-4 w-4 text-zinc-950" />
-                <label className="font-mono text-xs font-semibold uppercase text-zinc-950">
+                <Cpu className="h-4 w-4 text-white" />
+                <label className="font-mono text-xs font-semibold uppercase text-white">
                   OPENROUTER API KEY
                 </label>
               </div>
@@ -219,121 +222,85 @@ export function ApiKeysModal({
                 href="https://openrouter.ai/keys"
                 target="_blank"
                 rel="noreferrer"
-                className="flex items-center gap-1 font-mono text-[10px] font-medium uppercase text-zinc-500 hover:text-zinc-950 hover:underline transition-colors"
+                className="font-mono text-[11px] text-white/60 hover:text-white underline"
               >
-                GET FREE KEY <ExternalLink className="h-3 w-3" />
+                Get Key
               </a>
             </div>
-
-            <p className="font-mono text-[10px] text-zinc-500 uppercase font-medium leading-relaxed">
-              Powers live executive summaries via free tier models. If empty, local seed intelligence is used.
+            <Input
+              type="password"
+              placeholder="sk-or-v1-..."
+              value={openRouterKey}
+              onChange={(e) => setOpenRouterKey(e.target.value)}
+              className="border-white/15 bg-black/50 text-white placeholder:text-white/30 rounded-xl font-mono text-xs focus:border-white"
+            />
+            <p className="font-mono text-[10px] text-white/50">
+              Powers multi-perspective synthesis and chat.
             </p>
-
-            <div className="relative">
-              <input
-                type={showOpenRouter ? "text" : "password"}
-                placeholder="sk-or-v1-..."
-                value={openRouterKey}
-                onChange={(e) => setOpenRouterKey(e.target.value)}
-                className="h-9 w-full rounded-md border border-zinc-200 bg-white px-3 pr-9 font-mono text-xs text-zinc-950 placeholder:text-zinc-400 focus:bg-white focus:border-zinc-300 focus:outline-none transition-colors"
-              />
-              <button
-                type="button"
-                onClick={() => setShowOpenRouter(!showOpenRouter)}
-                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-950 transition-colors"
-              >
-                {showOpenRouter ? (
-                  <EyeOff className="h-4 w-4" />
-                ) : (
-                  <Eye className="h-4 w-4" />
-                )}
-              </button>
-            </div>
           </div>
 
           {/* Deepgram Configuration */}
-          <div className="space-y-2 rounded-xl border border-zinc-200 bg-zinc-50 p-3.5">
+          <div className="space-y-2 rounded-2xl border border-white/10 bg-white/5 p-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Mic className="h-4 w-4 text-zinc-950" />
-                <label className="font-mono text-xs font-semibold uppercase text-zinc-950">
-                  DEEPGRAM NOVA-2 API KEY
+                <Headphones className="h-4 w-4 text-white" />
+                <label className="font-mono text-xs font-semibold uppercase text-white">
+                  DEEPGRAM API KEY
                 </label>
               </div>
               <a
                 href="https://console.deepgram.com"
                 target="_blank"
                 rel="noreferrer"
-                className="flex items-center gap-1 font-mono text-[10px] font-medium uppercase text-zinc-500 hover:text-zinc-950 hover:underline transition-colors"
+                className="font-mono text-[11px] text-white/60 hover:text-white underline"
               >
-                GET KEY ($200 CREDIT) <ExternalLink className="h-3 w-3" />
+                Get Key
               </a>
             </div>
-
-            <p className="font-mono text-[10px] text-zinc-500 uppercase font-medium leading-relaxed">
-              Enables live browser transcription with multi-speaker diarization. If omitted, mock diarized speech is used.
+            <Input
+              type="password"
+              placeholder="dg-..."
+              value={deepgramKey}
+              onChange={(e) => setDeepgramKey(e.target.value)}
+              className="border-white/15 bg-black/50 text-white placeholder:text-white/30 rounded-xl font-mono text-xs focus:border-white"
+            />
+            <p className="font-mono text-[10px] text-white/50">
+              Powers neural Nova-2 speech diarization.
             </p>
-
-            <div className="relative">
-              <input
-                type={showDeepgram ? "text" : "password"}
-                placeholder="Token or API key..."
-                value={deepgramKey}
-                onChange={(e) => setDeepgramKey(e.target.value)}
-                className="h-9 w-full rounded-md border border-zinc-200 bg-white px-3 pr-9 font-mono text-xs text-zinc-950 placeholder:text-zinc-400 focus:bg-white focus:border-zinc-300 focus:outline-none transition-colors"
-              />
-              <button
-                type="button"
-                onClick={() => setShowDeepgram(!showDeepgram)}
-                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-950 transition-colors"
-              >
-                {showDeepgram ? (
-                  <EyeOff className="h-4 w-4" />
-                ) : (
-                  <Eye className="h-4 w-4" />
-                )}
-              </button>
-            </div>
           </div>
         </div>
 
-        <DialogFooter className="flex flex-row items-center justify-between border-t border-zinc-200 pt-3">
-          <button
-            type="button"
-            onClick={handleClear}
-            className="h-9 flex items-center gap-1.5 rounded-md border border-zinc-200 bg-white px-3 font-mono text-xs font-semibold uppercase text-zinc-600 hover:bg-zinc-50 hover:text-zinc-950 transition-colors"
-          >
-            <Trash2 className="h-3.5 w-3.5" />
-            <span>SEED MODE</span>
-          </button>
+        {savedSuccess && (
+          <div className="rounded-xl border border-white/20 bg-white/10 p-2.5 text-center font-mono text-xs text-white">
+            Keys saved securely to local browser storage.
+          </div>
+        )}
 
+        <DialogFooter className="border-t border-white/10 pt-4 flex flex-row items-center justify-between sm:justify-between">
+          <Button
+            type="button"
+            variant="ghost"
+            onClick={handleClear}
+            className="font-mono text-xs text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-full"
+          >
+            Clear Stored Keys
+          </Button>
           <div className="flex items-center gap-2">
-            <button
+            <Button
               type="button"
+              variant="outline"
               onClick={() => setIsOpen(false)}
-              className="h-9 rounded-md border border-zinc-200 bg-white px-3 font-mono text-xs font-semibold uppercase text-zinc-600 hover:bg-zinc-50 hover:text-zinc-950 transition-colors"
+              className="font-mono text-xs border-white/20 text-white hover:bg-white/10 rounded-full"
             >
-              CANCEL
-            </button>
-            <button
+              Cancel
+            </Button>
+            <Button
               type="button"
               onClick={handleSave}
-              className={cn(
-                "h-9 flex items-center gap-1.5 rounded-md border px-4 font-mono text-xs font-semibold uppercase tracking-wider transition-colors",
-                savedSuccess
-                  ? "border-zinc-200 bg-zinc-100 text-zinc-700"
-                  : "border-zinc-950 bg-zinc-950 text-white hover:bg-zinc-800"
-              )}
+              className="font-mono text-xs bg-white text-black hover:bg-white/90 rounded-full font-semibold"
             >
-              {savedSuccess ? (
-                <>
-                  <CheckCircle2 className="h-4 w-4" />
-                  <span>SAVED!</span>
-                </>
-              ) : (
-                "SAVE KEYS"
-              )}
-            </button>
+              Save Keys
+            </Button>
           </div>
         </DialogFooter>
       </DialogContent>

@@ -10,6 +10,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Check, Minus } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface SpecRow {
   capability: string;
@@ -66,31 +67,31 @@ const SPEC_ROWS: SpecRow[] = [
 export function SpecificationsTable() {
   return (
     <section aria-label="Specifications Table" className="w-full">
-      <div className="mb-6 flex items-baseline justify-between border-b border-[#E4E4E7] pb-3">
+      <div className="mb-6 flex items-baseline justify-between border-b border-white/15 pb-4">
         <div>
-          <span className="text-[10px] font-medium uppercase tracking-widest text-[#737373]">
-            SYSTEM BENCHMARKS / COMPARISON
+          <span className="section-badge mb-2">
+            SYSTEM BENCHMARKS / SPECIFICATION
           </span>
-          <h2 className="font-serif text-2xl font-light tracking-tight text-[#0B0B0B] sm:text-3xl mt-1">
+          <h2 className="font-serif text-3xl font-light tracking-tight text-white sm:text-4xl mt-2">
             Platform Specifications
           </h2>
         </div>
-        <span className="font-mono text-[11px] text-[#737373] hidden sm:inline-block uppercase tracking-wider">
+        <span className="font-mono text-[11px] text-white/50 hidden sm:inline-block uppercase tracking-widest">
           Architecture Delta
         </span>
       </div>
 
-      <div className="rounded-2xl border border-[#E4E4E7] bg-white overflow-hidden shadow-xs">
+      <div className="rounded-3xl border border-white/15 bg-black/45 backdrop-blur-xl overflow-hidden shadow-2xl">
         <Table className="font-mono text-xs">
-          <TableHeader className="bg-[#F4F4F5]/60 border-b border-[#E4E4E7]">
-            <TableRow className="hover:bg-transparent">
-              <TableHead className="w-[220px] font-medium text-[#0B0B0B] uppercase tracking-wider py-3.5 pl-6">
+          <TableHeader className="bg-white/5 border-b border-white/10">
+            <TableRow className="hover:bg-transparent border-white/10">
+              <TableHead className="w-[220px] font-medium text-white uppercase tracking-wider py-4 pl-6">
                 Capability
               </TableHead>
-              <TableHead className="font-medium text-[#0B0B0B] uppercase tracking-wider py-3.5">
+              <TableHead className="font-medium text-white uppercase tracking-wider py-4">
                 Fathom AI Workstation
               </TableHead>
-              <TableHead className="w-[240px] font-medium text-[#737373] uppercase tracking-wider py-3.5 pr-6 hidden sm:table-cell">
+              <TableHead className="w-[240px] font-medium text-white/50 uppercase tracking-wider py-4 pr-6 hidden sm:table-cell">
                 Legacy Recorders
               </TableHead>
             </TableRow>
@@ -99,22 +100,25 @@ export function SpecificationsTable() {
             {SPEC_ROWS.map((row, idx) => (
               <TableRow
                 key={row.capability}
-                className={idx % 2 === 0 ? "bg-white" : "bg-[#FAFAFA]/70"}
+                className={cn(
+                  "border-white/10 transition-colors hover:bg-white/5",
+                  idx % 2 === 0 ? "bg-black/20" : "bg-white/[0.02]"
+                )}
               >
-                <TableCell className="font-medium text-[#0B0B0B] py-3.5 pl-6">
+                <TableCell className="font-medium text-white/90 py-4 pl-6">
                   {row.capability}
                 </TableCell>
-                <TableCell className="py-3.5 text-[#0B0B0B]">
-                  <div className="flex items-center gap-2">
-                    <div className="flex h-4 w-4 items-center justify-center rounded-full bg-[#0B0B0B] text-white shrink-0">
-                      <Check className="h-2.5 w-2.5" />
+                <TableCell className="py-4 text-white">
+                  <div className="flex items-center gap-2.5">
+                    <div className="flex h-4 w-4 items-center justify-center rounded-full bg-white text-black shrink-0">
+                      <Check className="h-2.5 w-2.5 stroke-[3]" />
                     </div>
                     <span>{row.fathom}</span>
                   </div>
                 </TableCell>
-                <TableCell className="py-3.5 text-[#737373] pr-6 hidden sm:table-cell font-light">
+                <TableCell className="py-4 text-white/50 pr-6 hidden sm:table-cell font-light">
                   <div className="flex items-center gap-2">
-                    <Minus className="h-3 w-3 text-[#A1A1AA] shrink-0" />
+                    <Minus className="h-3 w-3 text-white/30 shrink-0" />
                     <span>{row.legacy}</span>
                   </div>
                 </TableCell>
