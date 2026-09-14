@@ -36,6 +36,9 @@ import {
   Zap,
   ArrowRight,
 } from "lucide-react";
+import { ArchitectureAccordion } from "@/components/landing/architecture-accordion";
+import { SpecificationsTable } from "@/components/landing/specifications-table";
+import { PipelineConsole } from "@/components/landing/pipeline-console";
 import { cn } from "@/lib/utils";
 
 type CategoryFilter = "all" | "engineering" | "sales" | "design" | "1-on-1s";
@@ -169,7 +172,7 @@ export default function DashboardPage() {
                 initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.08 }}
-                className="mt-6 rounded-lg border border-[#E4E4E7] bg-white p-5 sm:p-6 shadow-sm hover:border-[#0B0B0B]/40 transition-colors"
+                className="mt-6 rounded-2xl border border-[#E4E4E7] bg-white p-5 sm:p-6 shadow-sm hover:border-[#0B0B0B]/40 transition-colors"
               >
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                   <div className="space-y-1.5">
@@ -190,16 +193,16 @@ export default function DashboardPage() {
                       {benchmarkMeeting.participants.map((p) => (
                         <Tooltip key={p.id}>
                           <TooltipTrigger asChild>
-                            <Avatar className="h-6 w-6 rounded border border-[#E4E4E7] bg-[#F4F4F5] shadow-2xs">
+                            <Avatar className="h-6 w-6 rounded-full border border-[#E4E4E7] bg-[#F4F4F5] shadow-2xs">
                               <AvatarImage src={p.avatarUrl} alt={p.name} />
-                              <AvatarFallback className="rounded font-mono text-[9px] font-medium text-[#0B0B0B]">
+                              <AvatarFallback className="rounded-full font-mono text-[9px] font-medium text-[#0B0B0B]">
                                 {p.name.slice(0, 2).toUpperCase()}
                               </AvatarFallback>
                             </Avatar>
                           </TooltipTrigger>
                           <TooltipContent
                             side="bottom"
-                            className="border border-[#E4E4E7] bg-white text-xs font-mono text-[#0B0B0B] shadow-md rounded"
+                            className="border border-[#E4E4E7] bg-white text-xs font-mono text-[#0B0B0B] shadow-md rounded-lg"
                           >
                             <p className="font-semibold">{p.name}</p>
                           </TooltipContent>
@@ -213,7 +216,7 @@ export default function DashboardPage() {
                     <button
                       type="button"
                       onClick={handleOpenBenchmark}
-                      className="h-8 flex items-center justify-center gap-1.5 rounded bg-[#0B0B0B] px-3.5 text-[11px] font-medium uppercase tracking-wider text-white hover:opacity-90 active:scale-95 transition-all"
+                      className="h-8 flex items-center justify-center gap-1.5 rounded-xl bg-[#0B0B0B] px-3.5 text-[11px] font-medium uppercase tracking-wider text-white hover:opacity-90 active:scale-95 transition-all"
                     >
                       <Play className="h-2.5 w-2.5 fill-current" />
                       <span>LAUNCH</span>
@@ -222,7 +225,7 @@ export default function DashboardPage() {
                     <button
                       type="button"
                       onClick={() => handleShareClick(benchmarkMeeting)}
-                      className="h-8 flex items-center gap-1.5 rounded border border-[#E4E4E7] bg-white px-3 text-[11px] font-normal uppercase tracking-wider text-[#737373] hover:text-[#0B0B0B] hover:border-[#0B0B0B]/40 active:scale-95 transition-all relative group"
+                      className="h-8 flex items-center gap-1.5 rounded-xl border border-[#E4E4E7] bg-white px-3 text-[11px] font-normal uppercase tracking-wider text-[#737373] hover:text-[#0B0B0B] hover:border-[#0B0B0B]/40 active:scale-95 transition-all relative group"
                     >
                       <Share2 className="h-3 w-3" />
                       <span>SHARE</span>
@@ -232,7 +235,7 @@ export default function DashboardPage() {
                     <Link href="/actions">
                       <button
                         type="button"
-                        className="h-8 flex items-center gap-1.5 rounded border border-[#E4E4E7] bg-white px-3 text-[11px] font-normal uppercase tracking-wider text-[#737373] hover:text-[#0B0B0B] hover:border-[#0B0B0B]/40 active:scale-95 transition-all relative group"
+                        className="h-8 flex items-center gap-1.5 rounded-xl border border-[#E4E4E7] bg-white px-3 text-[11px] font-normal uppercase tracking-wider text-[#737373] hover:text-[#0B0B0B] hover:border-[#0B0B0B]/40 active:scale-95 transition-all relative group"
                       >
                         <ListTodo className="h-3 w-3" />
                         <span>TASKS</span>
@@ -390,13 +393,13 @@ export default function DashboardPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {/* Feature Card 1 */}
-              <Card className="rounded-lg border border-[#E4E4E7] bg-white p-5 shadow-2xs hover:border-[#0B0B0B]/50 transition-colors">
+              <Card className="rounded-2xl border border-[#E4E4E7] bg-white p-5 sm:p-6 shadow-2xs hover:border-[#0B0B0B]/50 transition-colors">
                 <CardHeader className="p-0 pb-2.5">
                   <div className="flex items-center justify-between">
-                    <div className="flex h-7 w-7 items-center justify-center rounded bg-[#F4F4F5] text-[#0B0B0B]">
+                    <div className="flex h-7 w-7 items-center justify-center rounded-xl bg-[#F4F4F5] text-[#0B0B0B]">
                       <Zap className="h-3.5 w-3.5" />
                     </div>
-                    <span className="rounded border border-[#E4E4E7] px-1.5 py-0.2 text-[10px] text-[#737373] uppercase">
+                    <span className="rounded-lg border border-[#E4E4E7] px-2 py-0.5 text-[10px] text-[#737373] uppercase">
                       SUB-SECOND
                     </span>
                   </div>
@@ -412,13 +415,13 @@ export default function DashboardPage() {
               </Card>
 
               {/* Feature Card 2 */}
-              <Card className="rounded-lg border border-[#E4E4E7] bg-white p-5 shadow-2xs hover:border-[#0B0B0B]/50 transition-colors">
+              <Card className="rounded-2xl border border-[#E4E4E7] bg-white p-5 sm:p-6 shadow-2xs hover:border-[#0B0B0B]/50 transition-colors">
                 <CardHeader className="p-0 pb-2.5">
                   <div className="flex items-center justify-between">
-                    <div className="flex h-7 w-7 items-center justify-center rounded bg-[#F4F4F5] text-[#0B0B0B]">
+                    <div className="flex h-7 w-7 items-center justify-center rounded-xl bg-[#F4F4F5] text-[#0B0B0B]">
                       <Layers className="h-3.5 w-3.5" />
                     </div>
-                    <span className="rounded border border-[#E4E4E7] px-1.5 py-0.2 text-[10px] text-[#737373] uppercase">
+                    <span className="rounded-lg border border-[#E4E4E7] px-2 py-0.5 text-[10px] text-[#737373] uppercase">
                       4 LENSES
                     </span>
                   </div>
@@ -434,13 +437,13 @@ export default function DashboardPage() {
               </Card>
 
               {/* Feature Card 3 */}
-              <Card className="rounded-lg border border-[#E4E4E7] bg-white p-5 shadow-2xs hover:border-[#0B0B0B]/50 transition-colors">
+              <Card className="rounded-2xl border border-[#E4E4E7] bg-white p-5 sm:p-6 shadow-2xs hover:border-[#0B0B0B]/50 transition-colors">
                 <CardHeader className="p-0 pb-2.5">
                   <div className="flex items-center justify-between">
-                    <div className="flex h-7 w-7 items-center justify-center rounded bg-[#F4F4F5] text-[#0B0B0B]">
+                    <div className="flex h-7 w-7 items-center justify-center rounded-xl bg-[#F4F4F5] text-[#0B0B0B]">
                       <ShieldCheck className="h-3.5 w-3.5" />
                     </div>
-                    <span className="rounded border border-[#E4E4E7] px-1.5 py-0.2 text-[10px] text-[#737373] uppercase">
+                    <span className="rounded-lg border border-[#E4E4E7] px-2 py-0.5 text-[10px] text-[#737373] uppercase">
                       ZERO LOGIN
                     </span>
                   </div>
@@ -460,21 +463,21 @@ export default function DashboardPage() {
           {/* Section 4: Action Items Matrix Access Strip */}
           <motion.section
             aria-label="Tasks Matrix Strip"
-            className="rounded-lg border border-[#E4E4E7] bg-[#F4F4F5]/60 p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3"
+            className="rounded-2xl border border-[#E4E4E7] bg-[#F4F4F5]/60 p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
             initial={{ opacity: 0, y: 16 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-40px" }}
             transition={{ duration: 0.4 }}
           >
             <div className="flex items-center gap-3">
-              <div className="flex h-7 w-7 items-center justify-center rounded bg-[#0B0B0B] text-white shrink-0">
-                <ListTodo className="h-3.5 w-3.5" />
+              <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-[#0B0B0B] text-white shrink-0">
+                <ListTodo className="h-4 w-4" />
               </div>
               <div>
                 <p className="text-xs font-medium uppercase tracking-wide text-[#0B0B0B]">
                   CENTRALIZED ACTION ITEMS MATRIX
                 </p>
-                <p className="text-[11px] text-[#737373] font-light">
+                <p className="text-[11px] text-[#737373] font-light mt-0.5">
                   Track owners, deadlines, and direct timestamp citations across all workspace calls.
                 </p>
               </div>
@@ -483,12 +486,45 @@ export default function DashboardPage() {
             <Link href="/actions" className="shrink-0">
               <button
                 type="button"
-                className="h-8 flex items-center gap-1.5 rounded bg-[#0B0B0B] px-3.5 text-[11px] font-medium uppercase tracking-wider text-white hover:opacity-90 transition-opacity"
+                className="h-8 flex items-center gap-1.5 rounded-xl bg-[#0B0B0B] px-4 text-[11px] font-medium uppercase tracking-wider text-white hover:opacity-90 transition-opacity"
               >
                 <span>OPEN MATRIX</span>
                 <ArrowRight className="h-3 w-3" />
               </button>
             </Link>
+          </motion.section>
+
+          {/* Section 5: Interactive Pipeline Execution Console (shadcn Tabs) */}
+          <motion.section
+            aria-label="Pipeline Console"
+            initial={{ opacity: 0, y: 18 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-40px" }}
+            transition={{ duration: 0.4 }}
+          >
+            <PipelineConsole />
+          </motion.section>
+
+          {/* Section 6: Platform Specifications Comparison Table (shadcn Table) */}
+          <motion.section
+            aria-label="Platform Specifications"
+            initial={{ opacity: 0, y: 18 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-40px" }}
+            transition={{ duration: 0.4 }}
+          >
+            <SpecificationsTable />
+          </motion.section>
+
+          {/* Section 7: Technical Architecture Deep-Dive (shadcn Accordion) */}
+          <motion.section
+            aria-label="Technical Architecture"
+            initial={{ opacity: 0, y: 18 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-40px" }}
+            transition={{ duration: 0.4 }}
+          >
+            <ArchitectureAccordion />
           </motion.section>
         </main>
 

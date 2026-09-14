@@ -63,7 +63,7 @@ export function FluidHeader() {
     <>
       {/* Floating Island Header - Nockchain architectural minimalism */}
       <header className="sticky top-3 z-50 w-full px-4 sm:px-6 lg:px-8 pointer-events-none mb-2 font-mono">
-        <div className="mx-auto max-w-6xl pointer-events-auto rounded-lg border border-[#E4E4E7]/70 bg-white/75 backdrop-blur-xl shadow-xs transition-all hover:bg-white/90">
+        <div className="mx-auto max-w-6xl pointer-events-auto rounded-2xl border border-[#E4E4E7]/80 bg-white/80 backdrop-blur-xl shadow-xs transition-all hover:bg-white/95">
           <div className="flex h-12 items-center justify-between px-3 sm:px-4 gap-2 sm:gap-3">
             {/* Left: Nockchain typography brand + workspace dropdown */}
             <div className="flex items-center gap-2.5 shrink-0">
@@ -71,7 +71,7 @@ export function FluidHeader() {
                 href="/"
                 className="flex items-center gap-2 transition-opacity hover:opacity-80 group"
               >
-                <FathomLogo className="h-6 w-6 rounded-md" size={24} />
+                <FathomLogo className="h-6 w-6 rounded-xl" size={24} />
                 <span className="text-sm font-semibold tracking-wider text-[#0B0B0B] uppercase">
                   FATHOM
                 </span>
@@ -82,7 +82,7 @@ export function FluidHeader() {
                 <DropdownMenuTrigger asChild>
                   <button
                     type="button"
-                    className="hidden sm:flex items-center gap-1.5 rounded border border-[#E4E4E7] bg-white/60 px-2 py-0.5 text-xs text-[#737373] hover:text-[#0B0B0B] hover:bg-white transition-colors focus:outline-none"
+                    className="hidden sm:flex items-center gap-1.5 rounded-xl border border-[#E4E4E7] bg-white/70 px-2.5 py-1 text-xs text-[#737373] hover:text-[#0B0B0B] hover:bg-white transition-colors focus:outline-none"
                   >
                     <span className="max-w-[120px] truncate text-[11px] uppercase tracking-wide">
                       {currentWorkspace}
@@ -90,7 +90,7 @@ export function FluidHeader() {
                     <ChevronDown className="h-3 w-3 opacity-60" />
                   </button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="start" className="w-52 p-1 text-xs font-mono">
+                <DropdownMenuContent align="start" className="w-52 p-1.5 text-xs font-mono rounded-xl border border-[#E4E4E7] shadow-lg">
                   <DropdownMenuLabel className="text-[10px] font-medium uppercase tracking-wider text-[#737373] px-2 py-1">
                     Workspaces
                   </DropdownMenuLabel>
@@ -98,7 +98,7 @@ export function FluidHeader() {
                     <DropdownMenuItem
                       key={ws}
                       onClick={() => setCurrentWorkspace(ws)}
-                      className="flex items-center justify-between px-2 py-1.5 cursor-pointer rounded-sm"
+                      className="flex items-center justify-between px-2.5 py-1.5 cursor-pointer rounded-lg hover:bg-[#F4F4F5]"
                     >
                       <span className="text-[11px]">{ws}</span>
                       {currentWorkspace === ws && (
@@ -107,7 +107,7 @@ export function FluidHeader() {
                     </DropdownMenuItem>
                   ))}
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem className="flex items-center gap-2 px-2 py-1.5 cursor-pointer rounded-sm text-[#737373]">
+                  <DropdownMenuItem className="flex items-center gap-2 px-2.5 py-1.5 cursor-pointer rounded-lg text-[#737373] hover:bg-[#F4F4F5]">
                     <Plus className="h-3.5 w-3.5" />
                     <span className="text-[11px]">Create Workspace</span>
                   </DropdownMenuItem>
@@ -214,12 +214,12 @@ export function FluidHeader() {
               <button
                 type="button"
                 onClick={handleOpenSearch}
-                className="rounded border border-[#E4E4E7] bg-white/70 px-2 py-0.5 text-xs text-[#737373] hover:text-[#0B0B0B] hover:bg-white transition-colors flex items-center gap-1.5"
+                className="rounded-xl border border-[#E4E4E7] bg-white/70 px-2.5 py-1 text-xs text-[#737373] hover:text-[#0B0B0B] hover:bg-white transition-colors flex items-center gap-1.5"
                 aria-label="Open search dialog"
               >
                 <Search className="h-3 w-3 text-[#737373]" />
                 <span className="hidden sm:inline text-[11px] uppercase">Search</span>
-                <kbd className="hidden sm:inline-flex items-center rounded border border-[#E4E4E7] bg-[#F4F4F5] px-1 py-0.2 text-[9px]">
+                <kbd className="hidden sm:inline-flex items-center rounded-md border border-[#E4E4E7] bg-[#F4F4F5] px-1 py-0.2 text-[9px]">
                   ⌘K
                 </kbd>
               </button>
@@ -228,7 +228,7 @@ export function FluidHeader() {
               <button
                 type="button"
                 onClick={() => setRecorderOpen(true)}
-                className="rounded bg-[#0B0B0B] text-white hover:opacity-90 text-[11px] font-medium tracking-wide uppercase px-2.5 py-1 flex items-center gap-1.5 transition-opacity"
+                className="rounded-xl bg-[#0B0B0B] text-white hover:opacity-90 text-[11px] font-medium tracking-wide uppercase px-3 py-1 flex items-center gap-1.5 transition-opacity"
               >
                 <span>Record</span>
               </button>
@@ -237,19 +237,19 @@ export function FluidHeader() {
               <button
                 type="button"
                 onClick={() => setSettingsOpen(true)}
-                className="rounded border border-[#E4E4E7] bg-white/60 p-1 text-[#737373] hover:text-[#0B0B0B] hover:bg-white transition-colors"
+                className="rounded-xl border border-[#E4E4E7] bg-white/70 p-1.5 text-[#737373] hover:text-[#0B0B0B] hover:bg-white transition-colors"
                 title="API Keys & Settings"
               >
                 <Settings className="h-3.5 w-3.5" />
               </button>
 
               {/* User Avatar */}
-              <Avatar className="h-6 w-6 rounded border border-[#E4E4E7]">
+              <Avatar className="h-6 w-6 rounded-full border border-[#E4E4E7]">
                 <AvatarImage
                   src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&h=150&fit=crop&crop=face"
                   alt="User"
                 />
-                <AvatarFallback className="rounded bg-[#F4F4F5] text-[9px] font-medium text-[#0B0B0B]">
+                <AvatarFallback className="rounded-full bg-[#F4F4F5] text-[9px] font-medium text-[#0B0B0B]">
                   MW
                 </AvatarFallback>
               </Avatar>

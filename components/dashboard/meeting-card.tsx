@@ -139,7 +139,7 @@ export function MeetingCard({ meeting, className, onShare }: MeetingCardProps) {
       <Card
         onClick={handleCardClick}
         className={cn(
-          "group relative flex flex-col justify-between overflow-hidden rounded-lg border border-[#E4E4E7] bg-white p-0 transition-all duration-300 hover:border-[#0B0B0B]/60 hover:shadow-md cursor-pointer font-mono",
+          "group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-[#E4E4E7] bg-white p-0 transition-all duration-300 hover:border-[#0B0B0B]/60 hover:shadow-md cursor-pointer font-mono",
           className
         )}
       >
@@ -150,13 +150,13 @@ export function MeetingCard({ meeting, className, onShare }: MeetingCardProps) {
               {meeting.tags?.slice(0, 2).map((tag) => (
                 <span
                   key={tag}
-                  className="rounded border border-[#E4E4E7] bg-[#F4F4F5] px-2 py-0.5 text-[10px] uppercase tracking-wider text-[#737373] font-normal"
+                  className="rounded-lg border border-[#E4E4E7] bg-[#F4F4F5] px-2 py-0.5 text-[10px] uppercase tracking-wider text-[#737373] font-normal"
                 >
                   {tag}
                 </span>
               ))}
               {meeting.highlights?.length > 0 && (
-                <span className="flex items-center gap-1 rounded border border-[#E4E4E7] bg-white px-2 py-0.5 text-[10px] text-[#0B0B0B] uppercase">
+                <span className="flex items-center gap-1 rounded-lg border border-[#E4E4E7] bg-white px-2 py-0.5 text-[10px] text-[#0B0B0B] uppercase">
                   <Sparkles className="h-2.5 w-2.5 text-[#737373]" />
                   <span>{meeting.highlights.length} CLIPS</span>
                 </span>
@@ -197,16 +197,16 @@ export function MeetingCard({ meeting, className, onShare }: MeetingCardProps) {
               {visibleParticipants.map((p) => (
                 <Tooltip key={p.id}>
                   <TooltipTrigger asChild>
-                    <Avatar className="h-6 w-6 rounded border border-[#E4E4E7] bg-white shadow-2xs transition-transform hover:scale-110 hover:z-20">
+                    <Avatar className="h-6 w-6 rounded-full border border-[#E4E4E7] bg-white shadow-2xs transition-transform hover:scale-110 hover:z-20">
                       <AvatarImage src={p.avatarUrl} alt={p.name} />
-                      <AvatarFallback className="rounded bg-[#F4F4F5] text-[9px] font-medium text-[#0B0B0B]">
+                      <AvatarFallback className="rounded-full bg-[#F4F4F5] text-[9px] font-medium text-[#0B0B0B]">
                         {p.name.slice(0, 2).toUpperCase()}
                       </AvatarFallback>
                     </Avatar>
                   </TooltipTrigger>
                   <TooltipContent
                     side="top"
-                    className="border border-[#E4E4E7] bg-white text-xs font-mono text-[#0B0B0B] shadow-md rounded"
+                    className="border border-[#E4E4E7] bg-white text-xs font-mono text-[#0B0B0B] shadow-md rounded-lg"
                   >
                     <p className="font-semibold">{p.name}</p>
                     {p.role && <p className="text-[10px] text-[#737373]">{p.role}</p>}
@@ -215,7 +215,7 @@ export function MeetingCard({ meeting, className, onShare }: MeetingCardProps) {
               ))}
 
               {remainingCount > 0 && (
-                <div className="flex h-6 w-6 items-center justify-center rounded border border-[#E4E4E7] bg-[#F4F4F5] text-[9px] text-[#737373]">
+                <div className="flex h-6 w-6 items-center justify-center rounded-full border border-[#E4E4E7] bg-[#F4F4F5] text-[9px] text-[#737373]">
                   +{remainingCount}
                 </div>
               )}
@@ -223,7 +223,7 @@ export function MeetingCard({ meeting, className, onShare }: MeetingCardProps) {
 
             {/* Action Item Indicator */}
             {totalActions > 0 && (
-              <span className="flex items-center gap-1.5 rounded border border-[#E4E4E7] bg-[#F4F4F5] px-2 py-0.5 text-[10px] text-[#737373] uppercase">
+              <span className="flex items-center gap-1.5 rounded-lg border border-[#E4E4E7] bg-[#F4F4F5] px-2 py-0.5 text-[10px] text-[#737373] uppercase">
                 <ListTodo className="h-3 w-3 text-[#737373]" />
                 <span>
                   {pendingActions}/{totalActions} TASKS
@@ -283,7 +283,7 @@ export function MeetingCard({ meeting, className, onShare }: MeetingCardProps) {
               e.stopPropagation();
               handleCardClick();
             }}
-            className="flex items-center gap-1.5 rounded bg-[#0B0B0B] px-3 py-1 text-[11px] font-medium tracking-wide uppercase text-white hover:opacity-90 transition-opacity"
+            className="flex items-center gap-1.5 rounded-xl bg-[#0B0B0B] px-3.5 py-1 text-[11px] font-medium tracking-wide uppercase text-white hover:opacity-90 transition-opacity"
           >
             <Play className="h-2.5 w-2.5 fill-current" />
             <span>OPEN</span>
