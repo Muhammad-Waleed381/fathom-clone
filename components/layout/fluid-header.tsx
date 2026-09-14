@@ -22,6 +22,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { CommandSearch } from "@/components/dashboard/command-search";
 import { MeetingRecorderModal } from "@/components/record/meeting-recorder-modal";
 import { ApiKeysModal } from "@/components/settings/api-keys-modal";
+import { FathomLogo } from "@/components/ui/fathom-logo";
 import {
   Search,
   Settings,
@@ -64,15 +65,13 @@ export function FluidHeader() {
       <header className="sticky top-3 z-50 w-full px-4 sm:px-6 lg:px-8 pointer-events-none mb-2">
         <div className="mx-auto max-w-6xl pointer-events-auto rounded-xl border border-zinc-200/50 bg-white/40 backdrop-blur-xl shadow-xs transition-all hover:bg-white/60">
           <div className="flex h-12 items-center justify-between px-3 sm:px-4 gap-2 sm:gap-3">
-            {/* Left: Minimal geometric Fathom icon + workspace dropdown */}
+            {/* Left: Custom Fathom soundwave logo + workspace dropdown */}
             <div className="flex items-center gap-2.5 shrink-0">
               <Link
                 href="/"
                 className="flex items-center gap-2 transition-opacity hover:opacity-85"
               >
-                <div className="flex h-6.5 w-6.5 items-center justify-center rounded-md bg-zinc-950 text-white font-mono text-xs font-bold shadow-xs">
-                  F
-                </div>
+                <FathomLogo className="h-6.5 w-6.5 shadow-xs rounded-md" size={26} />
                 <span className="font-semibold text-sm tracking-tight text-zinc-950 hidden xs:inline">
                   Fathom
                 </span>
