@@ -43,7 +43,9 @@ const CHROME =
 
 const results = [];
 const t0 = Date.now();
+const ONLY = (process.env.ONLY || "").split(",").filter(Boolean);
 async function check(name, fn) {
+  if (ONLY.length && !ONLY.some((id) => name.startsWith(id + " "))) return;
   const start = Date.now();
   try {
     const note = await fn();
@@ -128,23 +130,27 @@ await checkA("A3 summarize: all 4 templates via local-fallback path (invalid key
   return "fallback produced sections for every template";
 });
 
-await checkA("A4 summarize: executive via live OpenRouter (120s cap)", async () => {
+await checkA("A4 summarize: executive responds within the OpenRouter deadline", async () => {
   assert(transcript, "needs A1");
-  const { status, json } = await postJson(`${BASE}/api/ai/summarize`, { transcriptText: aggregated(), template: "executive", meetingTitle: "Engineering Sync" }, 120000).catch((e) => {
-    throw new Error(e.name === "AbortError" ? "no response in 120s — upstream stalled and lib/openrouter.ts has no timeout" : e.message);
+  const t = Date.now();
+  const { status, json } = await postJson(`${BASE}/api/ai/summarize`, { transcriptText: aggregated(), template: "executive", meetingTitle: "Engineering Sync" }, 90000).catch((e) => {
+    throw new Error(e.name === "AbortError" ? "no response in 90s — the 45s OpenRouter deadline is not being honoured" : e.message);
   });
+  const secs = ((Date.now() - t) / 1000).toFixed(1);
   assert(status === 200, `HTTP ${status}`);
-  assert(json.model && json.model !== "local-fallback", `fell back to local (${json.model})`);
   assert(json.summary?.overview?.length > 40, "overview too short");
+  assert(Date.now() - t < 60000, `took ${secs}s; deadline should cap this near 45s`);
   summaries.executive = json.summary;
-  return `model ${json.model}, ${json.summary.sections?.length} sections`;
+  return `${secs}s via ${json.model}${json.model === "local-fallback" ? " (upstream exceeded the 45s deadline)" : ""}`;
 });
 
-await checkA("A5 ask: live OpenRouter answers a question (120s cap)", async () => {
+await checkA("A5 ask: answers within the OpenRouter deadline", async () => {
   assert(transcript, "needs A1");
-  const { status, json } = await postJson(`${BASE}/api/ai/ask`, { transcriptText: aggregated(), question: "When is the code freeze and what are the three topics?", meetingTitle: "Engineering Sync" }, 120000).catch((e) => {
-    throw new Error(e.name === "AbortError" ? "no response in 120s" : e.message);
+  const t = Date.now();
+  const { status, json } = await postJson(`${BASE}/api/ai/ask`, { transcriptText: aggregated(), question: "When is the code freeze and what are the three topics?", meetingTitle: "Engineering Sync" }, 90000).catch((e) => {
+    throw new Error(e.name === "AbortError" ? "no response in 90s — deadline not honoured" : e.message);
   });
+  assert(Date.now() - t < 60000, `took ${((Date.now() - t) / 1000).toFixed(1)}s`);
   assert(status === 200, `HTTP ${status}`);
   const a = json.answer || json.content || "";
   assert(a.length > 20, "empty answer");
@@ -161,7 +167,7 @@ await checkA("A6 ask rejects an empty question (400)", async () => {
 // ---------------------------------------------------------------------------
 console.log(`\nTier B — browser (${LIVE_AI ? "LIVE AI" : "AI via local-fallback"})`);
 const { default: puppeteer } = await import(PUPPETEER_CORE);
-const browser = await puppeteer.launch({ executablePath: CHROME, headless: true, args: ["--no-sandbox", "--disable-gpu"] });
+const browser = await puppeteer.launch({ executablePath: CHROME, headless: true, protocolTimeout: 600000, args: ["--no-sandbox", "--disable-gpu"] });
 const page = await browser.newPage();
 await page.setViewport({ width: 1440, height: 900 });
 const pageErrors = [];
@@ -410,6 +416,85 @@ await check("B8 ⌘K search finds the recorded meeting", async () => {
   await waitForText("E2E Simulated Sync", 10000);
   await shot("b8-cmdk");
   await page.keyboard.press("Escape");
+});
+
+await check("B10 upload MP3 in the recorder → Deepgram → generated meeting", async () => {
+  assert(fs.existsSync(MP3), `audio file not found: ${MP3}`);
+  await page.goto(`${BASE}/dashboard`, { waitUntil: "networkidle0" });
+  await clickByText("button", "Record now");
+  await page.waitForSelector('input[placeholder="Enter meeting title..."]', { timeout: 5000 });
+  await clickByText("button", "Upload audio");
+  const input = await page.waitForSelector('[data-testid="audio-upload-input"]', { timeout: 5000 });
+  await input.uploadFile(MP3);
+  await waitForText(path.basename(MP3), 5000);
+  await clickByText("button", "Transcribe & generate notes");
+  await page.waitForFunction(() => /^\/meetings\/rec-/.test(location.pathname), { timeout: 320000 });
+  await page.waitForSelector("h1", { timeout: 10000 });
+  const title = await $text("h1");
+  await clickTab("Transcript");
+  await page.waitForSelector(SEG, { timeout: 10000 });
+  const segs = await page.$$eval(SEG, (n) => n.length);
+  assert(segs >= 10, `only ${segs} segments — Deepgram result not used`);
+  const stored = await page.evaluate(() => {
+    const s = JSON.parse(localStorage.getItem("fathom-meeting-storage"));
+    const m = s.state.meetings.find((x) => x.id === location.pathname.split("/").pop());
+    return m && { tags: m.tags, duration: m.duration, participants: m.participants.map((p) => p.name) };
+  });
+  assert(stored?.tags?.includes("Deepgram"), `unexpected tags ${JSON.stringify(stored?.tags)}`);
+  assert(stored.duration > 100, `duration ${stored.duration}s looks wrong for a 2-minute file`);
+  await shot("b10-upload");
+  return `"${title}" — ${segs} segments, ${stored.duration}s, speakers ${stored.participants.join(", ")}`;
+});
+
+await check("B11 live mic → Deepgram websocket → batch finalize (fake audio device)", async () => {
+  let ffmpeg = "";
+  try { ffmpeg = execSync("which ffmpeg", { shell: "/bin/bash" }).toString().trim(); } catch { /* none */ }
+  assert(ffmpeg, "ffmpeg not installed — cannot build the WAV Chromium needs for a fake mic");
+  const wav = path.join(OUT_DIR, "fake-mic.wav");
+  if (!fs.existsSync(wav)) execSync(`"${ffmpeg}" -y -loglevel error -i "${MP3}" -t 40 -ac 1 -ar 16000 -sample_fmt s16 "${wav}"`);
+  const mic = await puppeteer.launch({
+    executablePath: CHROME,
+    headless: true,
+    protocolTimeout: 600000,
+    args: ["--no-sandbox", "--disable-gpu", "--use-fake-device-for-media-stream", "--use-fake-ui-for-media-stream", `--use-file-for-fake-audio-capture=${wav}%noloop`],
+  });
+  try {
+    const mp = await mic.newPage();
+    await mp.setViewport({ width: 1440, height: 900 });
+    const errors = [];
+    mp.on("pageerror", (e) => errors.push(String(e)));
+    if (!LIVE_AI) {
+      await mp.setRequestInterception(true);
+      mp.on("request", (req) => {
+        if (req.method() === "POST" && /\/api\/ai\//.test(req.url())) {
+          try { const body = JSON.parse(req.postData() || "{}"); body.apiKey = "sk-or-invalid"; return req.continue({ postData: JSON.stringify(body) }); } catch { /* fall through */ }
+        }
+        req.continue();
+      });
+    }
+    await mp.goto(`${BASE}/dashboard`, { waitUntil: "networkidle0" });
+    const click = async (t) => { const h = await mp.evaluateHandle((t) => [...document.querySelectorAll("button")].find((b) => b.textContent.trim() === t) || null, t); const el = h.asElement(); assert(el, `no button "${t}"`); await el.click(); };
+    await click("Record now");
+    await mp.waitForSelector('input[placeholder="Enter meeting title..."]', { timeout: 5000 });
+    await click("Mic");
+    await click("Start recording");
+    await mp.waitForFunction(() => document.body.innerText.includes("Live · Deepgram"), { timeout: 20000 }).catch(() => { throw new Error("websocket never reached live state: " + (errors[0] || "no page error")); });
+    await mp.waitForFunction(() => Number((document.body.innerText.match(/(\d+) segments captured/) || [])[1]) >= 2, { timeout: 45000 }).catch(() => { throw new Error("no live segments arrived from Deepgram within 45s"); });
+    const live = await mp.evaluate(() => Number((document.body.innerText.match(/(\d+) segments captured/) || [])[1]));
+    await mp.screenshot({ path: path.join(OUT_DIR, "b11-live-mic.png") });
+    await click("Stop & generate AI notes");
+    await mp.waitForFunction(() => /^\/meetings\/rec-/.test(location.pathname), { timeout: 320000 });
+    const stored = await mp.evaluate(() => {
+      const s = JSON.parse(localStorage.getItem("fathom-meeting-storage"));
+      const m = s.state.meetings.find((x) => x.id === location.pathname.split("/").pop());
+      return m && { tags: m.tags, segments: m.transcript.length, text: m.transcript.map((t) => t.text).join(" ").slice(0, 120) };
+    });
+    assert(stored && stored.segments > 0, "meeting has no transcript");
+    assert(/code freeze|deployment|highlights|migration|engineering|latency|caching/i.test(stored.text), `transcript doesn't match the audio: "${stored.text}"`);
+    return `${live} live segments, ${stored.segments} final (${stored.tags.join(", ")}): "${stored.text.slice(0, 70)}…"`;
+  } finally {
+    await mic.close();
+  }
 });
 
 await check("B9 no uncaught page errors across the run", async () => {

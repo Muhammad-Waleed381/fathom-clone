@@ -1,4 +1,6 @@
 import { TranscriptSegment, TranscriptWord } from "@/types/meeting";
+import { spawn } from "node:child_process";
+import { accessSync, constants } from "node:fs";
 
 export const DEEPGRAM_API_URL =
   "https://api.deepgram.com/v1/listen?model=nova-2&diarize=true&punctuate=true&utterances=true&smart_format=true";
@@ -145,11 +147,88 @@ export function getMockDiarizedTranscription(): TranscriptionResponse {
  * Transcribes audio via Deepgram Nova-2 API with speaker diarization and sub-second word timestamps.
  * Falls back to realistic mock diarization if no key is provided or if network fails.
  */
+export class DeepgramError extends Error {
+  status: number;
+  constructor(message: string, status = 502) {
+    super(message);
+    this.name = "DeepgramError";
+    this.status = status;
+  }
+}
+
+const REQUEST_TIMEOUT_MS = Number(process.env.DEEPGRAM_TIMEOUT_MS || 120000);
+const MAX_ATTEMPTS = 3;
+
+// Deepgram rejects uploads that arrive too slowly (408 SLOW_UPLOAD). Speech
+// compresses ~7x to 16 kHz mono Opus with no loss for nova-2, so shrink
+// anything sizeable before sending when ffmpeg is available.
+const COMPACT_THRESHOLD_BYTES = Number(process.env.DEEPGRAM_COMPACT_THRESHOLD || 400 * 1024);
+const FFMPEG_CANDIDATES = [process.env.FFMPEG_PATH, "/usr/bin/ffmpeg", "/usr/local/bin/ffmpeg", "/opt/homebrew/bin/ffmpeg"].filter(Boolean) as string[];
+let ffmpegPath: string | null | undefined;
+
+function findFfmpeg(): string | null {
+  if (ffmpegPath !== undefined) return ffmpegPath;
+  ffmpegPath = null;
+  for (const candidate of FFMPEG_CANDIDATES) {
+    try {
+      accessSync(candidate, constants.X_OK);
+      ffmpegPath = candidate;
+      break;
+    } catch {
+      /* try next */
+    }
+  }
+  return ffmpegPath;
+}
+
+const ALREADY_COMPACT = /opus|ogg|webm/i;
+
+/** Transcode to 16 kHz mono Opus in an Ogg container; null if not possible. */
+export async function compactAudio(buffer: Buffer, mimeType: string): Promise<{ buffer: Buffer; mimeType: string } | null> {
+  if (buffer.byteLength < COMPACT_THRESHOLD_BYTES || ALREADY_COMPACT.test(mimeType)) return null;
+  const bin = findFfmpeg();
+  if (!bin) return null;
+  return new Promise((resolve) => {
+    const child = spawn(bin, ["-loglevel", "error", "-i", "pipe:0", "-vn", "-ac", "1", "-ar", "16000", "-c:a", "libopus", "-b:a", "24k", "-application", "voip", "-f", "ogg", "pipe:1"], { stdio: ["pipe", "pipe", "pipe"] });
+    const out: Buffer[] = [];
+    let err = "";
+    child.stdout.on("data", (d) => out.push(d));
+    child.stderr.on("data", (d) => (err += d.toString()));
+    child.on("error", () => resolve(null));
+    child.on("close", (code) => {
+      const result = Buffer.concat(out);
+      if (code === 0 && result.byteLength > 0 && result.byteLength < buffer.byteLength) {
+        console.info(`Deepgram upload compacted ${buffer.byteLength} → ${result.byteLength} bytes`);
+        resolve({ buffer: result, mimeType: "audio/ogg" });
+      } else {
+        console.warn(`ffmpeg transcode skipped (code ${code}): ${err.slice(0, 200)}`);
+        resolve(null);
+      }
+    });
+    child.stdin.on("error", () => {});
+    child.stdin.end(buffer);
+  });
+}
+
+/** Deepgram returns 408 SLOW_UPLOAD on slow links; 429/5xx are transient. */
+function isRetryable(status: number) {
+  return status === 408 || status === 429 || status >= 500;
+}
+
+/**
+ * Transcribe a buffer with Deepgram (nova-2, diarized).
+ *
+ * With no key configured the deterministic mock is returned so the app works
+ * offline. With a key configured, failures are surfaced as DeepgramError rather
+ * than silently swapped for mock text — callers can opt back into the mock
+ * with allowFallback.
+ */
 export async function transcribeAudioWithDeepgram({
   buffer,
   mimeType = "audio/wav",
   apiKey,
-}: TranscribeOptions): Promise<TranscriptionResponse> {
+  allowFallback = false,
+}: TranscribeOptions & { allowFallback?: boolean }): Promise<TranscriptionResponse> {
   const activeKey =
     apiKey ||
     process.env.DEEPGRAM_API_KEY ||
@@ -160,23 +239,66 @@ export async function transcribeAudioWithDeepgram({
     return getMockDiarizedTranscription();
   }
 
-  try {
-    const response = await fetch(DEEPGRAM_API_URL, {
-      method: "POST",
-      headers: {
-        Authorization: `Token ${activeKey}`,
-        "Content-Type": mimeType || "application/octet-stream",
-      },
-      body: buffer as unknown as BodyInit,
-    });
+  let lastError: DeepgramError | null = null;
+
+  let body: Buffer | ArrayBuffer = buffer;
+  let contentType = mimeType || "application/octet-stream";
+  const compacted = await compactAudio(Buffer.isBuffer(buffer) ? buffer : Buffer.from(buffer), contentType).catch(() => null);
+  if (compacted) {
+    body = compacted.buffer;
+    contentType = compacted.mimeType;
+  }
+
+  for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+    let response: Response;
+    try {
+      response = await fetch(DEEPGRAM_API_URL, {
+        method: "POST",
+        headers: {
+          Authorization: `Token ${activeKey}`,
+          "Content-Type": contentType,
+        },
+        body: body as unknown as BodyInit,
+        signal: controller.signal,
+      });
+    } catch (err: any) {
+      clearTimeout(timer);
+      const aborted = err?.name === "AbortError";
+      lastError = new DeepgramError(
+        aborted ? `Deepgram did not respond within ${REQUEST_TIMEOUT_MS / 1000}s` : `Could not reach Deepgram: ${err?.message || err}`,
+        aborted ? 504 : 502
+      );
+      console.warn(`Deepgram attempt ${attempt}/${MAX_ATTEMPTS} failed: ${lastError.message}`);
+      if (attempt < MAX_ATTEMPTS) await new Promise((r) => setTimeout(r, 1500 * attempt));
+      continue;
+    }
+    clearTimeout(timer);
 
     if (!response.ok) {
       const errorText = await response.text().catch(() => "");
-      console.warn(`Deepgram API error (${response.status}): ${errorText}. Falling back to mock transcription.`);
-      return getMockDiarizedTranscription();
+      lastError = new DeepgramError(`Deepgram API error (${response.status}): ${errorText.slice(0, 200)}`, response.status);
+      console.warn(`Deepgram attempt ${attempt}/${MAX_ATTEMPTS}: ${lastError.message}`);
+      if (isRetryable(response.status) && attempt < MAX_ATTEMPTS) {
+        await new Promise((r) => setTimeout(r, 1500 * attempt));
+        continue;
+      }
+      break;
     }
 
-    const data = await response.json();
+    return parseDeepgramResponse(await response.json());
+  }
+
+  if (allowFallback) {
+    console.warn("Deepgram unavailable; caller allowed the mock fallback.");
+    return getMockDiarizedTranscription();
+  }
+  throw lastError ?? new DeepgramError("Deepgram transcription failed");
+}
+
+function parseDeepgramResponse(data: any): TranscriptionResponse {
+  {
     const utterances = data?.results?.utterances;
 
     // 1. Process structured utterances with speaker diarization
@@ -289,10 +411,6 @@ export async function transcribeAudioWithDeepgram({
       };
     }
 
-    // Default fallback if payload is malformed
-    return getMockDiarizedTranscription();
-  } catch (error) {
-    console.error("Deepgram transcription failed, using fallback mock:", error);
-    return getMockDiarizedTranscription();
+    throw new DeepgramError("Deepgram returned a response with no transcript", 502);
   }
 }

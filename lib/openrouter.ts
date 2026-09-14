@@ -1,6 +1,18 @@
 import { SummarySection, SummaryTemplateContent, SummaryTemplateId } from "@/types/meeting";
 
 export const DEFAULT_OPENROUTER_MODEL = "nex-agi/nex-n2.5-pro:free";
+
+/**
+ * Free-tier models can queue for many minutes; without a deadline the recorder
+ * would hang. Past this the callers fall through to the local fallback.
+ */
+export const OPENROUTER_TIMEOUT_MS = Number(process.env.OPENROUTER_TIMEOUT_MS || 45000);
+
+function withTimeout(ms: number) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), ms);
+  return { signal: controller.signal, clear: () => clearTimeout(timer) };
+}
 export const OPENROUTER_API_URL = "https://openrouter.ai/api/v1/chat/completions";
 
 export interface Citation {
@@ -743,6 +755,7 @@ export async function generateMeetingSummary({
   try {
     const prompt = getPromptForTemplate(template, transcriptText, meetingTitle);
 
+    const deadline = withTimeout(OPENROUTER_TIMEOUT_MS);
     const response = await fetch(OPENROUTER_API_URL, {
       method: "POST",
       headers: {
@@ -766,7 +779,9 @@ export async function generateMeetingSummary({
         ],
         temperature: 0.2,
       }),
+      signal: deadline.signal,
     });
+    deadline.clear();
 
     if (!response.ok) {
       console.warn(`OpenRouter API error (${response.status}): Falling back to local intelligence.`);
@@ -827,7 +842,8 @@ export async function generateMeetingSummary({
       model,
     };
   } catch (error) {
-    console.error("OpenRouter summary generation failed, using intelligent fallback:", error);
+    const reason = (error as any)?.name === "AbortError" ? `no response within ${OPENROUTER_TIMEOUT_MS / 1000}s` : error;
+    console.error("OpenRouter summary generation failed, using intelligent fallback:", reason);
     return {
       summary: generateFallbackSummary(template, transcriptText, meetingTitle),
       isFallback: true,
@@ -868,6 +884,7 @@ export async function askMeetingQuestion({
   try {
     const prompt = generateAskFathomPrompt(transcriptText, question, meetingTitle);
 
+    const deadline = withTimeout(OPENROUTER_TIMEOUT_MS);
     const response = await fetch(OPENROUTER_API_URL, {
       method: "POST",
       headers: {
@@ -891,7 +908,9 @@ export async function askMeetingQuestion({
         ],
         temperature: 0.2,
       }),
+      signal: deadline.signal,
     });
+    deadline.clear();
 
     if (!response.ok) {
       console.warn(`OpenRouter API error (${response.status}): Falling back to local intelligence.`);
@@ -922,7 +941,8 @@ export async function askMeetingQuestion({
       model,
     };
   } catch (error) {
-    console.error("OpenRouter Ask Fathom failed, using intelligent fallback:", error);
+    const reason = (error as any)?.name === "AbortError" ? `no response within ${OPENROUTER_TIMEOUT_MS / 1000}s` : error;
+    console.error("OpenRouter Ask Fathom failed, using intelligent fallback:", reason);
     const fallback = generateFallbackAnswer(question, transcriptText, meetingTitle);
     return {
       answer: fallback.answer,

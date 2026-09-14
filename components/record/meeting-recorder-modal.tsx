@@ -1,19 +1,16 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   Dialog,
   DialogContent,
-  DialogHeader,
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
 import { useMeetingStore } from "@/lib/store/use-meeting-store";
-import {
-  useSpeechRecognition,
-  SAMPLE_SIMULATION_DIALOGUE,
-} from "@/lib/audio/use-speech-recognition";
+import { useDeepgramRecorder } from "@/lib/audio/use-deepgram-recorder";
+import { SAMPLE_SIMULATION_DIALOGUE } from "@/lib/audio/simulation-dialogue";
 import { WaveformVisualizer } from "./waveform-visualizer";
 import {
   Meeting,
@@ -27,16 +24,17 @@ import {
 import { generateFallbackSummary } from "@/lib/openrouter";
 import {
   Mic,
-  Square,
   Play,
   Pause,
   RotateCcw,
   Sparkles,
-  Bot,
   Radio,
   Clock,
   AlertCircle,
   Loader2,
+  Upload,
+  FileAudio,
+  X,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -47,6 +45,67 @@ export interface MeetingRecorderModalProps {
   autoStartSimulation?: boolean;
 }
 
+type RecordMode = "mic" | "upload" | "simulate";
+
+const TEMPLATES: SummaryTemplateId[] = ["executive", "action_items", "sales", "engineering"];
+const SPEAKER_COLORS = ["#FEF08A", "#A7F3D0", "#BAE6FD", "#FBCFE8", "#DDD6FE", "#FED7AA", "#99F6E4", "#FECACA"];
+const TRANSCRIBE_TIMEOUT_MS = 300000;
+
+interface TranscribeResult {
+  segments: TranscriptSegment[];
+  duration: number;
+  detectedSpeakers: number;
+  isFallback: boolean;
+}
+
+/** POST audio to /api/transcribe. Throws with the server's message on failure. */
+async function transcribeAudio(blob: Blob, fileName: string): Promise<TranscribeResult> {
+  const fd = new FormData();
+  fd.append("file", blob, fileName);
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), TRANSCRIBE_TIMEOUT_MS);
+  try {
+    const res = await fetch("/api/transcribe", { method: "POST", body: fd, signal: controller.signal });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok || !data.success) {
+      throw new Error(data.error || `Transcription failed (HTTP ${res.status})`);
+    }
+    return data as TranscribeResult;
+  } catch (err: any) {
+    if (err?.name === "AbortError") throw new Error("Transcription timed out. Check your connection and try again.");
+    throw err;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+/** Build participant records for whichever speaker ids appear in the transcript. */
+function participantsFor(segments: TranscriptSegment[], mode: RecordMode): Speaker[] {
+  if (mode === "simulate") {
+    const byId = new Map<string, Speaker>();
+    for (const line of SAMPLE_SIMULATION_DIALOGUE) {
+      if (!byId.has(line.speakerId)) {
+        byId.set(line.speakerId, {
+          id: line.speakerId,
+          name: line.speakerName,
+          role: line.speakerRole,
+          company: "Fathom Engineering",
+          color: line.speakerColor,
+        });
+      }
+    }
+    return Array.from(byId.values());
+  }
+  const ids = Array.from(new Set(segments.map((s) => s.speakerId))).sort();
+  return ids.map((id, i) => ({
+    id,
+    name: `Speaker ${i + 1}`,
+    role: i === 0 ? "Host" : "Participant",
+    company: "Fathom Workspace",
+    color: SPEAKER_COLORS[i % SPEAKER_COLORS.length],
+  }));
+}
+
 export function MeetingRecorderModal({
   open,
   onOpenChange,
@@ -55,31 +114,25 @@ export function MeetingRecorderModal({
 }: MeetingRecorderModalProps) {
   const router = useRouter();
   const transcriptScrollRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Editable Meeting Title
   const [meetingTitle, setMeetingTitle] = useState<string>(() => {
     if (initialTitle) return initialTitle;
     const now = new Date();
-    return `Studio Recording - ${now.toLocaleDateString(undefined, {
-      month: "short",
-      day: "numeric",
-    })} ${now.toLocaleTimeString(undefined, {
-      hour: "2-digit",
-      minute: "2-digit",
-    })}`;
+    return `Studio Recording - ${now.toLocaleDateString(undefined, { month: "short", day: "numeric" })} ${now.toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit" })}`;
   });
+  const [recordMode, setRecordMode] = useState<RecordMode>("mic");
+  const [uploadFile, setUploadFile] = useState<File | null>(null);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [generationStep, setGenerationStep] = useState("");
+  const [generationError, setGenerationError] = useState<string | null>(null);
 
-  // Mode: "mic" or "simulate"
-  const [recordMode, setRecordMode] = useState<"mic" | "simulate">("mic");
-  const [isGenerating, setIsGenerating] = useState<boolean>(false);
-  const [generationStep, setGenerationStep] = useState<string>("");
-
-  // Speech Recognition Hook
   const {
     isSupported,
     isListening,
     isPaused,
     isSimulating,
+    liveStatus,
     elapsedSeconds,
     interimTranscript,
     segments,
@@ -93,613 +146,577 @@ export function MeetingRecorderModal({
     startSimulation,
     stopSimulation,
     resetRecording,
-  } = useSpeechRecognition({
-    defaultSpeakerId: "spk-user",
-    defaultSpeakerName: "You",
-  });
+    getRecordingBlob,
+  } = useDeepgramRecorder();
 
-  // Keep title updated if initialTitle changes
   useEffect(() => {
-    if (initialTitle) {
-      setMeetingTitle(initialTitle);
-    }
+    if (initialTitle) setMeetingTitle(initialTitle);
   }, [initialTitle]);
 
-  // Handle auto-start or initial mode when modal opens
   useEffect(() => {
     if (open) {
       if (autoStartSimulation) {
         setRecordMode("simulate");
         startSimulation();
-      } else {
-        // Default to mic if supported, else simulate
-        if (!isSupported) {
-          setRecordMode("simulate");
-        }
+      } else if (!isSupported) {
+        setRecordMode("upload");
       }
     } else {
-      // Clean up when modal closes
       if (isListening || isSimulating) {
         stopListening();
         stopSimulation();
       }
       setIsGenerating(false);
+      setGenerationError(null);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, autoStartSimulation, isSupported]);
 
-  // Auto-scroll transcript container to bottom on new text
   useEffect(() => {
     if (transcriptScrollRef.current) {
-      transcriptScrollRef.current.scrollTop =
-        transcriptScrollRef.current.scrollHeight;
+      transcriptScrollRef.current.scrollTop = transcriptScrollRef.current.scrollHeight;
     }
   }, [segments, interimTranscript]);
 
-  // Format MM:SS timer
   const formatTimer = (seconds: number) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins.toString().padStart(2, "0")}:${secs
-      .toString()
-      .padStart(2, "0")}`;
+    const m = Math.floor(seconds / 60);
+    const s = Math.floor(seconds % 60);
+    return `${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
   };
 
-  // Toggle start / pause / resume
   const handleToggleRecord = async () => {
     if (!isListening) {
-      if (recordMode === "simulate") {
-        startSimulation();
-      } else {
-        await startListening();
-      }
+      if (recordMode === "simulate") startSimulation();
+      else await startListening();
+    } else if (isPaused) {
+      resumeListening();
     } else {
-      if (isPaused) {
-        resumeListening();
-      } else {
-        pauseListening();
-      }
+      pauseListening();
     }
   };
 
-  // Switch modes
-  const handleSwitchMode = (mode: "mic" | "simulate") => {
+  const handleSwitchMode = (mode: RecordMode) => {
     setRecordMode(mode);
+    setGenerationError(null);
+    if (mode === "upload") {
+      if (isListening) {
+        stopListening();
+        stopSimulation();
+      }
+      return;
+    }
     if (isListening) {
-      if (mode === "simulate") {
-        startSimulation();
-      } else {
-        startListening();
-      }
+      if (mode === "simulate") startSimulation();
+      else startListening();
     }
   };
 
-  // Trigger simulated sample audio explicitly
-  const handleSimulateSampleAudio = () => {
-    setRecordMode("simulate");
-    if (!isListening || !isSimulating) {
-      startSimulation();
+  const handleFilePicked = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const f = e.target.files?.[0] ?? null;
+    setUploadFile(f);
+    setGenerationError(null);
+    if (f && !initialTitle) {
+      setMeetingTitle(f.name.replace(/\.[^.]+$/, "").replace(/[_-]+/g, " "));
     }
   };
 
-  // AI Meeting Generation & Store Integration
-  const handleStopAndGenerate = async () => {
-    // 1. Stop audio/simulation capture
-    stopListening();
-    stopSimulation();
-    setIsGenerating(true);
+  /**
+   * Turn a finished transcript into a meeting: four summaries in parallel
+   * (each falling back locally if the API fails), action items, participants.
+   */
+  const buildAndOpenMeeting = async (
+    finalSegments: TranscriptSegment[],
+    durationSeconds: number,
+    mode: RecordMode,
+    tags: string[]
+  ) => {
+    const aggregatedText = finalSegments.map((s) => `[${s.speakerId}]: ${s.text}`).join("\n");
 
-    try {
-      setGenerationStep("Synthesizing Executive Summary & Key Themes...");
-
-      // Prepare final transcript segments
-      let finalSegments: TranscriptSegment[] = [...segments];
-
-      // If user had an interim piece hanging, commit it
-      if (interimTranscript.trim()) {
-        const cleanInterim = interimTranscript
-          .replace(/^\[.*?\]:\s*"?/, "")
-          .replace(/"?\.\.\.$/, "")
-          .trim();
-        if (cleanInterim) {
-          finalSegments.push({
-            id: `seg-final-${Date.now()}`,
-            speakerId: recordMode === "simulate" ? "spk-sim-1" : "spk-user",
-            start: Math.max(0, elapsedSeconds - 3),
-            end: elapsedSeconds,
-            text: cleanInterim,
-            words: cleanInterim.split(/\s+/).map((w, idx) => ({
-              text: w,
-              start: Math.max(0, elapsedSeconds - 3 + idx * 0.3),
-              end: Math.max(0, elapsedSeconds - 3 + (idx + 1) * 0.3),
-            })),
-          });
-        }
-      }
-
-      // If transcript was empty, create realistic initial segments
-      if (finalSegments.length === 0) {
-        finalSegments = SAMPLE_SIMULATION_DIALOGUE.slice(0, 4).map((line, i) => ({
-          id: `seg-init-${i}`,
-          speakerId: line.speakerId,
-          start: i * 8,
-          end: (i + 1) * 8,
-          text: line.text,
-          words: line.text.split(/\s+/).map((w, wi) => ({
-            text: w,
-            start: i * 8 + wi * 0.4,
-            end: i * 8 + (wi + 1) * 0.4,
-          })),
-        }));
-      }
-
-      const aggregatedText = finalSegments
-        .map((s) => `[${s.speakerId}]: ${s.text}`)
-        .join("\n");
-
-      // Generate all 4 Summary Templates (Executive, Action Items, Sales, Engineering)
-      const templateIds: SummaryTemplateId[] = [
-        "executive",
-        "action_items",
-        "sales",
-        "engineering",
-      ];
-      const summaries: Record<SummaryTemplateId, SummaryTemplateContent> = {} as any;
-
-      for (const tId of templateIds) {
-        setGenerationStep(`Synthesizing ${tId.replace("_", " ")} intelligence...`);
+    setGenerationStep("Writing summaries…");
+    const results = await Promise.all(
+      TEMPLATES.map(async (template) => {
         try {
           const res = await fetch("/api/ai/summarize", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              transcriptText: aggregatedText,
-              template: tId,
-              meetingTitle,
-            }),
+            body: JSON.stringify({ transcriptText: aggregatedText, template, meetingTitle }),
           });
-
           if (res.ok) {
             const data = await res.json();
-            if (data?.summary) {
-              summaries[tId] = data.summary;
-              continue;
-            }
+            if (data?.summary) return [template, data.summary as SummaryTemplateContent] as const;
           }
         } catch {
-          // Fall through to local fallback
+          /* handled by fallback below */
         }
+        return [template, generateFallbackSummary(template, aggregatedText, meetingTitle)] as const;
+      })
+    );
+    const summaries = Object.fromEntries(results) as Record<SummaryTemplateId, SummaryTemplateContent>;
 
-        // Reliable local intelligence fallback
-        summaries[tId] = generateFallbackSummary(
-          tId,
-          aggregatedText,
-          meetingTitle
-        );
-      }
-
-      setGenerationStep("Extracting Action Items & Assignees...");
-
-      // Synthesize Action Items from summaries or transcript
-      const newMeetingId = `rec-${Date.now()}`;
-      const actionItemsList: ActionItem[] = [];
-
-      const actionBullets =
-        summaries.action_items?.sections?.flatMap((s) => s.bullets) || [];
-
-      if (actionBullets.length > 0) {
-        actionBullets.forEach((bullet, index) => {
-          const match = bullet.match(
-            /^(?:([^:]+):\s*)?(.*?)(?:\s*\[(\d{1,2}:\d{2})\])?$/
-          );
-          const rawAssignee = match?.[1] || "You";
-          const rawTask = match?.[2] || bullet;
-
-          actionItemsList.push({
+    setGenerationStep("Extracting action items…");
+    const newMeetingId = `rec-${Date.now()}`;
+    const actionBullets = summaries.action_items?.sections?.flatMap((s) => s.bullets) || [];
+    const actionItems: ActionItem[] = actionBullets.length
+      ? actionBullets.map((bullet, index) => {
+          const match = bullet.match(/^(?:([^:]+):\s*)?(.*?)(?:\s*\[(\d{1,2}:\d{2})\])?$/);
+          return {
             id: `act-${newMeetingId}-${index + 1}`,
             meetingId: newMeetingId,
             meetingTitle,
-            text: rawTask.replace(/\s*\(Due:.*?\)/, "").trim(),
-            assigneeId: rawAssignee,
+            text: (match?.[2] || bullet).replace(/\s*\(Due:.*?\)/, "").trim(),
+            assigneeId: match?.[1] || finalSegments[0]?.speakerId || "spk-1",
             completed: false,
-            timestamp: (index + 1) * 15,
+            timestamp: Math.min(durationSeconds, (index + 1) * 15),
             priority: index === 0 ? "high" : "medium",
             dueDate: "Next Week",
-          });
-        });
-      } else {
-        actionItemsList.push(
+          };
+        })
+      : [
           {
             id: `act-${newMeetingId}-1`,
             meetingId: newMeetingId,
             meetingTitle,
-            text: "Review generated executive summary and verify milestones",
-            assigneeId: "You",
+            text: "Review the generated summary and confirm the decisions",
+            assigneeId: finalSegments[0]?.speakerId || "spk-1",
             completed: false,
             timestamp: 5,
             priority: "high",
             dueDate: "Tomorrow",
           },
-          {
-            id: `act-${newMeetingId}-2`,
-            meetingId: newMeetingId,
-            meetingTitle,
-            text: "Distribute transcript and action items to team leads",
-            assigneeId: "You",
-            completed: false,
-            timestamp: 20,
-            priority: "medium",
-            dueDate: "Friday",
-          }
-        );
-      }
+        ];
 
-      setGenerationStep("Finalizing Diarized Meeting...");
+    const highlights: MeetingHighlight[] = [
+      {
+        id: `hl-${newMeetingId}-1`,
+        meetingId: newMeetingId,
+        title: "Opening",
+        start: 0,
+        end: Math.min(25, Math.max(15, durationSeconds)),
+        category: "key_moment",
+        createdAt: new Date().toISOString(),
+      },
+    ];
 
-      // Participants
-      const participants: Speaker[] = [
-        {
-          id: "spk-user",
-          name: "You",
-          role: "Host & Lead",
-          company: "Fathom Workspace",
-          color: "#BAE6FD",
-          avatarUrl:
-            "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&h=150&fit=crop&crop=face",
-        },
-        {
-          id: "spk-sim-1",
-          name: "Sarah Chen",
-          role: "Staff Backend Engineer",
-          company: "Fathom Engineering",
-          color: "#FEF08A",
-          avatarUrl:
-            "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&h=150&fit=crop&crop=face",
-        },
-        {
-          id: "spk-sim-2",
-          name: "Alex Rivera",
-          role: "Principal Infrastructure Architect",
-          company: "Fathom Engineering",
-          color: "#A7F3D0",
-          avatarUrl:
-            "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face",
-        },
-      ];
+    const newMeeting: Meeting = {
+      id: newMeetingId,
+      title: meetingTitle.trim() || "Recorded Meeting Session",
+      date: new Date().toISOString(),
+      duration: durationSeconds,
+      videoUrl: "",
+      participants: participantsFor(finalSegments, mode),
+      transcript: finalSegments,
+      highlights,
+      actionItems,
+      summaries,
+      tags,
+    };
 
-      // Highlights
-      const highlights: MeetingHighlight[] = [
-        {
-          id: `hl-${newMeetingId}-1`,
-          meetingId: newMeetingId,
-          title: "Discussion Kickoff & Architecture Decision",
-          start: 0,
-          end: Math.min(25, Math.max(15, elapsedSeconds)),
-          category: "key_moment",
-          createdAt: new Date().toISOString(),
-        },
-      ];
+    useMeetingStore.getState().addMeeting(newMeeting);
+    useMeetingStore.getState().setCurrentMeeting(newMeeting.id);
+    onOpenChange(false);
+    resetRecording();
+    setUploadFile(null);
+    router.push(`/meetings/${newMeeting.id}`);
+  };
 
-      const totalDuration = Math.max(
-        elapsedSeconds,
-        finalSegments[finalSegments.length - 1]?.end || 60
-      );
-
-      const newMeeting: Meeting = {
-        id: newMeetingId,
-        title: meetingTitle.trim() || "Recorded Meeting Session",
-        date: new Date().toISOString(),
-        duration: totalDuration,
-        videoUrl:
-          "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
-        participants,
-        transcript: finalSegments,
-        highlights,
-        actionItems: actionItemsList,
-        summaries,
-        tags: ["Live Recording", "AI Generated", "Studio"],
-      };
-
-      useMeetingStore.getState().addMeeting(newMeeting);
-      useMeetingStore.getState().setCurrentMeeting(newMeeting.id);
-
-      onOpenChange(false);
-      resetRecording();
-      router.push(`/meetings/${newMeeting.id}`);
-    } catch (err) {
-      console.error("Failed to generate AI meeting notes:", err);
+  /** Upload mode: transcribe the chosen file with Deepgram, then build the meeting. */
+  const handleTranscribeUpload = async () => {
+    if (!uploadFile) return;
+    setIsGenerating(true);
+    setGenerationError(null);
+    try {
+      setGenerationStep(`Transcribing ${uploadFile.name}…`);
+      const result = await transcribeAudio(uploadFile, uploadFile.name);
+      await buildAndOpenMeeting(result.segments, result.duration, "upload", ["Uploaded audio", "Deepgram"]);
+    } catch (err: any) {
+      setGenerationError(err?.message || "Transcription failed.");
       setIsGenerating(false);
     }
   };
 
+  /**
+   * Mic / simulator: stop capture. For real audio, send the full recording to
+   * Deepgram batch for the definitive diarized transcript; keep the live
+   * segments if that fails so nothing the user said is lost.
+   */
+  const handleStopAndGenerate = async () => {
+    const mode = recordMode;
+    const blob = mode === "mic" ? getRecordingBlob() : null;
+    const liveSegments = [...segments];
+    const recordedSeconds = elapsedSeconds;
+
+    stopListening();
+    stopSimulation();
+    setIsGenerating(true);
+    setGenerationError(null);
+
+    try {
+      let finalSegments = liveSegments;
+      let duration = Math.max(recordedSeconds, liveSegments[liveSegments.length - 1]?.end || 0);
+      let tags = mode === "simulate" ? ["Simulated", "Sample dialogue"] : ["Live recording", "Deepgram"];
+
+      if (mode === "mic" && blob && blob.size > 0) {
+        setGenerationStep("Finalizing transcript with Deepgram…");
+        try {
+          const batch = await transcribeAudio(blob, `recording-${Date.now()}.webm`);
+          if (batch.segments.length > 0 && !batch.isFallback) {
+            finalSegments = batch.segments;
+            duration = Math.max(duration, batch.duration);
+          }
+        } catch (err: any) {
+          console.warn("Batch transcription failed; keeping the live transcript.", err);
+          tags = [...tags, "Live transcript"];
+        }
+      }
+
+      if (finalSegments.length === 0) {
+        throw new Error(
+          mode === "mic"
+            ? "No speech was transcribed. Check the microphone and try again, or upload an audio file."
+            : "No transcript was produced."
+        );
+      }
+
+      await buildAndOpenMeeting(finalSegments, Math.max(duration, 1), mode, tags);
+    } catch (err: any) {
+      console.error("Failed to generate meeting notes:", err);
+      setGenerationError(err?.message || "Could not generate meeting notes.");
+      setIsGenerating(false);
+    }
+  };
+
+  const speakerLabel = (id: string) => {
+    if (id === "spk-user") return "You";
+    const sim = SAMPLE_SIMULATION_DIALOGUE.find((l) => l.speakerId === id);
+    if (sim) return sim.speakerName;
+    return id.replace(/^spk-/, "Speaker ");
+  };
+
+  const statusLabel =
+    isListening && !isPaused
+      ? isSimulating
+        ? "Simulating"
+        : liveStatus === "live"
+        ? "Live · Deepgram"
+        : "Connecting"
+      : isPaused
+      ? "Paused"
+      : "Standby";
+
+  const modeButton = (mode: RecordMode, icon: React.ReactNode, label: string) => (
+    <button
+      type="button"
+      onClick={() => handleSwitchMode(mode)}
+      disabled={isGenerating}
+      className={cn(
+        "flex h-9 items-center gap-1.5 rounded-full border px-3 text-[13px] font-medium transition-colors disabled:opacity-50",
+        recordMode === mode
+          ? "border-white bg-white text-black"
+          : "border-white/15 text-white/70 hover:bg-white/5 hover:text-white"
+      )}
+    >
+      {icon}
+      <span>{label}</span>
+    </button>
+  );
+
+  const alert = error || generationError;
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl border border-white/15 bg-surface-raised p-0 text-white shadow-black/[0.08] overflow-hidden rounded-xl">
+      <DialogContent className="max-w-2xl overflow-hidden rounded-2xl border border-white/15 bg-surface-raised p-0 text-white">
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-white/15 bg-surface-raised px-6 py-4">
+        <div className="flex items-center justify-between border-b border-white/15 px-6 py-4">
           <div className="flex items-center gap-3">
-            <div className="relative flex h-10 w-10 items-center justify-center rounded-xl border border-white/15 bg-surface-raised shadow-sm">
+            <div className="relative flex h-10 w-10 items-center justify-center rounded-xl border border-white/15">
               <Radio className="h-5 w-5 text-white" />
               {isListening && !isPaused && (
-                <span className="absolute -top-1 -right-1 flex h-3 w-3">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-sm bg-red-500/100 opacity-75" />
-                  <span className="relative inline-flex rounded-sm h-3 w-3 bg-red-600" />
+                <span className="absolute -right-1 -top-1 flex h-3 w-3">
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-500 opacity-75" />
+                  <span className="relative inline-flex h-3 w-3 rounded-full bg-red-600" />
                 </span>
               )}
             </div>
-
             <div>
-              <DialogTitle className="text-base font-semibold text-white tracking-tight flex items-center gap-2">
-                <span>Live recording studio</span>
+              <DialogTitle className="text-base font-semibold tracking-tight text-white">
+                Record a meeting
               </DialogTitle>
               <DialogDescription className="text-xs text-white/60">
-                Real-time diarization & AI synthesis
+                Live transcription and diarization by Deepgram
               </DialogDescription>
             </div>
           </div>
-
-          {/* Status Badge */}
-          <div className="flex items-center gap-2">
-            <span
-              className={cn(
-                "rounded-xl border px-2.5 py-1 text-[13px] font-medium transition-all",
-                isListening && !isPaused
-                  ? isSimulating
-                    ? "border-white/15 bg-white/10 text-white animate-pulse"
-                    : "border-white/15 bg-white text-black"
-                  : isPaused
-                  ? "border-white/15 bg-white/10 text-white/70"
-                  : "border-white/15 bg-surface-raised text-white/60"
-              )}
-            >
-              {isListening && !isPaused
-                ? isSimulating
-                  ? "Simulating call"
-                  : "Recording"
-                : isPaused
-                ? "Paused"
-                : "Standby"}
-            </span>
-          </div>
+          <span
+            className={cn(
+              "rounded-full border px-2.5 py-1 text-[12px] font-medium",
+              isListening && !isPaused
+                ? "border-white bg-white text-black"
+                : "border-white/15 text-white/60"
+            )}
+          >
+            {statusLabel}
+          </span>
         </div>
 
-        {/* Modal Body */}
-        <div className="p-6 space-y-4">
-          {/* Title Input & Mode Switchers */}
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
-            <div className="flex-1">
-              <input
-                type="text"
-                value={meetingTitle}
-                onChange={(e) => setMeetingTitle(e.target.value)}
-                placeholder="Enter meeting title..."
-                className="h-10 w-full rounded-xl border border-white/15 bg-surface-raised px-3 text-xs font-medium text-white placeholder:text-white/45 focus:bg-white/5 focus:border-white/25 focus:outline-none transition-colors"
-              />
-            </div>
-
-            {/* Microphone vs Simulate Call Toggle */}
-            <div className="flex items-center gap-1.5 shrink-0">
-              <button
-                type="button"
-                onClick={() => handleSwitchMode("mic")}
-                className={cn(
-                  "h-9 flex items-center gap-1.5 rounded-xl border px-3 text-[13px] font-medium transition-colors",
-                  recordMode === "mic"
-                    ? "border-white bg-white text-black"
-                    : "border-white/15 bg-surface-raised text-white/70 hover:bg-white/5 hover:text-white"
-                )}
-              >
-                <Mic className="h-3.5 w-3.5" />
-                <span>Mic</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => handleSwitchMode("simulate")}
-                className={cn(
-                  "h-9 flex items-center gap-1.5 rounded-xl border px-3 text-[13px] font-medium transition-colors",
-                  recordMode === "simulate"
-                    ? "border-white bg-white text-black"
-                    : "border-white/15 bg-surface-raised text-white/70 hover:bg-white/5 hover:text-white"
-                )}
-              >
-                <Sparkles className="h-3.5 w-3.5" />
-                <span>Simulator</span>
-              </button>
-
-              {/* Explicit simulate sample audio button */}
-              <button
-                type="button"
-                onClick={handleSimulateSampleAudio}
-                className="h-9 flex items-center gap-1.5 rounded-xl border border-white/15 bg-surface-raised px-3 text-[13px] font-medium text-white/80 hover:bg-white/5 hover:text-white transition-colors"
-                title="Inject sample audio dialogue for quick testing"
-              >
-                <span>Sample audio</span>
-              </button>
+        {/* Body */}
+        <div className="space-y-4 p-6">
+          <div className="flex flex-col items-stretch justify-between gap-3 sm:flex-row sm:items-center">
+            <input
+              type="text"
+              value={meetingTitle}
+              onChange={(e) => setMeetingTitle(e.target.value)}
+              placeholder="Enter meeting title..."
+              className="h-10 flex-1 rounded-full border border-white/15 bg-transparent px-4 text-sm text-white placeholder:text-white/45 transition-colors focus:border-white/40 focus:outline-none"
+            />
+            <div className="flex shrink-0 items-center gap-1.5">
+              {modeButton("mic", <Mic className="h-3.5 w-3.5" />, "Mic")}
+              {modeButton("upload", <Upload className="h-3.5 w-3.5" />, "Upload audio")}
+              {modeButton("simulate", <Sparkles className="h-3.5 w-3.5" />, "Simulator")}
             </div>
           </div>
 
-          {/* Browser Mic Notice if unsupported or errored */}
-          {error && (
-            <div className="flex items-center justify-between gap-3 rounded-xl border border-red-500/30 bg-red-500/100/10 px-4 py-2.5 text-xs text-red-300">
-              <div className="flex items-center gap-2">
-                <AlertCircle className="h-4 w-4 shrink-0" />
-                <span>{error}</span>
+          {alert && (
+            <div className="flex items-start justify-between gap-3 rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-2.5 text-xs text-red-300">
+              <div className="flex items-start gap-2">
+                <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
+                <span>{alert}</span>
               </div>
-              <button
-                type="button"
-                onClick={() => handleSwitchMode("simulate")}
-                className="rounded-xl border border-red-500/30 bg-white px-2 py-1 text-[10px] font-semibold hover:bg-red-500/100/10 transition-colors"
-              >
-                Use simulator
-              </button>
+              {recordMode !== "upload" && (
+                <button
+                  type="button"
+                  onClick={() => handleSwitchMode("upload")}
+                  className="shrink-0 rounded-full border border-red-500/30 px-2.5 py-1 text-[11px] font-medium text-red-200 transition-colors hover:bg-red-500/10"
+                >
+                  Upload audio instead
+                </button>
+              )}
             </div>
           )}
 
-          {/* Digital Timer & Audio Waveform Banner */}
-          <div className="flex flex-col sm:flex-row items-center gap-4">
-            {/* Live Digital Timer Display */}
-            <div className="flex sm:flex-col items-center justify-center gap-1 rounded-xl border border-white/15 bg-surface-raised px-5 py-3 shrink-0">
-              <div className="flex items-center gap-1 text-[10px] font-semibold text-white/45">
-                <Clock className="h-3 w-3" />
-                <span>Rec time</span>
-              </div>
-              <span className="text-3xl font-bold text-white">
-                {formatTimer(elapsedSeconds)}
-              </span>
-            </div>
-
-            {/* Reactive Waveform Visualizer */}
-            <div className="flex-1 w-full">
-              <WaveformVisualizer
-                frequencyData={frequencyData}
-                audioLevel={audioLevel}
-                isListening={isListening}
-                isPaused={isPaused}
-                height={52}
-              />
-            </div>
-          </div>
-
-          {/* Streaming Live Transcript Box */}
-          <div className="rounded-xl border border-white/15 bg-surface-raised p-4">
-            <div className="flex items-center justify-between mb-2.5 pb-2 border-b border-white/15 text-xs text-white">
-              <div className="flex items-center gap-2">
-                <span className="font-semibold uppercase">
-                  Streaming diarization log
-                </span>
-                {isListening && !isPaused && (
-                  <span className="relative flex h-2 w-2">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-sm bg-white opacity-75" />
-                    <span className="relative inline-flex rounded-sm h-2 w-2 bg-white" />
-                  </span>
-                )}
-              </div>
-              <span className="font-medium text-white/60">
-                {segments.length} segments captured
-              </span>
-            </div>
-
+          {recordMode === "upload" ? (
+            /* Upload mode: file picker */
             <div
-              ref={transcriptScrollRef}
-              className="h-44 overflow-y-auto space-y-2.5 pr-2 text-xs"
-            >
-              {segments.length === 0 && !interimTranscript && (
-                <div className="flex flex-col items-center justify-center h-full text-center py-6 text-white/45">
-                  <Mic className="h-8 w-8 mb-2 text-white/35" />
-                  <p className="font-medium text-[11px]">
-                    {isListening
-                      ? "Listening for audio speech... Speak into mic or click 'SAMPLE AUDIO'."
-                      : "Workstation Standby. Click 'Start Recording' or 'Sample Audio' to initiate."}
-                  </p>
-                </div>
+              className={cn(
+                "flex flex-col items-center justify-center gap-3 rounded-2xl border border-dashed px-6 py-10 text-center transition-colors",
+                uploadFile ? "border-white/40" : "border-white/20 hover:border-white/40"
               )}
-
-              {/* Finalized Segments */}
-              {segments.map((seg, idx) => (
-                <div
-                  key={seg.id || idx}
-                  className="flex flex-col gap-1 rounded-xl border border-white/15 bg-surface-raised p-2.5"
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <span className="rounded-sm border border-white/15 bg-white/10 px-1.5 py-0.5 text-[9px] font-semibold text-white/70">
-                        {seg.speakerId === "spk-user"
-                          ? "YOU"
-                          : seg.speakerId.replace("spk-sim-", "SPEAKER ")}
-                      </span>
-                    </div>
-                    <span className="text-[10px] font-medium text-white/45">
-                      {formatTimer(seg.start)} - {formatTimer(seg.end)}
-                    </span>
+              onDragOver={(e) => e.preventDefault()}
+              onDrop={(e) => {
+                e.preventDefault();
+                const f = e.dataTransfer.files?.[0];
+                if (f) {
+                  setUploadFile(f);
+                  setGenerationError(null);
+                  if (!initialTitle) setMeetingTitle(f.name.replace(/\.[^.]+$/, "").replace(/[_-]+/g, " "));
+                }
+              }}
+            >
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="audio/*,video/webm,video/mp4"
+                onChange={handleFilePicked}
+                className="hidden"
+                data-testid="audio-upload-input"
+              />
+              {uploadFile ? (
+                <>
+                  <FileAudio className="h-8 w-8 text-white" />
+                  <div>
+                    <p className="text-sm font-medium text-white">{uploadFile.name}</p>
+                    <p className="mt-1 text-xs text-white/50">
+                      {(uploadFile.size / (1024 * 1024)).toFixed(1)} MB · {uploadFile.type || "audio"}
+                    </p>
                   </div>
-                  <p className="font-sans text-xs font-medium text-white pl-1 mt-0.5">
-                    {seg.text}
-                  </p>
-                </div>
-              ))}
-
-              {/* Streaming Interim Transcript */}
-              {interimTranscript && (
-                <div className="rounded-xl border border-dashed border-white/25 bg-surface-raised p-2.5">
-                  <span className="text-[9px] font-semibold text-white/45 block mb-0.5">
-                    Live streaming...
-                  </span>
-                  <p className="font-sans text-xs font-medium text-white/80 italic animate-pulse">
-                    {interimTranscript}
-                  </p>
-                </div>
+                  <button
+                    type="button"
+                    onClick={() => { setUploadFile(null); if (fileInputRef.current) fileInputRef.current.value = ""; }}
+                    disabled={isGenerating}
+                    className="inline-flex items-center gap-1 text-xs text-white/60 transition-colors hover:text-white disabled:opacity-50"
+                  >
+                    <X className="h-3 w-3" /> Choose a different file
+                  </button>
+                </>
+              ) : (
+                <>
+                  <Upload className="h-8 w-8 text-white/50" />
+                  <div>
+                    <p className="text-sm font-medium text-white">Drop an audio file here</p>
+                    <p className="mt-1 text-xs text-white/50">MP3, WAV, M4A, WebM · transcribed and diarized by Deepgram</p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    className="rounded-full border border-white/20 px-4 py-1.5 text-[13px] font-medium text-white transition-colors hover:bg-white hover:text-black"
+                  >
+                    Browse files
+                  </button>
+                </>
               )}
             </div>
-          </div>
+          ) : (
+            <>
+              {/* Timer + waveform */}
+              <div className="flex flex-col items-center gap-4 sm:flex-row">
+                <div className="flex shrink-0 items-center justify-center gap-1 rounded-xl border border-white/15 px-5 py-3 sm:flex-col">
+                  <div className="flex items-center gap-1 text-[10px] font-semibold text-white/45">
+                    <Clock className="h-3 w-3" />
+                    <span>Rec time</span>
+                  </div>
+                  <span className="text-3xl font-bold tabular-nums text-white">{formatTimer(elapsedSeconds)}</span>
+                </div>
+                <div className="w-full flex-1">
+                  <WaveformVisualizer
+                    frequencyData={frequencyData}
+                    audioLevel={audioLevel}
+                    isListening={isListening}
+                    isPaused={isPaused}
+                    height={52}
+                  />
+                </div>
+              </div>
+
+              {/* Live transcript */}
+              <div className="rounded-xl border border-white/15 p-4">
+                <div className="mb-2.5 flex items-center justify-between border-b border-white/15 pb-2 text-xs text-white">
+                  <div className="flex items-center gap-2">
+                    <span className="font-semibold">Live transcript</span>
+                    {isListening && !isPaused && (
+                      <span className="relative flex h-2 w-2">
+                        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-white opacity-75" />
+                        <span className="relative inline-flex h-2 w-2 rounded-full bg-white" />
+                      </span>
+                    )}
+                  </div>
+                  <span className="font-medium text-white/60">{segments.length} segments captured</span>
+                </div>
+
+                <div ref={transcriptScrollRef} className="h-44 space-y-2.5 overflow-y-auto pr-2 text-xs">
+                  {segments.length === 0 && !interimTranscript && (
+                    <div className="flex h-full flex-col items-center justify-center py-6 text-center text-white/45">
+                      <Mic className="mb-2 h-8 w-8 text-white/35" />
+                      <p className="text-[11px] font-medium">
+                        {isListening
+                          ? liveStatus === "live"
+                            ? "Listening — start talking."
+                            : "Connecting to Deepgram…"
+                          : "Press Start recording, or upload an audio file."}
+                      </p>
+                    </div>
+                  )}
+
+                  {segments.map((seg, idx) => (
+                    <div key={seg.id || idx} className="flex flex-col gap-1 rounded-xl border border-white/15 p-2.5">
+                      <div className="flex items-center justify-between">
+                        <span className="rounded-full border border-white/15 bg-white/10 px-1.5 py-0.5 text-[10px] font-medium text-white/80">
+                          {speakerLabel(seg.speakerId)}
+                        </span>
+                        <span className="text-[10px] tabular-nums text-white/45">
+                          {formatTimer(seg.start)} – {formatTimer(seg.end)}
+                        </span>
+                      </div>
+                      <p className="mt-0.5 pl-1 text-xs text-white">{seg.text}</p>
+                    </div>
+                  ))}
+
+                  {interimTranscript && (
+                    <div className="rounded-xl border border-dashed border-white/25 p-2.5">
+                      <p className="animate-pulse text-xs italic text-white/70">{interimTranscript}</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </>
+          )}
         </div>
 
-        {/* Modal Footer Controls */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 border-t border-white/15 bg-surface-raised px-6 py-4">
-          {/* Left: Recording Controls */}
-          <div className="flex items-center gap-2 w-full sm:w-auto">
-            <button
-              type="button"
-              onClick={handleToggleRecord}
-              disabled={isGenerating}
-              className={cn(
-                "h-10 flex items-center gap-2 rounded-xl border px-4 text-[13px] font-medium transition-colors disabled:opacity-50",
-                !isListening
-                  ? "border-white/15 bg-surface-raised text-white/80 hover:bg-white/5 hover:text-white"
-                  : isPaused
-                  ? "border-white/15 bg-white/10 text-white/80"
-                  : "border-white bg-white text-black"
-              )}
-            >
-              {!isListening ? (
-                <>
-                  <Mic className="h-4 w-4" />
-                  <span>Start recording</span>
-                </>
-              ) : isPaused ? (
-                <>
-                  <Play className="h-4 w-4 fill-current stroke-[2]" />
-                  <span>Resume</span>
-                </>
-              ) : (
-                <>
-                  <Pause className="h-4 w-4" />
-                  <span>Pause</span>
-                </>
-              )}
-            </button>
+        {/* Footer */}
+        <div className="flex flex-col items-center justify-between gap-3 border-t border-white/15 px-6 py-4 sm:flex-row">
+          {recordMode === "upload" ? (
+            <div className="w-full">
+              <button
+                type="button"
+                onClick={handleTranscribeUpload}
+                disabled={isGenerating || !uploadFile}
+                className="flex h-10 w-full items-center justify-center gap-2 rounded-full border border-white bg-white px-5 text-[13px] font-medium text-black transition-colors hover:bg-white/90 disabled:opacity-50"
+              >
+                {isGenerating ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    <span>{generationStep || "Working…"}</span>
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="h-4 w-4" />
+                    <span>Transcribe & generate notes</span>
+                  </>
+                )}
+              </button>
+            </div>
+          ) : (
+            <>
+              <div className="flex w-full items-center gap-2 sm:w-auto">
+                <button
+                  type="button"
+                  onClick={handleToggleRecord}
+                  disabled={isGenerating}
+                  className={cn(
+                    "flex h-10 items-center gap-2 rounded-full border px-4 text-[13px] font-medium transition-colors disabled:opacity-50",
+                    !isListening
+                      ? "border-white/20 text-white hover:bg-white hover:text-black"
+                      : isPaused
+                      ? "border-white/15 bg-white/10 text-white/80"
+                      : "border-white bg-white text-black"
+                  )}
+                >
+                  {!isListening ? (
+                    <>
+                      <Mic className="h-4 w-4" />
+                      <span>Start recording</span>
+                    </>
+                  ) : isPaused ? (
+                    <>
+                      <Play className="h-4 w-4 fill-current" />
+                      <span>Resume</span>
+                    </>
+                  ) : (
+                    <>
+                      <Pause className="h-4 w-4" />
+                      <span>Pause</span>
+                    </>
+                  )}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => { resetRecording(); setGenerationError(null); }}
+                  disabled={isGenerating || (!isListening && segments.length === 0)}
+                  className="flex h-10 items-center gap-1.5 rounded-full border border-white/15 px-3 text-[13px] font-medium text-white/70 transition-colors hover:bg-white/5 hover:text-white disabled:opacity-50"
+                >
+                  <RotateCcw className="h-3.5 w-3.5" />
+                  <span>Reset</span>
+                </button>
+              </div>
 
-            <button
-              type="button"
-              onClick={resetRecording}
-              disabled={isGenerating || (!isListening && segments.length === 0)}
-              className="h-10 flex items-center gap-1.5 rounded-xl border border-white/15 bg-surface-raised px-3 text-[13px] font-medium text-white/70 hover:bg-white/5 hover:text-white disabled:opacity-50 transition-colors"
-            >
-              <RotateCcw className="h-3.5 w-3.5" />
-              <span>Reset</span>
-            </button>
-          </div>
-
-          {/* Right: Primary AI Generation Button */}
-          <div className="w-full sm:w-auto flex justify-end">
-            <button
-              type="button"
-              onClick={handleStopAndGenerate}
-              disabled={isGenerating}
-              className="h-10 w-full sm:w-auto flex items-center justify-center gap-2 rounded-xl border border-white bg-white px-5 text-[13px] font-medium text-black hover:bg-white/90 disabled:opacity-50 transition-colors"
-            >
-              {isGenerating ? (
-                <>
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                  <span>{generationStep || "GENERATING AI NOTES..."}</span>
-                </>
-              ) : (
-                <>
-                  <Sparkles className="h-4 w-4" />
-                  <span>Stop & generate AI notes</span>
-                </>
-              )}
-            </button>
-          </div>
+              <button
+                type="button"
+                onClick={handleStopAndGenerate}
+                disabled={isGenerating || (!isListening && segments.length === 0)}
+                className="flex h-10 w-full items-center justify-center gap-2 rounded-full border border-white bg-white px-5 text-[13px] font-medium text-black transition-colors hover:bg-white/90 disabled:opacity-50 sm:w-auto"
+              >
+                {isGenerating ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    <span>{generationStep || "Generating…"}</span>
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="h-4 w-4" />
+                    <span>Stop & generate AI notes</span>
+                  </>
+                )}
+              </button>
+            </>
+          )}
         </div>
       </DialogContent>
     </Dialog>

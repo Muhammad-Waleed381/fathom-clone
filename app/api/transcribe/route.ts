@@ -1,5 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import { transcribeAudioWithDeepgram } from "@/lib/deepgram";
+import { DeepgramError, transcribeAudioWithDeepgram } from "@/lib/deepgram";
+
+// Uploads can be large; keep the route on the Node runtime with a generous budget.
+export const runtime = "nodejs";
+export const maxDuration = 300;
 
 export async function POST(req: NextRequest) {
   try {
@@ -38,10 +42,13 @@ export async function POST(req: NextRequest) {
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
 
+    const allowFallback = formData.get("allowFallback") === "1";
+
     const result = await transcribeAudioWithDeepgram({
       buffer,
       mimeType: file.type || "audio/wav",
       apiKey,
+      allowFallback,
     });
 
     return NextResponse.json({
@@ -55,12 +62,14 @@ export async function POST(req: NextRequest) {
     });
   } catch (error: any) {
     console.error("Error in /api/transcribe:", error);
+    const status = error instanceof DeepgramError ? error.status : 500;
     return NextResponse.json(
       {
         success: false,
         error: error?.message || "Audio transcription failed",
+        retryable: status === 408 || status === 429 || status === 504 || status >= 500,
       },
-      { status: 500 }
+      { status }
     );
   }
 }
