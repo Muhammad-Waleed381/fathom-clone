@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter, JetBrains_Mono, Outfit } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 import { SmoothScrollProvider } from "@/components/providers/smooth-scroll-provider";
 import { FluidHeader } from "@/components/layout/fluid-header";
@@ -55,6 +56,7 @@ export default function RootLayout({
           <main className="relative z-10 min-h-screen">{children}</main>
           <FluidFooter />
         </SmoothScrollProvider>
+        <Analytics />
       </body>
     </html>
   );
