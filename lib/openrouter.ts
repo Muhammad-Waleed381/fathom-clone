@@ -1,6 +1,6 @@
 import { SummarySection, SummaryTemplateContent, SummaryTemplateId } from "@/types/meeting";
 
-export const DEFAULT_OPENROUTER_MODEL = "meta-llama/llama-3.3-70b-instruct:free";
+export const DEFAULT_OPENROUTER_MODEL = "nex-agi/nex-n2.5-pro:free";
 export const OPENROUTER_API_URL = "https://openrouter.ai/api/v1/chat/completions";
 
 export interface Citation {
