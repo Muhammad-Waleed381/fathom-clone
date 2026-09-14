@@ -32,7 +32,6 @@ import {
   Share2,
   Video,
   Layers,
-  Sparkles,
   ShieldCheck,
   Zap,
   ArrowRight,
@@ -42,11 +41,11 @@ import { cn } from "@/lib/utils";
 type CategoryFilter = "all" | "engineering" | "sales" | "design" | "1-on-1s";
 
 const CATEGORY_TABS: { id: CategoryFilter; label: string }[] = [
-  { id: "all", label: "All" },
-  { id: "engineering", label: "Engineering" },
-  { id: "sales", label: "Sales" },
-  { id: "design", label: "Design" },
-  { id: "1-on-1s", label: "1-on-1s" },
+  { id: "all", label: "ALL" },
+  { id: "engineering", label: "ENGINEERING" },
+  { id: "sales", label: "SALES" },
+  { id: "design", label: "DESIGN" },
+  { id: "1-on-1s", label: "1-ON-1S" },
 ];
 
 export default function DashboardPage() {
@@ -123,9 +122,9 @@ export default function DashboardPage() {
 
   return (
     <TooltipProvider delayDuration={150}>
-      <div className="min-h-screen bg-white text-zinc-950 font-sans selection:bg-zinc-200 selection:text-zinc-950 flex flex-col">
+      <div className="min-h-screen bg-[#FFFFFF] text-[#0B0B0B] font-mono selection:bg-[#0B0B0B] selection:text-white flex flex-col">
         {/* Hero Section with Gleaming Star Sparkles */}
-        <section className="relative w-full overflow-hidden border-b border-zinc-200/80 bg-white">
+        <section className="relative w-full overflow-hidden border-b border-[#E4E4E7] bg-white">
           <div className="absolute inset-0 h-full w-full pointer-events-none overflow-hidden">
             <SparklesCore
               id="hero-sparkles"
@@ -133,26 +132,34 @@ export default function DashboardPage() {
               minSize={0.6}
               maxSize={2.0}
               particleDensity={50}
-              className="h-full w-full opacity-75"
-              particleColor="#18181b"
-              speed={0.5}
+              className="h-full w-full opacity-70"
+              particleColor="#0B0B0B"
+              speed={0.45}
             />
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_40%,rgba(0,0,0,0.02),transparent_70%)] pointer-events-none" />
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_35%,rgba(11,11,11,0.02),transparent_70%)] pointer-events-none" />
             <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-white via-white/80 to-transparent pointer-events-none" />
           </div>
 
-          <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-10 sm:pt-10 sm:pb-12">
+          <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-10 sm:pt-12 sm:pb-14">
             <motion.div
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.45 }}
-              className="max-w-xl"
+              className="max-w-2xl"
             >
-              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-zinc-950">
-                Meeting Intelligence
+              {/* Nockchain-style Category Tag */}
+              <div className="inline-flex items-center gap-2 mb-3">
+                <span className="text-[11px] uppercase tracking-widest text-[#737373]">
+                  PROTOCOL // INTELLIGENCE SYSTEM
+                </span>
+              </div>
+
+              {/* Nockchain Editorial Headline */}
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-normal tracking-tight text-[#0B0B0B] font-serif">
+                Meeting intelligence, verified by speech compute.
               </h1>
-              <p className="mt-1.5 text-xs sm:text-sm text-zinc-500">
-                Word-level diarization, summaries, and action items.
+              <p className="mt-2.5 text-xs sm:text-sm text-[#737373] max-w-lg leading-relaxed font-light">
+                Synchronized diarization, autonomous summaries, and cryptographic action item provenance.
               </p>
             </motion.div>
 
@@ -162,11 +169,11 @@ export default function DashboardPage() {
                 initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.08 }}
-                className="mt-5 rounded-xl border border-zinc-200/90 bg-white/95 p-4 sm:p-5 shadow-lg shadow-black/[0.03] backdrop-blur-sm"
+                className="mt-6 rounded-lg border border-[#E4E4E7] bg-white p-5 sm:p-6 shadow-sm hover:border-[#0B0B0B]/40 transition-colors"
               >
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                   <div className="space-y-1.5">
-                    <div className="flex items-center gap-2 font-mono text-[11px] text-zinc-500">
+                    <div className="flex items-center gap-2 text-[11px] text-[#737373] uppercase tracking-wider">
                       <span>BENCHMARK CALL</span>
                       <span>·</span>
                       <span>42M 15S</span>
@@ -174,25 +181,25 @@ export default function DashboardPage() {
                       <span>8 ATTENDEES</span>
                     </div>
 
-                    <h2 className="text-base sm:text-lg font-semibold tracking-tight text-zinc-950">
+                    <h2 className="text-base sm:text-lg font-medium tracking-tight text-[#0B0B0B]">
                       {benchmarkMeeting.title}
                     </h2>
 
                     {/* Participant Avatars */}
-                    <div className="flex items-center -space-x-1.5 pt-0.5">
+                    <div className="flex items-center -space-x-1.5 pt-1">
                       {benchmarkMeeting.participants.map((p) => (
                         <Tooltip key={p.id}>
                           <TooltipTrigger asChild>
-                            <Avatar className="h-6 w-6 rounded-md border border-white bg-zinc-100 shadow-xs">
+                            <Avatar className="h-6 w-6 rounded border border-[#E4E4E7] bg-[#F4F4F5] shadow-2xs">
                               <AvatarImage src={p.avatarUrl} alt={p.name} />
-                              <AvatarFallback className="rounded-md font-mono text-[9px] font-medium text-zinc-800">
+                              <AvatarFallback className="rounded font-mono text-[9px] font-medium text-[#0B0B0B]">
                                 {p.name.slice(0, 2).toUpperCase()}
                               </AvatarFallback>
                             </Avatar>
                           </TooltipTrigger>
                           <TooltipContent
                             side="bottom"
-                            className="border border-zinc-200 bg-white text-xs font-medium text-zinc-900 shadow-md rounded-md"
+                            className="border border-[#E4E4E7] bg-white text-xs font-mono text-[#0B0B0B] shadow-md rounded"
                           >
                             <p className="font-semibold">{p.name}</p>
                           </TooltipContent>
@@ -202,32 +209,34 @@ export default function DashboardPage() {
                   </div>
 
                   {/* Actions */}
-                  <div className="flex flex-wrap items-center gap-2 shrink-0">
+                  <div className="flex flex-wrap items-center gap-2.5 shrink-0">
                     <button
                       type="button"
                       onClick={handleOpenBenchmark}
-                      className="h-8 flex items-center justify-center gap-1.5 rounded-md bg-zinc-950 px-3 font-mono text-xs font-medium uppercase text-white hover:bg-zinc-800 active:scale-95 transition-all shadow-xs"
+                      className="h-8 flex items-center justify-center gap-1.5 rounded bg-[#0B0B0B] px-3.5 text-[11px] font-medium uppercase tracking-wider text-white hover:opacity-90 active:scale-95 transition-all"
                     >
-                      <Play className="h-3 w-3 fill-current" />
-                      <span>Launch</span>
+                      <Play className="h-2.5 w-2.5 fill-current" />
+                      <span>LAUNCH</span>
                     </button>
 
                     <button
                       type="button"
                       onClick={() => handleShareClick(benchmarkMeeting)}
-                      className="h-8 flex items-center gap-1.5 rounded-md border border-zinc-200 bg-white px-2.5 font-mono text-xs font-medium text-zinc-700 hover:bg-zinc-50 hover:text-zinc-950 active:scale-95 transition-all shadow-xs"
+                      className="h-8 flex items-center gap-1.5 rounded border border-[#E4E4E7] bg-white px-3 text-[11px] font-normal uppercase tracking-wider text-[#737373] hover:text-[#0B0B0B] hover:border-[#0B0B0B]/40 active:scale-95 transition-all relative group"
                     >
-                      <Share2 className="h-3 w-3 text-zinc-400" />
-                      <span>Share</span>
+                      <Share2 className="h-3 w-3" />
+                      <span>SHARE</span>
+                      <span className="stipple-underline w-0 group-hover:w-full" />
                     </button>
 
                     <Link href="/actions">
                       <button
                         type="button"
-                        className="h-8 flex items-center gap-1.5 rounded-md border border-zinc-200 bg-white px-2.5 font-mono text-xs font-medium text-zinc-700 hover:bg-zinc-50 hover:text-zinc-950 active:scale-95 transition-all shadow-xs"
+                        className="h-8 flex items-center gap-1.5 rounded border border-[#E4E4E7] bg-white px-3 text-[11px] font-normal uppercase tracking-wider text-[#737373] hover:text-[#0B0B0B] hover:border-[#0B0B0B]/40 active:scale-95 transition-all relative group"
                       >
-                        <ListTodo className="h-3 w-3 text-zinc-400" />
-                        <span>Tasks</span>
+                        <ListTodo className="h-3 w-3" />
+                        <span>TASKS</span>
+                        <span className="stipple-underline w-0 group-hover:w-full" />
                       </button>
                     </Link>
                   </div>
@@ -238,7 +247,7 @@ export default function DashboardPage() {
         </section>
 
         {/* Main Content Area */}
-        <main className="flex-1 w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-10">
+        <main className="flex-1 w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-12">
           {/* Section 1: Calendar Schedule Strip */}
           <motion.section
             aria-label="Schedule"
@@ -263,9 +272,9 @@ export default function DashboardPage() {
             viewport={{ once: true, margin: "-40px" }}
             transition={{ duration: 0.4 }}
           >
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-zinc-200 pb-3">
-              {/* Category Filter Tabs */}
-              <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0 scrollbar-none">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#E4E4E7] pb-3">
+              {/* Category Filter Tabs with Stipple Underline */}
+              <div className="flex items-center gap-4 overflow-x-auto pb-1 sm:pb-0 scrollbar-none">
                 {CATEGORY_TABS.map((tab) => {
                   const isActive = activeTab === tab.id;
                   return (
@@ -274,13 +283,19 @@ export default function DashboardPage() {
                       type="button"
                       onClick={() => setActiveTab(tab.id)}
                       className={cn(
-                        "rounded-md px-2.5 py-1 text-xs font-medium transition-all whitespace-nowrap",
+                        "relative py-1 text-xs tracking-wider transition-opacity uppercase group whitespace-nowrap",
                         isActive
-                          ? "bg-zinc-950 text-white shadow-xs"
-                          : "border border-zinc-200 bg-white text-zinc-600 hover:bg-zinc-50 hover:text-zinc-950"
+                          ? "text-[#0B0B0B] font-medium opacity-100"
+                          : "text-[#737373] hover:text-[#0B0B0B] opacity-70 hover:opacity-100"
                       )}
                     >
-                      {tab.label}
+                      <span>{tab.label}</span>
+                      <span
+                        className={cn(
+                          "stipple-underline",
+                          isActive ? "w-full" : "w-0 group-hover:w-full"
+                        )}
+                      />
                     </button>
                   );
                 })}
@@ -288,13 +303,13 @@ export default function DashboardPage() {
 
               {/* Inline Search Input */}
               <div className="relative w-full sm:w-56">
-                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-zinc-400" />
+                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-[#737373]" />
                 <input
                   type="text"
-                  placeholder="Filter calls..."
+                  placeholder="FILTER CALLS..."
                   value={filterQuery}
                   onChange={(e) => setFilterQuery(e.target.value)}
-                  className="h-8 w-full rounded-md border border-zinc-200 bg-white pl-8 pr-2.5 font-mono text-xs text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:border-zinc-400 focus:ring-1 focus:ring-zinc-400 transition-colors shadow-xs"
+                  className="h-8 w-full rounded border border-[#E4E4E7] bg-white pl-8 pr-2.5 font-mono text-[11px] uppercase tracking-wider text-[#0B0B0B] placeholder:text-[#737373] focus:outline-none focus:border-[#0B0B0B] transition-colors"
                 />
               </div>
             </div>
@@ -336,10 +351,10 @@ export default function DashboardPage() {
                 ))}
               </motion.div>
             ) : (
-              <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-zinc-200 bg-zinc-50/50 py-12 text-center">
-                <Video className="h-6 w-6 text-zinc-400 mb-2" />
-                <p className="font-mono text-xs font-medium uppercase text-zinc-700">
-                  No matching meetings
+              <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-[#E4E4E7] bg-[#F4F4F5]/50 py-12 text-center">
+                <Video className="h-6 w-6 text-[#737373] mb-2" />
+                <p className="text-xs font-medium uppercase text-[#737373] tracking-wide">
+                  NO MATCHING MEETINGS FOUND
                 </p>
                 <button
                   type="button"
@@ -347,7 +362,7 @@ export default function DashboardPage() {
                     setActiveTab("all");
                     setFilterQuery("");
                   }}
-                  className="mt-3 rounded-md border border-zinc-200 bg-white px-2.5 py-1 font-mono text-xs font-medium text-zinc-700 hover:bg-zinc-50 transition-colors shadow-xs"
+                  className="mt-3 rounded border border-[#E4E4E7] bg-white px-2.5 py-1 text-[11px] uppercase tracking-wide text-[#0B0B0B] hover:bg-[#F4F4F5] transition-colors"
                 >
                   Reset filters
                 </button>
@@ -355,110 +370,112 @@ export default function DashboardPage() {
             )}
           </motion.section>
 
-          {/* Section 3: Architecture & Workflow Highlights (Extends page naturally without text bloat) */}
+          {/* Section 3: Protocol Architecture Capabilities (Nockchain Grid) */}
           <motion.section
-            aria-label="Platform Highlights"
-            className="space-y-4 pt-2 border-t border-zinc-200/80"
+            aria-label="Platform Architecture"
+            className="space-y-4 pt-4 border-t border-[#E4E4E7]"
             initial={{ opacity: 0, y: 18 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-40px" }}
             transition={{ duration: 0.4 }}
           >
             <div className="flex items-center justify-between">
-              <span className="font-mono text-xs font-semibold uppercase tracking-wider text-zinc-400">
-                Core Capabilities
+              <span className="text-[11px] font-medium uppercase tracking-widest text-[#737373]">
+                CORE PROTOCOL SPECIFICATION
               </span>
-              <span className="font-mono text-[11px] text-zinc-400">Zero Configuration</span>
+              <span className="text-[11px] text-[#737373] uppercase tracking-wide">
+                ZERO COMPROMISE
+              </span>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {/* Feature Card 1 */}
-              <Card className="border border-zinc-200/80 bg-white/95 p-5 shadow-sm hover:shadow-md hover:border-zinc-300 transition-all">
+              <Card className="rounded-lg border border-[#E4E4E7] bg-white p-5 shadow-2xs hover:border-[#0B0B0B]/50 transition-colors">
                 <CardHeader className="p-0 pb-2.5">
                   <div className="flex items-center justify-between">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-md bg-zinc-100 text-zinc-900">
-                      <Zap className="h-4 w-4" />
+                    <div className="flex h-7 w-7 items-center justify-center rounded bg-[#F4F4F5] text-[#0B0B0B]">
+                      <Zap className="h-3.5 w-3.5" />
                     </div>
-                    <Badge variant="outline" className="font-mono text-[10px] text-zinc-500">
-                      Sub-second
-                    </Badge>
+                    <span className="rounded border border-[#E4E4E7] px-1.5 py-0.2 text-[10px] text-[#737373] uppercase">
+                      SUB-SECOND
+                    </span>
                   </div>
-                  <CardTitle className="text-sm font-semibold text-zinc-950 mt-3">
-                    Word-Level Karaoke Seek
+                  <CardTitle className="text-sm font-medium uppercase tracking-wide text-[#0B0B0B] mt-3 font-mono">
+                    Acoustic Word Karaoke
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="p-0">
-                  <CardDescription className="text-xs text-zinc-600 leading-relaxed">
-                    Click any spoken word across 92 diarized segments to jump audio playback instantly.
+                  <CardDescription className="text-xs text-[#737373] leading-relaxed font-light">
+                    Every word mapped to sub-second audio timestamps across 92 diarized conversational segments.
                   </CardDescription>
                 </CardContent>
               </Card>
 
               {/* Feature Card 2 */}
-              <Card className="border border-zinc-200/80 bg-white/95 p-5 shadow-sm hover:shadow-md hover:border-zinc-300 transition-all">
+              <Card className="rounded-lg border border-[#E4E4E7] bg-white p-5 shadow-2xs hover:border-[#0B0B0B]/50 transition-colors">
                 <CardHeader className="p-0 pb-2.5">
                   <div className="flex items-center justify-between">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-md bg-zinc-100 text-zinc-900">
-                      <Layers className="h-4 w-4" />
+                    <div className="flex h-7 w-7 items-center justify-center rounded bg-[#F4F4F5] text-[#0B0B0B]">
+                      <Layers className="h-3.5 w-3.5" />
                     </div>
-                    <Badge variant="outline" className="font-mono text-[10px] text-zinc-500">
-                      4 Lenses
-                    </Badge>
+                    <span className="rounded border border-[#E4E4E7] px-1.5 py-0.2 text-[10px] text-[#737373] uppercase">
+                      4 LENSES
+                    </span>
                   </div>
-                  <CardTitle className="text-sm font-semibold text-zinc-950 mt-3">
-                    Multi-Template Summaries
+                  <CardTitle className="text-sm font-medium uppercase tracking-wide text-[#0B0B0B] mt-3 font-mono">
+                    Multi-Template Compute
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="p-0">
-                  <CardDescription className="text-xs text-zinc-600 leading-relaxed">
-                    Switch between Executive, Engineering, Sales MEDDPICC, and 1-on-1 briefs dynamically.
+                  <CardDescription className="text-xs text-[#737373] leading-relaxed font-light">
+                    Instant zero-latency synthesis for Executive Briefs, Technical Architecture, and Sales MEDDPICC.
                   </CardDescription>
                 </CardContent>
               </Card>
 
               {/* Feature Card 3 */}
-              <Card className="border border-zinc-200/80 bg-white/95 p-5 shadow-sm hover:shadow-md hover:border-zinc-300 transition-all">
+              <Card className="rounded-lg border border-[#E4E4E7] bg-white p-5 shadow-2xs hover:border-[#0B0B0B]/50 transition-colors">
                 <CardHeader className="p-0 pb-2.5">
                   <div className="flex items-center justify-between">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-md bg-zinc-100 text-zinc-900">
-                      <ShieldCheck className="h-4 w-4" />
+                    <div className="flex h-7 w-7 items-center justify-center rounded bg-[#F4F4F5] text-[#0B0B0B]">
+                      <ShieldCheck className="h-3.5 w-3.5" />
                     </div>
-                    <Badge variant="outline" className="font-mono text-[10px] text-zinc-500">
-                      Zero Login
-                    </Badge>
+                    <span className="rounded border border-[#E4E4E7] px-1.5 py-0.2 text-[10px] text-[#737373] uppercase">
+                      ZERO LOGIN
+                    </span>
                   </div>
-                  <CardTitle className="text-sm font-semibold text-zinc-950 mt-3">
+                  <CardTitle className="text-sm font-medium uppercase tracking-wide text-[#0B0B0B] mt-3 font-mono">
                     Public Clip Sharing
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="p-0">
-                  <CardDescription className="text-xs text-zinc-600 leading-relaxed">
-                    Share bounded 30s clips with external stakeholders without requiring account signup.
+                  <CardDescription className="text-xs text-[#737373] leading-relaxed font-light">
+                    Share bounded highlight clips with external parties with cryptographic verification and zero login.
                   </CardDescription>
                 </CardContent>
               </Card>
             </div>
           </motion.section>
 
-          {/* Section 4: Action Items Matrix Quick Access Strip */}
+          {/* Section 4: Action Items Matrix Access Strip */}
           <motion.section
             aria-label="Tasks Matrix Strip"
-            className="rounded-xl border border-zinc-200/80 bg-zinc-50/70 p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3"
+            className="rounded-lg border border-[#E4E4E7] bg-[#F4F4F5]/60 p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3"
             initial={{ opacity: 0, y: 16 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-40px" }}
             transition={{ duration: 0.4 }}
           >
             <div className="flex items-center gap-3">
-              <div className="flex h-8 w-8 items-center justify-center rounded-md bg-zinc-950 text-white shrink-0">
-                <ListTodo className="h-4 w-4" />
+              <div className="flex h-7 w-7 items-center justify-center rounded bg-[#0B0B0B] text-white shrink-0">
+                <ListTodo className="h-3.5 w-3.5" />
               </div>
               <div>
-                <p className="text-xs font-semibold text-zinc-950">
-                  Centralized Action Items Matrix
+                <p className="text-xs font-medium uppercase tracking-wide text-[#0B0B0B]">
+                  CENTRALIZED ACTION ITEMS MATRIX
                 </p>
-                <p className="text-[11px] text-zinc-500">
-                  Track owners, deadlines, and direct timestamp citations across all calls.
+                <p className="text-[11px] text-[#737373] font-light">
+                  Track owners, deadlines, and direct timestamp citations across all workspace calls.
                 </p>
               </div>
             </div>
@@ -466,9 +483,9 @@ export default function DashboardPage() {
             <Link href="/actions" className="shrink-0">
               <button
                 type="button"
-                className="h-8 flex items-center gap-1.5 rounded-md bg-zinc-950 px-3 font-mono text-xs font-medium uppercase text-white hover:bg-zinc-800 transition-colors shadow-xs"
+                className="h-8 flex items-center gap-1.5 rounded bg-[#0B0B0B] px-3.5 text-[11px] font-medium uppercase tracking-wider text-white hover:opacity-90 transition-opacity"
               >
-                <span>Open Matrix</span>
+                <span>OPEN MATRIX</span>
                 <ArrowRight className="h-3 w-3" />
               </button>
             </Link>

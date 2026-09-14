@@ -43,7 +43,7 @@ export function MeetingCard({ meeting, className, onShare }: MeetingCardProps) {
   const [copiedSummary, setCopiedSummary] = useState(false);
   const [copiedShare, setCopiedShare] = useState(false);
 
-  // Format Date: e.g. "Sep 12, 2026"
+  // Format Date
   const formattedDate = (() => {
     try {
       const d = new Date(meeting.date);
@@ -57,16 +57,16 @@ export function MeetingCard({ meeting, className, onShare }: MeetingCardProps) {
     }
   })();
 
-  // Format Duration: e.g. 2535s -> 42m 15s
+  // Format Duration
   const formattedDuration = (() => {
     const mins = Math.floor(meeting.duration / 60);
     const secs = meeting.duration % 60;
     if (mins >= 60) {
       const hours = Math.floor(mins / 60);
       const remMins = mins % 60;
-      return `${hours}h ${remMins}m`;
+      return `${hours}H ${remMins}M`;
     }
-    return secs > 0 ? `${mins}m ${secs}s` : `${mins}m`;
+    return secs > 0 ? `${mins}M ${secs}S` : `${mins}M`;
   })();
 
   // Summary snippet
@@ -139,87 +139,83 @@ export function MeetingCard({ meeting, className, onShare }: MeetingCardProps) {
       <Card
         onClick={handleCardClick}
         className={cn(
-          "group relative flex flex-col justify-between overflow-hidden rounded-xl border border-zinc-200/90 bg-white/95 p-0 transition-all duration-200 hover:border-zinc-400/80 hover:shadow-lg hover:shadow-black/[0.04] cursor-pointer",
+          "group relative flex flex-col justify-between overflow-hidden rounded-lg border border-[#E4E4E7] bg-white p-0 transition-all duration-300 hover:border-[#0B0B0B]/60 hover:shadow-md cursor-pointer font-mono",
           className
         )}
       >
-        {/* Card Header with Category Badges & Meta */}
+        {/* Card Header */}
         <CardHeader className="p-5 pb-3">
           <div className="flex items-start justify-between gap-3">
             <div className="flex flex-wrap items-center gap-1.5">
               {meeting.tags?.slice(0, 2).map((tag) => (
-                <Badge
+                <span
                   key={tag}
-                  variant="outline"
-                  className="rounded-md border-zinc-200/80 bg-zinc-50 px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider text-zinc-600 font-medium"
+                  className="rounded border border-[#E4E4E7] bg-[#F4F4F5] px-2 py-0.5 text-[10px] uppercase tracking-wider text-[#737373] font-normal"
                 >
                   {tag}
-                </Badge>
+                </span>
               ))}
               {meeting.highlights?.length > 0 && (
-                <Badge
-                  variant="secondary"
-                  className="flex items-center gap-1 rounded-md border-zinc-200 bg-zinc-100/70 px-2 py-0.5 font-mono text-[10px] text-zinc-800 font-medium"
-                >
-                  <Sparkles className="h-2.5 w-2.5 text-zinc-500" />
-                  <span>{meeting.highlights.length} clips</span>
-                </Badge>
+                <span className="flex items-center gap-1 rounded border border-[#E4E4E7] bg-white px-2 py-0.5 text-[10px] text-[#0B0B0B] uppercase">
+                  <Sparkles className="h-2.5 w-2.5 text-[#737373]" />
+                  <span>{meeting.highlights.length} CLIPS</span>
+                </span>
               )}
             </div>
 
             {/* Duration Tag */}
-            <div className="flex items-center gap-1 font-mono text-xs text-zinc-500 shrink-0">
-              <Clock className="h-3 w-3 text-zinc-400" />
+            <div className="flex items-center gap-1 text-[11px] text-[#737373] shrink-0 uppercase">
+              <Clock className="h-3 w-3 text-[#737373]" />
               <span>{formattedDuration}</span>
             </div>
           </div>
 
-          <div className="mt-2.5">
-            <CardTitle className="text-base font-semibold tracking-tight text-zinc-950 group-hover:text-black flex items-center justify-between gap-2">
+          <div className="mt-3">
+            <CardTitle className="text-base font-medium tracking-tight text-[#0B0B0B] group-hover:text-black flex items-center justify-between gap-2">
               <span className="line-clamp-1">{meeting.title}</span>
-              <ArrowUpRight className="h-4 w-4 text-zinc-400 group-hover:text-zinc-950 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all shrink-0" />
+              <ArrowUpRight className="h-4 w-4 text-[#737373] group-hover:text-[#0B0B0B] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all shrink-0" />
             </CardTitle>
 
-            <div className="mt-1 flex items-center gap-2 font-mono text-[11px] text-zinc-500">
-              <CalendarIcon className="h-3 w-3 text-zinc-400" />
+            <div className="mt-1 flex items-center gap-2 text-[11px] text-[#737373] uppercase">
+              <CalendarIcon className="h-3 w-3 text-[#737373]" />
               <span>{formattedDate}</span>
               <span>•</span>
-              <span>{meeting.participants.length} attendees</span>
+              <span>{meeting.participants.length} ATTENDEES</span>
             </div>
           </div>
         </CardHeader>
 
         {/* Card Content with Summary & Attendees */}
         <CardContent className="p-5 pt-0 pb-3 space-y-3">
-          <CardDescription className="line-clamp-2 text-xs leading-relaxed text-zinc-600">
+          <CardDescription className="line-clamp-2 text-xs leading-relaxed text-[#737373] font-light">
             {summarySnippet}
           </CardDescription>
 
           <div className="flex items-center justify-between gap-2 pt-1">
             {/* Avatar Cluster */}
-            <div className="flex items-center -space-x-2 overflow-hidden py-0.5">
+            <div className="flex items-center -space-x-1.5 overflow-hidden py-0.5">
               {visibleParticipants.map((p) => (
                 <Tooltip key={p.id}>
                   <TooltipTrigger asChild>
-                    <Avatar className="h-6.5 w-6.5 rounded-md border-2 border-white bg-zinc-100 shadow-xs transition-transform hover:scale-110 hover:z-20">
+                    <Avatar className="h-6 w-6 rounded border border-[#E4E4E7] bg-white shadow-2xs transition-transform hover:scale-110 hover:z-20">
                       <AvatarImage src={p.avatarUrl} alt={p.name} />
-                      <AvatarFallback className="rounded-md bg-zinc-100 font-mono text-[9px] font-medium text-zinc-800">
+                      <AvatarFallback className="rounded bg-[#F4F4F5] text-[9px] font-medium text-[#0B0B0B]">
                         {p.name.slice(0, 2).toUpperCase()}
                       </AvatarFallback>
                     </Avatar>
                   </TooltipTrigger>
                   <TooltipContent
                     side="top"
-                    className="border border-zinc-200 bg-white text-xs font-medium text-zinc-900 shadow-md rounded-md"
+                    className="border border-[#E4E4E7] bg-white text-xs font-mono text-[#0B0B0B] shadow-md rounded"
                   >
                     <p className="font-semibold">{p.name}</p>
-                    {p.role && <p className="text-[10px] text-zinc-500 font-normal">{p.role}</p>}
+                    {p.role && <p className="text-[10px] text-[#737373]">{p.role}</p>}
                   </TooltipContent>
                 </Tooltip>
               ))}
 
               {remainingCount > 0 && (
-                <div className="flex h-6.5 w-6.5 items-center justify-center rounded-md border border-zinc-200 bg-zinc-100 font-mono text-[9px] font-medium text-zinc-600">
+                <div className="flex h-6 w-6 items-center justify-center rounded border border-[#E4E4E7] bg-[#F4F4F5] text-[9px] text-[#737373]">
                   +{remainingCount}
                 </div>
               )}
@@ -227,37 +223,35 @@ export function MeetingCard({ meeting, className, onShare }: MeetingCardProps) {
 
             {/* Action Item Indicator */}
             {totalActions > 0 && (
-              <Badge
-                variant="outline"
-                className="flex items-center gap-1.5 rounded-md border-zinc-200/80 bg-zinc-50/80 px-2 py-0.5 font-mono text-[11px] text-zinc-700"
-              >
-                <ListTodo className="h-3 w-3 text-zinc-400" />
+              <span className="flex items-center gap-1.5 rounded border border-[#E4E4E7] bg-[#F4F4F5] px-2 py-0.5 text-[10px] text-[#737373] uppercase">
+                <ListTodo className="h-3 w-3 text-[#737373]" />
                 <span>
-                  {pendingActions}/{totalActions} tasks
+                  {pendingActions}/{totalActions} TASKS
                 </span>
-              </Badge>
+              </span>
             )}
           </div>
         </CardContent>
 
-        {/* Card Footer with 1-Click Tactile Actions */}
-        <CardFooter className="flex items-center justify-between border-t border-zinc-100 bg-zinc-50/50 p-3 px-5">
-          <div className="flex items-center gap-1.5">
+        {/* Card Footer with Stipple Action Buttons */}
+        <CardFooter className="flex items-center justify-between border-t border-[#E4E4E7] bg-[#F4F4F5]/40 p-3 px-5">
+          <div className="flex items-center gap-2">
             <button
               type="button"
               onClick={handleCopySummary}
-              className="flex items-center gap-1.5 rounded-md border border-zinc-200/80 bg-white px-2 py-1 text-xs font-medium text-zinc-700 hover:bg-zinc-50 hover:text-zinc-950 transition-colors shadow-2xs"
+              className="relative group text-xs text-[#737373] hover:text-[#0B0B0B] transition-colors py-0.5 uppercase tracking-wide flex items-center gap-1"
               title="Copy Summary"
             >
               {copiedSummary ? (
                 <>
-                  <Check className="h-3 w-3 stroke-[2.5] text-emerald-600" />
-                  <span className="text-[11px]">Copied</span>
+                  <Check className="h-3 w-3 text-[#0B0B0B]" />
+                  <span className="text-[11px]">COPIED</span>
                 </>
               ) : (
                 <>
-                  <Copy className="h-3 w-3 text-zinc-400" />
-                  <span className="text-[11px]">Summary</span>
+                  <Copy className="h-3 w-3" />
+                  <span className="text-[11px]">SUMMARY</span>
+                  <span className="stipple-underline w-0 group-hover:w-full" />
                 </>
               )}
             </button>
@@ -265,18 +259,19 @@ export function MeetingCard({ meeting, className, onShare }: MeetingCardProps) {
             <button
               type="button"
               onClick={handleShare}
-              className="flex items-center gap-1.5 rounded-md border border-zinc-200/80 bg-white px-2 py-1 text-xs font-medium text-zinc-700 hover:bg-zinc-50 hover:text-zinc-950 transition-colors shadow-2xs"
+              className="relative group text-xs text-[#737373] hover:text-[#0B0B0B] transition-colors py-0.5 uppercase tracking-wide flex items-center gap-1"
               title="Share Recording"
             >
               {copiedShare ? (
                 <>
-                  <Check className="h-3 w-3 stroke-[2.5] text-emerald-600" />
-                  <span className="text-[11px]">Copied</span>
+                  <Check className="h-3 w-3 text-[#0B0B0B]" />
+                  <span className="text-[11px]">COPIED</span>
                 </>
               ) : (
                 <>
-                  <Share2 className="h-3 w-3 text-zinc-400" />
-                  <span className="text-[11px]">Share</span>
+                  <Share2 className="h-3 w-3" />
+                  <span className="text-[11px]">SHARE</span>
+                  <span className="stipple-underline w-0 group-hover:w-full" />
                 </>
               )}
             </button>
@@ -288,10 +283,10 @@ export function MeetingCard({ meeting, className, onShare }: MeetingCardProps) {
               e.stopPropagation();
               handleCardClick();
             }}
-            className="flex items-center gap-1.5 rounded-md bg-zinc-950 px-3 py-1 font-mono text-xs font-medium uppercase tracking-wider text-white hover:bg-zinc-800 active:scale-95 transition-all shadow-2xs"
+            className="flex items-center gap-1.5 rounded bg-[#0B0B0B] px-3 py-1 text-[11px] font-medium tracking-wide uppercase text-white hover:opacity-90 transition-opacity"
           >
-            <Play className="h-3 w-3 fill-current" />
-            <span>Open</span>
+            <Play className="h-2.5 w-2.5 fill-current" />
+            <span>OPEN</span>
           </button>
         </CardFooter>
       </Card>
